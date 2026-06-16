@@ -96,6 +96,7 @@ export default function NewProject() {
           name: wizardData.name!,
           category: wizardData.category || undefined,
           brief: wizardData.brief || undefined,
+          vibe: wizardData.vibe || undefined,
           status: "draft",
           printMethod: wizardData.printMethod || undefined,
           estimatedQuantity: qty != null && qty !== "" ? Number(qty) : undefined,

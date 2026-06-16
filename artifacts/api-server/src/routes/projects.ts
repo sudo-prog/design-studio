@@ -46,17 +46,18 @@ router.post("/projects", async (req, res): Promise<void> => {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
+  const createData = parsed.data as typeof parsed.data & { vibe?: string };
   const [project] = await db
     .insert(projectsTable)
     .values({
-      name: parsed.data.name,
-      category: parsed.data.category ?? null,
-      brief: parsed.data.brief ?? null,
-      vibe: (parsed.data as Record<string, unknown>).vibe as string ?? null,
-      status: parsed.data.status ?? "draft",
-      printMethod: parsed.data.printMethod ?? null,
-      estimatedQuantity: parsed.data.estimatedQuantity ?? null,
-      colorPalette: parsed.data.colorPalette ?? [],
+      name: createData.name,
+      category: createData.category ?? null,
+      brief: createData.brief ?? null,
+      vibe: createData.vibe ?? null,
+      status: createData.status ?? "draft",
+      printMethod: createData.printMethod ?? null,
+      estimatedQuantity: createData.estimatedQuantity ?? null,
+      colorPalette: createData.colorPalette ?? [],
     })
     .returning();
   await db.insert(activityLogTable).values({
@@ -103,15 +104,27 @@ router.patch("/projects/:id", async (req, res): Promise<void> => {
     return;
   }
   const updateData: Record<string, unknown> = {};
-  if (parsed.data.name !== undefined) updateData.name = parsed.data.name;
-  if (parsed.data.category !== undefined) updateData.category = parsed.data.category;
-  if (parsed.data.brief !== undefined) updateData.brief = parsed.data.brief;
-  if (parsed.data.status !== undefined) updateData.status = parsed.data.status;
+  const patchData = parsed.data as typeof parsed.data & { vibe?: string };
+  if (patchData.name !== undefined) updateData.name = patchData.name;
+  if (patchData.category !== undefined) updateData.category = patchData.category;
+  if (patchData.brief !== undefined) updateData.brief = patchData.brief;
+  if (patchData.vibe !== undefined) updateData.vibe = patchData.vibe;
+  if (patchData.status !== undefined) updateData.status = patchData.status;
   if (parsed.data.printMethod !== undefined) updateData.printMethod = parsed.data.printMethod;
   if (parsed.data.estimatedQuantity !== undefined) updateData.estimatedQuantity = parsed.data.estimatedQuantity;
   if (parsed.data.colorPalette !== undefined) updateData.colorPalette = parsed.data.colorPalette;
   if (parsed.data.githubRepo !== undefined) updateData.githubRepo = parsed.data.githubRepo;
   if (parsed.data.coverAssetUrl !== undefined) updateData.coverAssetUrl = parsed.data.coverAssetUrl;
+
+  const [before] = await db
+    .select()
+    .from(projectsTable)
+    .where(eq(projectsTable.id, params.data.id));
+  if (!before) {
+    res.status(404).json({ error: "Project not found" });
+    return;
+  }
+
   const [project] = await db
     .update(projectsTable)
     .set(updateData)
@@ -121,11 +134,24 @@ router.patch("/projects/:id", async (req, res): Promise<void> => {
     res.status(404).json({ error: "Project not found" });
     return;
   }
+
+  const previousState = {
+    name: before.name,
+    category: before.category,
+    brief: before.brief,
+    vibe: (before as unknown as Record<string, unknown>).vibe,
+    status: before.status,
+    printMethod: before.printMethod,
+    estimatedQuantity: before.estimatedQuantity,
+    colorPalette: before.colorPalette,
+    coverAssetUrl: before.coverAssetUrl,
+  };
+
   await db.insert(projectHistoryTable).values({
     projectId: project.id,
     type: "updated",
-    description: "Project updated",
-    metadata: JSON.stringify(updateData),
+    description: `Updated: ${Object.keys(updateData).join(", ")}`,
+    metadata: JSON.stringify({ changes: updateData, previous: previousState }),
   });
   res.json(GetProjectResponse.parse(project));
 });
@@ -181,17 +207,19 @@ router.post("/projects/:id/backup", async (req, res): Promise<void> => {
     .from(assetsTable)
     .where(eq(assetsTable.projectId, params.data.id));
 
+  const proj = project as unknown as Record<string, unknown>;
+
   const designJson = {
     id: project.id,
     name: project.name,
     category: project.category,
     brief: project.brief,
-    vibe: (project as Record<string, unknown>).vibe,
+    vibe: proj.vibe,
     status: project.status,
     printMethod: project.printMethod,
     estimatedQuantity: project.estimatedQuantity,
     colorPalette: project.colorPalette,
-    moodBoard: (project as Record<string, unknown>).moodBoard,
+    moodBoard: proj.moodBoard,
     printSpecs: {},
     githubBackup: {
       repo: project.githubRepo,
@@ -208,42 +236,60 @@ router.post("/projects/:id/backup", async (req, res): Promise<void> => {
     updatedAt: project.updatedAt,
   };
 
-  const repoInput = (req.body as Record<string, unknown>).repo as string | undefined;
-  const patInput = (req.body as Record<string, unknown>).pat as string | undefined;
-  const repo = repoInput || project.githubRepo;
-  const pat = patInput || (project as Record<string, unknown>).githubPat as string;
+  const bodyRecord = req.body as Record<string, unknown>;
+  const repo = (bodyRecord.repo as string | undefined) || project.githubRepo;
+  const pat = (bodyRecord.pat as string | undefined) || (proj.githubPat as string | undefined);
 
-  let commitUrl: string | null = null;
+  if (!repo || !pat) {
+    res.json(
+      BackupProjectResponse.parse({
+        success: true,
+        message: "No GitHub repository configured — use the download button to export design.json",
+        commitUrl: null,
+      })
+    );
+    return;
+  }
 
-  if (repo && pat) {
+  const [owner, repoName] = repo.split("/");
+  if (!owner || !repoName) {
+    res.status(400).json({ error: "Invalid repository format — expected owner/repo" });
+    return;
+  }
+
+  let commitUrl: string;
+  try {
+    const { Octokit } = await import("@octokit/rest");
+    const octokit = new Octokit({ auth: pat });
+    const projectFolder = `projects/${project.id}`;
+    const path = `${projectFolder}/design.json`;
+    const content = Buffer.from(JSON.stringify(designJson, null, 2)).toString("base64");
+    const message = `Backup: ${project.name} [${new Date().toISOString()}]`;
+
+    let sha: string | undefined;
     try {
-      const { Octokit } = await import("@octokit/rest");
-      const octokit = new Octokit({ auth: pat });
-      const [owner, repoName] = repo.split("/");
-      const path = `design.json`;
-      const content = Buffer.from(JSON.stringify(designJson, null, 2)).toString("base64");
-      const message = `Backup: ${project.name} — ${new Date().toISOString()}`;
-
-      let sha: string | undefined;
-      try {
-        const existing = await octokit.rest.repos.getContent({ owner, repo: repoName, path });
-        if (!Array.isArray(existing.data) && "sha" in existing.data) {
-          sha = existing.data.sha;
-        }
-      } catch {}
-
-      const result = await octokit.rest.repos.createOrUpdateFileContents({
-        owner,
-        repo: repoName,
-        path,
-        message,
-        content,
-        ...(sha ? { sha } : {}),
-      });
-      commitUrl = result.data.commit.html_url ?? null;
-    } catch (err) {
-      logger.error({ err }, "GitHub backup failed");
+      const existing = await octokit.rest.repos.getContent({ owner, repo: repoName, path });
+      if (!Array.isArray(existing.data) && "sha" in existing.data) {
+        sha = existing.data.sha;
+      }
+    } catch {
+      // file doesn't exist yet — that's fine, we'll create it
     }
+
+    const result = await octokit.rest.repos.createOrUpdateFileContents({
+      owner,
+      repo: repoName,
+      path,
+      message,
+      content,
+      ...(sha ? { sha } : {}),
+    });
+    commitUrl = result.data.commit.html_url ?? `https://github.com/${repo}`;
+  } catch (err) {
+    logger.error({ err }, "GitHub backup failed");
+    const msg = err instanceof Error ? err.message : "Unknown error";
+    res.status(502).json({ error: `GitHub backup failed: ${msg}` });
+    return;
   }
 
   await db
@@ -253,7 +299,7 @@ router.post("/projects/:id/backup", async (req, res): Promise<void> => {
 
   await db.insert(activityLogTable).values({
     type: "backup_completed",
-    description: `Project "${project.name}" backed up${commitUrl ? " to GitHub" : " (local only)"}`,
+    description: `Project "${project.name}" backed up to GitHub`,
     projectId: project.id,
     projectName: project.name,
   });
@@ -261,17 +307,71 @@ router.post("/projects/:id/backup", async (req, res): Promise<void> => {
   await db.insert(projectHistoryTable).values({
     projectId: project.id,
     type: "backup",
-    description: "Project backed up",
+    description: `Backed up to GitHub: ${repo}`,
     metadata: JSON.stringify({ commitUrl, repo }),
   });
 
   res.json(
     BackupProjectResponse.parse({
       success: true,
-      message: commitUrl ? "Backed up to GitHub" : "design.json prepared (no GitHub configured)",
+      message: "Backed up to GitHub",
       commitUrl,
     })
   );
+});
+
+router.post("/projects/:id/restore/:historyId", async (req, res): Promise<void> => {
+  const projectId = parseInt(String(req.params.id), 10);
+  const historyId = parseInt(String(req.params.historyId), 10);
+  if (isNaN(projectId) || isNaN(historyId)) {
+    res.status(400).json({ error: "Invalid id" });
+    return;
+  }
+  const [project] = await db.select().from(projectsTable).where(eq(projectsTable.id, projectId));
+  if (!project) {
+    res.status(404).json({ error: "Project not found" });
+    return;
+  }
+  const [entry] = await db
+    .select()
+    .from(projectHistoryTable)
+    .where(eq(projectHistoryTable.id, historyId));
+  if (!entry) {
+    res.status(404).json({ error: "History entry not found" });
+    return;
+  }
+  if (!entry.metadata) {
+    res.status(400).json({ error: "This history entry has no restorable state" });
+    return;
+  }
+  let metadata: Record<string, unknown>;
+  try {
+    metadata = JSON.parse(entry.metadata);
+  } catch {
+    res.status(400).json({ error: "Could not parse history entry metadata" });
+    return;
+  }
+  const allowedFields = ["name", "category", "brief", "vibe", "status", "printMethod", "estimatedQuantity", "colorPalette", "coverAssetUrl"];
+  const restoreData: Record<string, unknown> = {};
+  for (const field of allowedFields) {
+    if (metadata[field] !== undefined) restoreData[field] = metadata[field];
+  }
+  if (Object.keys(restoreData).length === 0) {
+    res.status(400).json({ error: "No restorable fields in this history entry" });
+    return;
+  }
+  const [updated] = await db
+    .update(projectsTable)
+    .set(restoreData)
+    .where(eq(projectsTable.id, projectId))
+    .returning();
+  await db.insert(projectHistoryTable).values({
+    projectId,
+    type: "restored",
+    description: `Restored from history entry #${historyId}: "${entry.description}"`,
+    metadata: JSON.stringify({ fromHistoryId: historyId, restoredFields: Object.keys(restoreData) }),
+  });
+  res.json(GetProjectResponse.parse(updated));
 });
 
 router.patch("/projects/:id/mood-board", async (req, res): Promise<void> => {

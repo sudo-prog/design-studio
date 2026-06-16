@@ -64,6 +64,8 @@ export interface Project {
   category?: string | null;
   /** @nullable */
   brief?: string | null;
+  /** @nullable */
+  vibe?: string | null;
   status: ProjectStatus;
   /** @nullable */
   coverAssetUrl?: string | null;
@@ -75,7 +77,10 @@ export interface Project {
   /** @nullable */
   githubRepo?: string | null;
   /** @nullable */
+  githubPat?: string | null;
+  /** @nullable */
   lastBackupAt?: string | null;
+  moodBoard?: unknown;
   createdAt: string;
   updatedAt: string;
 }
@@ -95,6 +100,7 @@ export interface ProjectInput {
   name: string;
   category?: string;
   brief?: string;
+  vibe?: string;
   status?: ProjectInputStatus;
   printMethod?: string;
   estimatedQuantity?: number;
@@ -116,6 +122,7 @@ export interface ProjectUpdate {
   name?: string;
   category?: string;
   brief?: string;
+  vibe?: string;
   status?: ProjectUpdateStatus;
   printMethod?: string;
   estimatedQuantity?: number;

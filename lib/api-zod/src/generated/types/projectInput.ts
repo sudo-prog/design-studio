@@ -12,6 +12,7 @@ export interface ProjectInput {
   name: string;
   category?: string;
   brief?: string;
+  vibe?: string;
   status?: ProjectInputStatus;
   printMethod?: string;
   estimatedQuantity?: number;

@@ -1,6 +1,15 @@
-import { useGetProjectHistory, getGetProjectHistoryQueryKey } from "@workspace/api-client-react";
+import { useState } from "react";
+import { useGetProjectHistory, getGetProjectHistoryQueryKey, useGetProject, getGetProjectQueryKey } from "@workspace/api-client-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel,
+  AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
+  AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
 import {
   Upload, Sparkles, Palette, FileText, Package, GitBranch,
   Pencil, Plus, RotateCcw, Clock
@@ -34,6 +43,8 @@ const EVENT_COLORS: Record<string, string> = {
   restored: "text-amber-400 bg-amber-400/10",
 };
 
+const RESTORABLE_TYPES = new Set(["updated", "created"]);
+
 function timeAgo(date: string | Date) {
   const d = new Date(date);
   const diff = Date.now() - d.getTime();
@@ -47,10 +58,45 @@ function timeAgo(date: string | Date) {
   return d.toLocaleDateString();
 }
 
+function entryHasRestorableState(metadata: string | null | undefined): boolean {
+  if (!metadata) return false;
+  try {
+    const m = JSON.parse(metadata);
+    if (m.previous && typeof m.previous === "object" && Object.keys(m.previous).length > 0) return true;
+    const restorable = ["name", "category", "brief", "vibe", "status", "printMethod", "estimatedQuantity", "colorPalette", "coverAssetUrl"];
+    return restorable.some((f) => m[f] !== undefined);
+  } catch {
+    return false;
+  }
+}
+
 export function ProjectHistory({ projectId }: { projectId: number }) {
   const { data: history, isLoading } = useGetProjectHistory(projectId, {
     query: { enabled: !!projectId, queryKey: getGetProjectHistoryQueryKey(projectId) },
   });
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  const [confirmEntry, setConfirmEntry] = useState<{ id: number; description: string } | null>(null);
+  const [restoring, setRestoring] = useState(false);
+
+  async function handleRestore(historyId: number) {
+    setRestoring(true);
+    try {
+      const res = await fetch(`/api/projects/${projectId}/restore/${historyId}`, { method: "POST" });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: "Restore failed" }));
+        throw new Error((err as { error?: string }).error ?? "Restore failed");
+      }
+      await queryClient.invalidateQueries({ queryKey: getGetProjectQueryKey(projectId) });
+      await queryClient.invalidateQueries({ queryKey: getGetProjectHistoryQueryKey(projectId) });
+      toast({ title: "Project restored", description: "Fields rolled back to the selected history state." });
+    } catch (err) {
+      toast({ title: "Restore failed", description: err instanceof Error ? err.message : "Unknown error", variant: "destructive" });
+    } finally {
+      setRestoring(false);
+      setConfirmEntry(null);
+    }
+  }
 
   if (isLoading) {
     return (
@@ -78,56 +124,93 @@ export function ProjectHistory({ projectId }: { projectId: number }) {
   }
 
   return (
-    <div className="space-y-0">
-      {history.map((entry, idx) => {
-        const Icon = EVENT_ICONS[entry.type] ?? Clock;
-        const colorClass = EVENT_COLORS[entry.type] ?? "text-muted-foreground bg-muted";
-        const isLast = idx === history.length - 1;
+    <>
+      <div className="space-y-0">
+        {history.map((entry, idx) => {
+          const Icon = EVENT_ICONS[entry.type] ?? Clock;
+          const colorClass = EVENT_COLORS[entry.type] ?? "text-muted-foreground bg-muted";
+          const isLast = idx === history.length - 1;
+          const canRestore = RESTORABLE_TYPES.has(entry.type) && entryHasRestorableState(entry.metadata);
 
-        return (
-          <div key={entry.id} className="flex gap-3 group">
-            <div className="flex flex-col items-center">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${colorClass}`}>
-                <Icon className="w-4 h-4" />
-              </div>
-              {!isLast && <div className="w-px flex-1 bg-border mt-1" />}
-            </div>
-            <div className={`flex-1 pb-4 ${!isLast ? "pb-4" : "pb-0"}`}>
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <p className="text-sm font-medium leading-tight">{entry.description}</p>
-                  {entry.metadata && (
-                    <p className="text-xs text-muted-foreground mt-0.5 font-mono">
-                      {typeof entry.metadata === "string"
-                        ? (() => {
-                            try {
-                              const m = JSON.parse(entry.metadata);
-                              return Object.entries(m)
-                                .filter(([, v]) => v !== null && v !== undefined)
-                                .slice(0, 3)
-                                .map(([k, v]) => `${k}: ${v}`)
-                                .join(" · ");
-                            } catch {
-                              return entry.metadata;
-                            }
-                          })()
-                        : null}
-                    </p>
-                  )}
+          return (
+            <div key={entry.id} className="flex gap-3 group">
+              <div className="flex flex-col items-center">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${colorClass}`}>
+                  <Icon className="w-4 h-4" />
                 </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <Badge variant="outline" className="text-[10px]">
-                    {entry.type.replace(/_/g, " ")}
-                  </Badge>
-                  <span className="text-xs text-muted-foreground whitespace-nowrap">
-                    {timeAgo(entry.createdAt)}
-                  </span>
+                {!isLast && <div className="w-px flex-1 bg-border mt-1" />}
+              </div>
+              <div className={`flex-1 ${!isLast ? "pb-4" : "pb-0"}`}>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium leading-tight">{entry.description}</p>
+                    {entry.metadata && (
+                      <p className="text-xs text-muted-foreground mt-0.5 font-mono truncate max-w-xs">
+                        {(() => {
+                          try {
+                            const m = JSON.parse(entry.metadata as string);
+                            const display = m.changes ?? m;
+                            return Object.entries(display)
+                              .filter(([, v]) => v !== null && v !== undefined && typeof v !== "object")
+                              .slice(0, 3)
+                              .map(([k, v]) => `${k}: ${v}`)
+                              .join(" · ");
+                          } catch {
+                            return entry.metadata as string;
+                          }
+                        })()}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    {canRestore && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 px-2 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() => setConfirmEntry({ id: entry.id, description: entry.description })}
+                      >
+                        <RotateCcw className="w-3 h-3 mr-1" />
+                        Restore
+                      </Button>
+                    )}
+                    <Badge variant="outline" className="text-[10px]">
+                      {entry.type.replace(/_/g, " ")}
+                    </Badge>
+                    <span className="text-xs text-muted-foreground whitespace-nowrap">
+                      {timeAgo(entry.createdAt)}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        );
-      })}
-    </div>
+          );
+        })}
+      </div>
+
+      <AlertDialog open={!!confirmEntry} onOpenChange={(open) => !open && setConfirmEntry(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Restore this state?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will overwrite the project's current field values with the state captured in:
+              <br />
+              <span className="font-medium text-foreground">"{confirmEntry?.description}"</span>
+              <br /><br />
+              Assets and mood board items are not affected. This action can be undone by restoring a newer entry.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={restoring}
+              onClick={() => confirmEntry && handleRestore(confirmEntry.id)}
+            >
+              {restoring ? "Restoring…" : "Restore"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }
