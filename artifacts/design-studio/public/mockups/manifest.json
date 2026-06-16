@@ -1,0 +1,16 @@
+[
+  { "id": "tshirt-front",     "name": "T-Shirt Front",          "category": "tops",        "file": "tshirt-front.svg",     "tags": ["tshirt","apparel"],          "anchorPoints": [[0.30,0.25],[0.70,0.25],[0.70,0.65],[0.30,0.65]] },
+  { "id": "tshirt-back",      "name": "T-Shirt Back",           "category": "tops",        "file": "tshirt-back.svg",      "tags": ["tshirt","apparel"],          "anchorPoints": [[0.28,0.22],[0.72,0.22],[0.72,0.62],[0.28,0.62]] },
+  { "id": "hoodie-front",     "name": "Hoodie Front",           "category": "tops",        "file": "hoodie-front.svg",     "tags": ["hoodie","apparel"],          "anchorPoints": [[0.25,0.20],[0.75,0.20],[0.75,0.65],[0.25,0.65]] },
+  { "id": "hoodie-back",      "name": "Hoodie Back",            "category": "tops",        "file": "hoodie-back.svg",      "tags": ["hoodie","apparel"],          "anchorPoints": [[0.25,0.20],[0.75,0.20],[0.75,0.65],[0.25,0.65]] },
+  { "id": "longsleeve-front", "name": "Long Sleeve Front",      "category": "tops",        "file": "longsleeve-front.svg", "tags": ["longsleeve","apparel"],      "anchorPoints": [[0.30,0.22],[0.70,0.22],[0.70,0.60],[0.30,0.60]] },
+  { "id": "crewneck-front",   "name": "Crewneck Sweatshirt",    "category": "tops",        "file": "crewneck-front.svg",   "tags": ["crewneck","apparel"],        "anchorPoints": [[0.25,0.20],[0.75,0.20],[0.75,0.65],[0.25,0.65]] },
+  { "id": "tank-front",       "name": "Tank Top",               "category": "tops",        "file": "tank-front.svg",       "tags": ["tank","apparel"],            "anchorPoints": [[0.30,0.15],[0.70,0.15],[0.70,0.70],[0.30,0.70]] },
+  { "id": "polo-front",       "name": "Polo Shirt",             "category": "tops",        "file": "polo-front.svg",       "tags": ["polo","apparel"],            "anchorPoints": [[0.30,0.25],[0.70,0.25],[0.70,0.65],[0.30,0.65]] },
+  { "id": "cap-front",        "name": "Cap Front",              "category": "accessories", "file": "cap-front.svg",        "tags": ["cap","hat","accessories"],   "anchorPoints": [[0.30,0.30],[0.70,0.30],[0.65,0.55],[0.35,0.55]] },
+  { "id": "tote-front",       "name": "Tote Bag",               "category": "accessories", "file": "tote-front.svg",       "tags": ["tote","bag","accessories"],  "anchorPoints": [[0.22,0.20],[0.78,0.20],[0.78,0.75],[0.22,0.75]] },
+  { "id": "phone-case",       "name": "Phone Case",             "category": "accessories", "file": "phone-case.svg",       "tags": ["phone","case","accessories"],"anchorPoints": [[0.22,0.15],[0.78,0.15],[0.78,0.85],[0.22,0.85]] },
+  { "id": "poster-a2",        "name": "Poster A2",              "category": "flat",        "file": "poster-a2.svg",        "tags": ["poster","print"],            "anchorPoints": [[0.10,0.08],[0.90,0.08],[0.90,0.92],[0.10,0.92]] },
+  { "id": "poster-a3",        "name": "Poster A3 (Framed)",     "category": "flat",        "file": "poster-a3.svg",        "tags": ["poster","print","framed"],   "anchorPoints": [[0.12,0.10],[0.88,0.10],[0.88,0.90],[0.12,0.90]] },
+  { "id": "canvas-print",     "name": "Canvas Print",           "category": "flat",        "file": "canvas-print.svg",     "tags": ["canvas","print","art"],      "anchorPoints": [[0.08,0.08],[0.92,0.08],[0.92,0.92],[0.08,0.92]] }
+]

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 420" width="400" height="420">
+  <defs>
+    <linearGradient id="fabric" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f0f0f0"/>
+      <stop offset="100%" style="stop-color:#d8d8d8"/>
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+  <!-- T-Shirt body -->
+  <g filter="url(#shadow)">
+    <!-- Left sleeve -->
+    <path d="M 60 60 L 10 130 L 60 150 L 100 100" fill="url(#fabric)" stroke="#bbb" stroke-width="1.5"/>
+    <!-- Right sleeve -->
+    <path d="M 340 60 L 390 130 L 340 150 L 300 100" fill="url(#fabric)" stroke="#bbb" stroke-width="1.5"/>
+    <!-- Body -->
+    <path d="M 100 50 Q 140 30 160 28 Q 180 60 200 62 Q 220 60 240 28 Q 260 30 300 50 L 300 100 L 340 150 L 340 400 L 60 400 L 60 150 L 100 100 Z" fill="url(#fabric)" stroke="#bbb" stroke-width="1.5"/>
+    <!-- Collar -->
+    <path d="M 160 28 Q 180 55 200 57 Q 220 55 240 28" fill="none" stroke="#ccc" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <!-- Print zone dashed outline -->
+  <rect x="130" y="120" width="140" height="160" rx="4" fill="none" stroke="#999" stroke-width="1" stroke-dasharray="6 4" opacity="0.5"/>
+  <text x="200" y="218" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#aaa">Print area</text>
+</svg>

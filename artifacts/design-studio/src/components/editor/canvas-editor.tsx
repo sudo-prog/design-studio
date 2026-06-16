@@ -58,7 +58,7 @@ export interface EditorContextValue {
   removeLayer(id: string): void;
   reorderLayer(id: string, direction: "up" | "down"): void;
   deleteSelected(): void;
-  exportPNG(dpi?: number): string;
+  exportPNG(dpi?: number, transparent?: boolean): string;
   exportSVG(): string;
 }
 
@@ -345,9 +345,18 @@ export function EditorProvider({
     snapshot();
   }, [syncLayers, snapshot]);
 
-  const exportPNG = useCallback((dpi = 96) => {
+  const exportPNG = useCallback((dpi = 96, transparent = false) => {
     const c = fabricRef.current;
     if (!c) return "";
+    if (transparent) {
+      const prevBg = c.backgroundColor;
+      c.backgroundColor = "";
+      c.requestRenderAll();
+      const url = c.toDataURL({ format: "png", multiplier: dpi / 96 });
+      c.backgroundColor = prevBg;
+      c.requestRenderAll();
+      return url;
+    }
     return c.toDataURL({ format: "png", multiplier: dpi / 96 });
   }, []);
 

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 320" width="400" height="320">
+  <defs>
+    <linearGradient id="fabric" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e4e4e4"/>
+      <stop offset="100%" style="stop-color:#cccccc"/>
+    </linearGradient>
+    <filter id="shadow"><feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.15"/></filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <!-- Cap dome -->
+    <path d="M 80 200 Q 80 60 200 50 Q 320 60 320 200 Z" fill="url(#fabric)" stroke="#bbb" stroke-width="1.5"/>
+    <!-- Brim -->
+    <path d="M 80 200 Q 60 215 50 230 Q 80 240 200 240 Q 320 240 350 230 Q 340 215 320 200 Z" fill="#d8d8d8" stroke="#bbb" stroke-width="1.5"/>
+    <!-- Crown button -->
+    <circle cx="200" cy="55" r="8" fill="#cccccc" stroke="#bbb" stroke-width="1.5"/>
+    <!-- Panel seams -->
+    <line x1="200" y1="55" x2="200" y2="200" stroke="#ccc" stroke-width="1" stroke-dasharray="3 3"/>
+    <path d="M 200 55 Q 155 80 130 180" stroke="#ccc" stroke-width="1" stroke-dasharray="3 3" fill="none"/>
+    <path d="M 200 55 Q 245 80 270 180" stroke="#ccc" stroke-width="1" stroke-dasharray="3 3" fill="none"/>
+  </g>
+  <!-- Embroidery area -->
+  <rect x="155" y="115" width="90" height="70" rx="4" fill="none" stroke="#999" stroke-width="1" stroke-dasharray="5 3" opacity="0.5"/>
+  <text x="200" y="155" text-anchor="middle" font-family="sans-serif" font-size="9" fill="#aaa">Embroidery</text>
+</svg>

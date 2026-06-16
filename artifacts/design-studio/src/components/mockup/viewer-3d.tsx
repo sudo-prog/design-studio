@@ -85,11 +85,12 @@ export function Viewer3D({ designUrl, garmentColor, className }: Props) {
     geo.computeVertexNormals();
     geo.center();
 
-    // Design texture
+    // Design texture — never append query params to data URLs (corrupts them)
     const designTex = designUrl
       ? (() => {
           const loader = new THREE.TextureLoader();
-          return loader.load(designUrl + (designUrl.includes("?") ? "&" : "?") + "crossOrigin=anonymous");
+          const loadUrl = designUrl.startsWith("data:") ? designUrl : designUrl + (designUrl.includes("?") ? "&" : "?") + "crossOrigin=anonymous";
+          return loader.load(loadUrl);
         })()
       : null;
 

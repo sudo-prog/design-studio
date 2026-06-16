@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 460" width="400" height="460">
+  <defs>
+    <linearGradient id="fabric" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#eaeaea"/>
+      <stop offset="100%" style="stop-color:#d2d2d2"/>
+    </linearGradient>
+    <filter id="shadow"><feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.15"/></filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <!-- Long sleeves -->
+    <path d="M 55 60 L 15 380 L 70 385 L 100 100" fill="url(#fabric)" stroke="#bbb" stroke-width="1.5"/>
+    <path d="M 345 60 L 385 380 L 330 385 L 300 100" fill="url(#fabric)" stroke="#bbb" stroke-width="1.5"/>
+    <!-- Body -->
+    <path d="M 100 50 Q 140 28 162 26 Q 180 56 200 58 Q 220 56 238 26 Q 260 28 300 50 L 300 100 L 345 60 L 345 60 L 300 100 L 300 430 L 100 430 L 100 100 L 55 60 L 55 60 L 100 100 Z" fill="url(#fabric)" stroke="#bbb" stroke-width="1.5"/>
+    <path d="M 162 26 Q 180 52 200 54 Q 220 52 238 26" fill="none" stroke="#ccc" stroke-width="2" stroke-linecap="round"/>
+    <!-- Cuffs -->
+    <rect x="15" y="375" width="55" height="15" rx="3" fill="#d0d0d0" stroke="#bbb" stroke-width="1"/>
+    <rect x="330" y="375" width="55" height="15" rx="3" fill="#d0d0d0" stroke="#bbb" stroke-width="1"/>
+  </g>
+  <rect x="128" y="115" width="144" height="170" rx="4" fill="none" stroke="#999" stroke-width="1" stroke-dasharray="6 4" opacity="0.5"/>
+  <text x="200" y="208" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#aaa">Print area</text>
+</svg>

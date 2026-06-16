@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 440" width="400" height="440">
+  <defs>
+    <linearGradient id="fabric" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e4e4e4"/>
+      <stop offset="100%" style="stop-color:#cccccc"/>
+    </linearGradient>
+    <filter id="shadow"><feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.15"/></filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <path d="M 55 70 L 10 220 L 75 235 L 100 110" fill="url(#fabric)" stroke="#bbb" stroke-width="1.5"/>
+    <path d="M 345 70 L 390 220 L 325 235 L 300 110" fill="url(#fabric)" stroke="#bbb" stroke-width="1.5"/>
+    <path d="M 100 60 Q 140 35 168 38 Q 180 65 200 67 Q 220 65 232 38 Q 260 35 300 60 L 300 110 L 325 235 L 325 420 L 75 420 L 75 235 L 100 110 Z" fill="url(#fabric)" stroke="#bbb" stroke-width="1.5"/>
+    <!-- Crew neck ribbing -->
+    <path d="M 168 38 Q 180 62 200 64 Q 220 62 232 38 Q 220 32 200 30 Q 180 32 168 38 Z" fill="#d8d8d8" stroke="#bbb" stroke-width="1"/>
+    <!-- Cuffs and waistband -->
+    <rect x="10" y="217" width="65" height="14" rx="3" fill="#d0d0d0" stroke="#bbb" stroke-width="1"/>
+    <rect x="325" y="217" width="65" height="14" rx="3" fill="#d0d0d0" stroke="#bbb" stroke-width="1"/>
+    <rect x="75" y="412" width="250" height="16" rx="3" fill="#d0d0d0" stroke="#bbb" stroke-width="1"/>
+  </g>
+  <rect x="118" y="125" width="164" height="170" rx="4" fill="none" stroke="#999" stroke-width="1" stroke-dasharray="6 4" opacity="0.5"/>
+  <text x="200" y="218" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#aaa">Print area</text>
+</svg>

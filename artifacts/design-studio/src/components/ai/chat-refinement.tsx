@@ -81,7 +81,7 @@ export function ChatRefinement({ projectId: _projectId, canvasJson }: Props) {
   const [showSettings, setShowSettings] = useState(false);
   const [providerCfg, setProviderCfg] = useState(loadProviderConfig);
   const [tempApiKey, setTempApiKey] = useState(providerCfg.apiKey ?? "");
-  const [tempProvider, setTempProvider] = useState<"local" | "openrouter" | "openai">(providerCfg.provider);
+  const [tempProvider, setTempProvider] = useState<"local" | "openrouter" | "openai" | "groq">(providerCfg.provider);
   const [acceptedDiffs, setAcceptedDiffs] = useState<Set<string>>(new Set());
   const [rejectedDiffs, setRejectedDiffs] = useState<Set<string>>(new Set());
   const bottomRef = useRef<HTMLDivElement>(null);

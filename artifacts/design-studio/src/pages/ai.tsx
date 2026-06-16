@@ -262,11 +262,19 @@ export default function AiHub() {
             variant="outline"
             className="text-[10px] gap-1 cursor-pointer"
             onClick={() => {
-              const key = prompt("Enter OpenRouter API key (optional — enables live AI):");
-              if (key !== null) {
-                saveProviderConfig({ ...cfg, provider: "openrouter", apiKey: key || undefined });
-                toast({ title: "Provider config saved" });
+              const providerChoice = prompt("Provider (local / openrouter / openai / groq):", cfg.provider);
+              if (providerChoice === null) return;
+              const p = providerChoice.trim() as "local" | "openrouter" | "openai" | "groq";
+              if (!["local","openrouter","openai","groq"].includes(p)) return;
+              if (p === "local") {
+                saveProviderConfig({ provider: "local" });
+              } else {
+                const key = prompt(`API key for ${p}:`, cfg.apiKey ?? "");
+                if (key === null) return;
+                const model = prompt("Model (leave blank for default):", cfg.model ?? "");
+                saveProviderConfig({ provider: p, apiKey: key || undefined, model: model || undefined });
               }
+              toast({ title: "Provider config saved" });
             }}
           >
             <Zap className="w-3 h-3" />

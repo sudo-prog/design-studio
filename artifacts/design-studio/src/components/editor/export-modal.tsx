@@ -40,6 +40,7 @@ export function ExportModal({ open, onOpenChange, projectId, onSaved }: ExportMo
   const [format, setFormat] = useState<"png" | "svg">("png");
   const [dpi, setDpi] = useState<"72" | "150" | "300" | "600">("300");
   const [colorSpace, setColorSpace] = useState<"srgb" | "cmyk">("srgb");
+  const [transparent, setTransparent] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
 
@@ -47,7 +48,7 @@ export function ExportModal({ open, onOpenChange, projectId, onSaved }: ExportMo
 
   function getExportData() {
     if (format === "svg") return exportSVG();
-    return exportPNG(dpiValue);
+    return exportPNG(dpiValue, transparent);
   }
 
   async function handleDownload() {
@@ -183,6 +184,25 @@ export function ExportModal({ open, onOpenChange, projectId, onSaved }: ExportMo
               </p>
             )}
           </div>
+
+          {/* Transparent background (PNG only) */}
+          {format === "png" && (
+            <div className="flex items-center justify-between">
+              <div>
+                <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Transparent Background</Label>
+                <p className="text-[10px] text-muted-foreground mt-0.5">Remove white fill — logo / sticker use</p>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={transparent}
+                onClick={() => setTransparent((v) => !v)}
+                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${transparent ? "bg-primary" : "bg-muted"}`}
+              >
+                <span className={`inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform ${transparent ? "translate-x-4" : "translate-x-1"}`} />
+              </button>
+            </div>
+          )}
         </div>
 
         <Separator />

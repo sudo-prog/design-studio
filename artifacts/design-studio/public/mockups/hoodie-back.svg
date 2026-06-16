@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 450" width="400" height="450">
+  <defs>
+    <linearGradient id="fabric" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#dcdcdc"/>
+      <stop offset="100%" style="stop-color:#c4c4c4"/>
+    </linearGradient>
+    <filter id="shadow"><feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.15"/></filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <path d="M 55 80 L 5 200 L 65 220 L 100 110" fill="url(#fabric)" stroke="#bbb" stroke-width="1.5"/>
+    <path d="M 345 80 L 395 200 L 335 220 L 300 110" fill="url(#fabric)" stroke="#bbb" stroke-width="1.5"/>
+    <path d="M 100 60 Q 145 20 175 30 Q 175 50 200 52 Q 225 50 225 30 Q 255 20 300 60 L 300 110 L 335 220 L 335 430 L 65 430 L 65 220 L 100 110 Z" fill="url(#fabric)" stroke="#bbb" stroke-width="1.5"/>
+    <path d="M 175 30 Q 175 60 200 62 Q 225 60 225 30 Q 220 15 200 12 Q 180 15 175 30" fill="url(#fabric)" stroke="#bbb" stroke-width="1.5"/>
+  </g>
+  <text x="200" y="100" text-anchor="middle" font-family="sans-serif" font-size="9" fill="#bbb">BACK</text>
+  <rect x="115" y="110" width="170" height="220" rx="4" fill="none" stroke="#999" stroke-width="1" stroke-dasharray="6 4" opacity="0.5"/>
+  <text x="200" y="228" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#aaa">Print area</text>
+</svg>

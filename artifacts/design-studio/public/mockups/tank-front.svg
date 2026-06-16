@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 440" width="400" height="440">
+  <defs>
+    <linearGradient id="fabric" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ececec"/>
+      <stop offset="100%" style="stop-color:#d4d4d4"/>
+    </linearGradient>
+    <filter id="shadow"><feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.15"/></filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <!-- Tank body with armhole cutouts -->
+    <path d="
+      M 160 30 Q 180 55 200 57 Q 220 55 240 30
+      Q 270 28 290 40 L 280 80
+      Q 260 65 250 70 L 250 420 L 150 420 L 150 70
+      Q 140 65 120 80 L 110 40
+      Q 130 28 160 30 Z
+    " fill="url(#fabric)" stroke="#bbb" stroke-width="1.5"/>
+    <!-- Collar -->
+    <path d="M 160 30 Q 180 52 200 54 Q 220 52 240 30" fill="none" stroke="#ccc" stroke-width="2" stroke-linecap="round"/>
+    <!-- Armhole binding -->
+    <path d="M 110 40 L 120 80 Q 140 65 150 70" fill="none" stroke="#ccc" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M 290 40 L 280 80 Q 260 65 250 70" fill="none" stroke="#ccc" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+  <rect x="152" y="85" width="96" height="230" rx="4" fill="none" stroke="#999" stroke-width="1" stroke-dasharray="6 4" opacity="0.5"/>
+  <text x="200" y="208" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#aaa">Print area</text>
+</svg>

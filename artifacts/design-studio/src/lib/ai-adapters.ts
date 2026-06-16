@@ -91,7 +91,7 @@ export class OpenAICompatibleAdapter implements ImageGenService {
 
 // ── Provider config (stored in localStorage) ─────────────────────────────────
 export interface ProviderConfig {
-  provider: "local" | "openrouter" | "openai";
+  provider: "local" | "openrouter" | "openai" | "groq";
   apiKey?: string;
   baseUrl?: string;
   model?: string;
@@ -117,6 +117,9 @@ export function buildAdapter(cfg: ProviderConfig, projectId: number): ImageGenSe
   }
   if (cfg.provider === "openai" && cfg.apiKey) {
     return new OpenAICompatibleAdapter(cfg.baseUrl ?? "https://api.openai.com/v1", cfg.apiKey, cfg.model, projectId);
+  }
+  if (cfg.provider === "groq" && cfg.apiKey) {
+    return new OpenAICompatibleAdapter("https://api.groq.com/openai/v1", cfg.apiKey, cfg.model ?? "llama-3.3-70b-versatile", projectId);
   }
   return new LocalBackendAdapter(projectId);
 }
