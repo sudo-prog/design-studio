@@ -1,2 +1,4 @@
 - [Orval params collision fix](orval-params-collision.md) — combined path+query params on same op generate TS2308; fix by removing query params from endpoints that already have a path param.
 - [api-zod dom lib](api-zod-dom-lib.md) — api-zod tsconfig must include "dom" lib when any endpoint uses multipart/form-data (File/Blob types).
+- [workspace dep + tsconfig pattern](workspace-dep-tsconfig.md) — adding a new @workspace/* dep requires both package.json devDependencies AND tsconfig references; api-zod types are NOT re-exported from api-client-react and must be imported directly.
+- [Drizzle JSONB new columns](drizzle-jsonb-columns.md) — new JSONB/text columns added to a table are unknown to the generated Zod schema; cast project as unknown as Record<string,unknown> to access them safely in TypeScript without regenerating.

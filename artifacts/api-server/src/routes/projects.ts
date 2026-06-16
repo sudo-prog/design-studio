@@ -1,10 +1,11 @@
 import { Router, type IRouter } from "express";
-import { eq, desc, and } from "drizzle-orm";
+import { eq, desc, and, ilike } from "drizzle-orm";
 import { db } from "@workspace/db";
 import {
   projectsTable,
   projectHistoryTable,
   activityLogTable,
+  assetsTable,
 } from "@workspace/db";
 import {
   CreateProjectBody,
@@ -27,8 +28,9 @@ const router: IRouter = Router();
 router.get("/projects", async (req, res): Promise<void> => {
   const query = ListProjectsQueryParams.safeParse(req.query);
   const where = [];
-  if (query.success && query.data.status) {
-    where.push(eq(projectsTable.status, query.data.status));
+  if (query.success) {
+    if (query.data.status) where.push(eq(projectsTable.status, query.data.status));
+    if (query.data.category) where.push(ilike(projectsTable.category, `%${query.data.category}%`));
   }
   const projects = await db
     .select()
@@ -50,6 +52,7 @@ router.post("/projects", async (req, res): Promise<void> => {
       name: parsed.data.name,
       category: parsed.data.category ?? null,
       brief: parsed.data.brief ?? null,
+      vibe: (parsed.data as Record<string, unknown>).vibe as string ?? null,
       status: parsed.data.status ?? "draft",
       printMethod: parsed.data.printMethod ?? null,
       estimatedQuantity: parsed.data.estimatedQuantity ?? null,
@@ -66,6 +69,7 @@ router.post("/projects", async (req, res): Promise<void> => {
     projectId: project.id,
     type: "created",
     description: "Project created",
+    metadata: JSON.stringify({ name: project.name, status: project.status }),
   });
   res.status(201).json(GetProjectResponse.parse(project));
 });
@@ -120,7 +124,8 @@ router.patch("/projects/:id", async (req, res): Promise<void> => {
   await db.insert(projectHistoryTable).values({
     projectId: project.id,
     type: "updated",
-    description: `Project updated`,
+    description: "Project updated",
+    metadata: JSON.stringify(updateData),
   });
   res.json(GetProjectResponse.parse(project));
 });
@@ -170,23 +175,214 @@ router.post("/projects/:id/backup", async (req, res): Promise<void> => {
     res.status(404).json({ error: "Project not found" });
     return;
   }
+
+  const assets = await db
+    .select()
+    .from(assetsTable)
+    .where(eq(assetsTable.projectId, params.data.id));
+
+  const designJson = {
+    id: project.id,
+    name: project.name,
+    category: project.category,
+    brief: project.brief,
+    vibe: (project as Record<string, unknown>).vibe,
+    status: project.status,
+    printMethod: project.printMethod,
+    estimatedQuantity: project.estimatedQuantity,
+    colorPalette: project.colorPalette,
+    moodBoard: (project as Record<string, unknown>).moodBoard,
+    printSpecs: {},
+    githubBackup: {
+      repo: project.githubRepo,
+      lastBackupAt: project.lastBackupAt,
+    },
+    assets: assets.map((a) => ({
+      id: a.id,
+      filename: a.filename,
+      url: a.url,
+      type: a.type,
+      tags: a.tags,
+    })),
+    createdAt: project.createdAt,
+    updatedAt: project.updatedAt,
+  };
+
+  const repoInput = (req.body as Record<string, unknown>).repo as string | undefined;
+  const patInput = (req.body as Record<string, unknown>).pat as string | undefined;
+  const repo = repoInput || project.githubRepo;
+  const pat = patInput || (project as Record<string, unknown>).githubPat as string;
+
+  let commitUrl: string | null = null;
+
+  if (repo && pat) {
+    try {
+      const { Octokit } = await import("@octokit/rest");
+      const octokit = new Octokit({ auth: pat });
+      const [owner, repoName] = repo.split("/");
+      const path = `design.json`;
+      const content = Buffer.from(JSON.stringify(designJson, null, 2)).toString("base64");
+      const message = `Backup: ${project.name} — ${new Date().toISOString()}`;
+
+      let sha: string | undefined;
+      try {
+        const existing = await octokit.rest.repos.getContent({ owner, repo: repoName, path });
+        if (!Array.isArray(existing.data) && "sha" in existing.data) {
+          sha = existing.data.sha;
+        }
+      } catch {}
+
+      const result = await octokit.rest.repos.createOrUpdateFileContents({
+        owner,
+        repo: repoName,
+        path,
+        message,
+        content,
+        ...(sha ? { sha } : {}),
+      });
+      commitUrl = result.data.commit.html_url ?? null;
+    } catch (err) {
+      logger.error({ err }, "GitHub backup failed");
+    }
+  }
+
   await db
     .update(projectsTable)
     .set({ lastBackupAt: new Date() })
     .where(eq(projectsTable.id, params.data.id));
+
   await db.insert(activityLogTable).values({
     type: "backup_completed",
-    description: `Project "${project.name}" backed up`,
+    description: `Project "${project.name}" backed up${commitUrl ? " to GitHub" : " (local only)"}`,
     projectId: project.id,
     projectName: project.name,
   });
+
+  await db.insert(projectHistoryTable).values({
+    projectId: project.id,
+    type: "backup",
+    description: "Project backed up",
+    metadata: JSON.stringify({ commitUrl, repo }),
+  });
+
   res.json(
     BackupProjectResponse.parse({
       success: true,
-      message: "Project backed up successfully",
-      commitUrl: null,
+      message: commitUrl ? "Backed up to GitHub" : "design.json prepared (no GitHub configured)",
+      commitUrl,
     })
   );
+});
+
+router.patch("/projects/:id/mood-board", async (req, res): Promise<void> => {
+  const id = parseInt(String(req.params.id), 10);
+  if (isNaN(id)) {
+    res.status(400).json({ error: "Invalid project id" });
+    return;
+  }
+  const items = req.body.items;
+  if (!Array.isArray(items)) {
+    res.status(400).json({ error: "items must be an array" });
+    return;
+  }
+  const [project] = await db
+    .update(projectsTable)
+    .set({ moodBoard: items } as Record<string, unknown>)
+    .where(eq(projectsTable.id, id))
+    .returning();
+  if (!project) {
+    res.status(404).json({ error: "Project not found" });
+    return;
+  }
+  await db.insert(projectHistoryTable).values({
+    projectId: id,
+    type: "mood_board_updated",
+    description: `Mood board updated (${items.length} items)`,
+  });
+  res.json({ success: true, itemCount: items.length });
+});
+
+router.patch("/projects/:id/github", async (req, res): Promise<void> => {
+  const id = parseInt(String(req.params.id), 10);
+  if (isNaN(id)) {
+    res.status(400).json({ error: "Invalid project id" });
+    return;
+  }
+  const { repo, pat } = req.body as { repo?: string; pat?: string };
+  const [project] = await db
+    .update(projectsTable)
+    .set({ githubRepo: repo ?? null, githubPat: pat ?? null } as Record<string, unknown>)
+    .where(eq(projectsTable.id, id))
+    .returning();
+  if (!project) {
+    res.status(404).json({ error: "Project not found" });
+    return;
+  }
+  res.json({ success: true });
+});
+
+router.get("/projects/:id/design.json", async (req, res): Promise<void> => {
+  const id = parseInt(String(req.params.id), 10);
+  if (isNaN(id)) {
+    res.status(400).json({ error: "Invalid project id" });
+    return;
+  }
+  const [project] = await db.select().from(projectsTable).where(eq(projectsTable.id, id));
+  if (!project) {
+    res.status(404).json({ error: "Project not found" });
+    return;
+  }
+  const assets = await db.select().from(assetsTable).where(eq(assetsTable.projectId, id));
+  const history = await db
+    .select()
+    .from(projectHistoryTable)
+    .where(eq(projectHistoryTable.projectId, id))
+    .orderBy(desc(projectHistoryTable.createdAt));
+
+  const designJson = {
+    id: project.id,
+    name: project.name,
+    category: project.category,
+    brief: project.brief,
+    vibe: (project as Record<string, unknown>).vibe,
+    status: project.status,
+    coverAssetUrl: project.coverAssetUrl,
+    colorPalette: project.colorPalette,
+    moodBoard: (project as Record<string, unknown>).moodBoard,
+    printSpecs: {
+      method: project.printMethod,
+      estimatedQuantity: project.estimatedQuantity,
+    },
+    githubBackup: {
+      repo: project.githubRepo,
+      lastBackupAt: project.lastBackupAt,
+    },
+    assets: assets.map((a) => ({
+      id: a.id,
+      filename: a.filename,
+      url: a.url,
+      thumbnailUrl: a.thumbnailUrl,
+      type: a.type,
+      mimeType: a.mimeType,
+      width: a.width,
+      height: a.height,
+      fileSize: a.fileSize,
+      tags: a.tags,
+      createdAt: a.createdAt,
+    })),
+    historyEntries: history.map((h) => ({
+      id: h.id,
+      type: h.type,
+      description: h.description,
+      metadata: h.metadata ? JSON.parse(h.metadata) : null,
+      createdAt: h.createdAt,
+    })),
+    createdAt: project.createdAt,
+    updatedAt: project.updatedAt,
+  };
+
+  res.setHeader("Content-Disposition", `attachment; filename="design-${project.id}.json"`);
+  res.json(designJson);
 });
 
 export default router;
