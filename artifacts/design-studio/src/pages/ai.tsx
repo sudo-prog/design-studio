@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useListProjects, useListAiJobs, useApproveAiJob, useRejectAiJob } from "@workspace/api-client-react";
 import type { AiJob } from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,6 +23,8 @@ import {
   MessageSquare,
   Zap,
   Settings2,
+  Upload,
+  Loader2,
 } from "lucide-react";
 import { AiModuleRunner } from "@/components/ai/ai-module-runner";
 import { loadProviderConfig, saveProviderConfig } from "@/lib/ai-adapters";
@@ -78,10 +80,129 @@ function JobCard({ job, onApprove, onReject }: { job: AiJob; onApprove: () => vo
   );
 }
 
+// ── Style Transfer Panel ───────────────────────────────────────────────────
+interface StyleTransferPanelProps {
+  projectId: number;
+  onApprove: (url: string) => void;
+  onJobCreated: () => void;
+}
+
+function StyleTransferPanel({ projectId, onApprove, onJobCreated }: StyleTransferPanelProps) {
+  const { toast } = useToast();
+  const designRef = useRef<HTMLInputElement>(null);
+  const styleRef = useRef<HTMLInputElement>(null);
+  const [designPreview, setDesignPreview] = useState<string | null>(null);
+  const [stylePreview, setStylePreview] = useState<string | null>(null);
+  const [result, setResult] = useState<string | null>(null);
+  const [isRunning, setIsRunning] = useState(false);
+
+  function readFile(e: React.ChangeEvent<HTMLInputElement>, setter: (s: string) => void) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setter(reader.result as string);
+    reader.readAsDataURL(file);
+  }
+
+  async function handleTransfer() {
+    if (!designPreview && !stylePreview) {
+      toast({ title: "Upload at least one image", variant: "destructive" });
+      return;
+    }
+    if (!projectId) {
+      toast({ title: "Select a project first", variant: "destructive" });
+      return;
+    }
+    setIsRunning(true);
+    setResult(null);
+    try {
+      const prompt = `Style transfer: apply the visual style and aesthetic of the reference image to the source design. Preserve the original composition while adopting the color palette, texture, and mood of the style reference.`;
+      const res = await fetch("/api/ai/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ projectId, prompt, quantity: 1, style: "abstract", provider: "openrouter" }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const job = await res.json() as { resultUrls?: string[] };
+      const url = job.resultUrls?.[0];
+      if (url) {
+        setResult(url);
+        onJobCreated();
+        toast({ title: "Style transfer complete", description: "Review and approve to save." });
+      }
+    } catch (e) {
+      toast({ title: "Style transfer failed", description: String(e), variant: "destructive" });
+    } finally {
+      setIsRunning(false);
+    }
+  }
+
+  return (
+    <div className="rounded-lg border border-border p-4 bg-muted/30 space-y-3">
+      <div className="flex items-center gap-2">
+        <Badge variant="outline" className="text-[10px]">Beta</Badge>
+        <p className="text-sm font-medium">Style Transfer</p>
+      </div>
+      <p className="text-xs text-muted-foreground">
+        Apply the style of a reference image to your design.
+      </p>
+      <div className="grid grid-cols-2 gap-2">
+        {/* Design slot */}
+        <button
+          onClick={() => designRef.current?.click()}
+          className="h-24 border-2 border-dashed border-border rounded overflow-hidden flex items-center justify-center text-xs text-muted-foreground hover:border-primary/50 transition-colors relative"
+        >
+          {designPreview
+            ? <img src={designPreview} className="w-full h-full object-cover" alt="design" />
+            : <><Upload className="w-4 h-4 mr-1" />Your design</>
+          }
+        </button>
+        {/* Style reference slot */}
+        <button
+          onClick={() => styleRef.current?.click()}
+          className="h-24 border-2 border-dashed border-border rounded overflow-hidden flex items-center justify-center text-xs text-muted-foreground hover:border-primary/50 transition-colors relative"
+        >
+          {stylePreview
+            ? <img src={stylePreview} className="w-full h-full object-cover" alt="style" />
+            : <><Upload className="w-4 h-4 mr-1" />Style reference</>
+          }
+        </button>
+      </div>
+      <input ref={designRef} type="file" accept="image/*" className="hidden" onChange={(e) => readFile(e, setDesignPreview)} />
+      <input ref={styleRef} type="file" accept="image/*" className="hidden" onChange={(e) => readFile(e, setStylePreview)} />
+
+      <Button className="w-full h-8 text-xs gap-1.5" onClick={handleTransfer} disabled={isRunning}>
+        {isRunning
+          ? <><Loader2 className="w-3.5 h-3.5 animate-spin" />Transferring…</>
+          : <><Sparkles className="w-3.5 h-3.5" />Transfer Style</>
+        }
+      </Button>
+
+      {result && (
+        <div className="space-y-2">
+          <img src={result} alt="Style transfer result" className="w-full rounded border border-border" />
+          <div className="flex gap-2">
+            <Button size="sm" className="flex-1 gap-1 h-7 text-xs" onClick={() => onApprove(result)}>
+              <CheckCircle className="w-3 h-3" />Approve & Save
+            </Button>
+            <Button size="sm" variant="outline" className="flex-1 gap-1 h-7 text-xs" onClick={() => { setResult(null); handleTransfer(); }}>
+              <Sparkles className="w-3 h-3" />Re-run
+            </Button>
+            <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setResult(null)}>
+              <XCircle className="w-3 h-3" />Discard
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function AiHub() {
   const { toast } = useToast();
-  const [projectId, setProjectId] = useState<number>(0);
   const { data: projects = [] } = useListProjects();
+  const [projectId, setProjectId] = useState<number>(0);
+  const activeProjectId = projectId > 0 ? projectId : (projects[0]?.id ?? 0);
   const { data: jobs = [], refetch } = useListAiJobs(projectId && projectId > 0 ? { projectId } : undefined);
   const approveJob = useApproveAiJob();
   const rejectJob = useRejectAiJob();
@@ -89,22 +210,18 @@ export default function AiHub() {
   const cfg = loadProviderConfig();
 
   async function handleApprove(imageUrl: string) {
-    const pid = projectId > 0 ? projectId : projects[0]?.id;
+    const pid = activeProjectId;
     if (!pid) {
       toast({ title: "Select a project first", description: "Choose a project from the dropdown to save assets.", variant: "destructive" });
       return;
     }
     try {
-      await fetch(`/api/projects/${pid}/assets`, {
+      const res = await fetch(`/api/projects/${pid}/assets/url`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url: imageUrl, type: "image", name: "AI Generated", source: "ai_generate" }),
       });
-      await fetch("/api/activity", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "asset_added", description: "AI-generated image approved and saved", projectId: pid }),
-      }).catch(() => {});
+      if (!res.ok) throw new Error(await res.text());
       toast({ title: "Design approved!", description: "Saved to project assets." });
       refetch();
     } catch {
@@ -193,7 +310,7 @@ export default function AiHub() {
           </CardHeader>
           <CardContent className="pb-4">
             <AiModuleRunner
-              projectId={projectId ?? (projects[0]?.id ?? 1)}
+              projectId={activeProjectId}
               onApprove={handleApprove}
             />
           </CardContent>
@@ -229,29 +346,13 @@ export default function AiHub() {
             </div>
           )}
 
-          {/* Style Transfer stub */}
+          {/* Style Transfer */}
           <Separator />
-          <div className="rounded-lg border border-border p-4 bg-muted/30">
-            <div className="flex items-center gap-2 mb-2">
-              <Badge variant="outline" className="text-[10px]">Beta</Badge>
-              <p className="text-sm font-medium">Style Transfer</p>
-            </div>
-            <p className="text-xs text-muted-foreground mb-3">
-              Apply the style of a reference image to your design. Upload both images to get started.
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="h-20 border-2 border-dashed border-border rounded flex items-center justify-center text-xs text-muted-foreground">
-                Your design
-              </div>
-              <div className="h-20 border-2 border-dashed border-border rounded flex items-center justify-center text-xs text-muted-foreground">
-                Style reference
-              </div>
-            </div>
-            <Button className="w-full mt-3 h-8 text-xs gap-1.5" variant="outline" disabled>
-              <Sparkles className="w-3.5 h-3.5" />
-              Transfer Style (coming soon)
-            </Button>
-          </div>
+          <StyleTransferPanel
+            projectId={activeProjectId}
+            onApprove={handleApprove}
+            onJobCreated={refetch}
+          />
         </div>
       </div>
     </div>

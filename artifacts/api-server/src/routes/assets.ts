@@ -4,6 +4,7 @@ import path from "path";
 import fs from "fs";
 import multer from "multer";
 import sharp from "sharp";
+import { z } from "zod";
 import { db } from "@workspace/db";
 import { assetsTable, activityLogTable, projectsTable, projectHistoryTable } from "@workspace/db";
 import {
@@ -110,6 +111,66 @@ router.post("/projects/:id/assets", upload.single("file"), async (req, res): Pro
     description: `Asset uploaded: ${req.file.originalname}`,
     metadata: JSON.stringify({ assetId: asset.id, filename: req.file.originalname, type: req.body.type ?? "photo" }),
   });
+  res.status(201).json(asset);
+});
+
+// POST /api/projects/:id/assets/url — ingest an external/AI-generated URL as a project asset
+router.post("/projects/:id/assets/url", async (req, res): Promise<void> => {
+  const params = UploadAssetParams.safeParse(req.params);
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+  const body = z.object({
+    url: z.string().url(),
+    name: z.string().optional().default("AI Generated"),
+    type: z.string().optional().default("image"),
+    source: z.string().optional().default("ai_generate"),
+  }).safeParse(req.body);
+  if (!body.success) {
+    res.status(400).json({ error: body.error.message });
+    return;
+  }
+
+  const [project] = await db
+    .select({ name: projectsTable.name })
+    .from(projectsTable)
+    .where(eq(projectsTable.id, params.data.id));
+  if (!project) {
+    res.status(404).json({ error: "Project not found" });
+    return;
+  }
+
+  const { url, name, type } = body.data;
+  const [asset] = await db
+    .insert(assetsTable)
+    .values({
+      projectId: params.data.id,
+      filename: name,
+      url,
+      thumbnailUrl: url,
+      type,
+      mimeType: "image/jpeg",
+      fileSize: 0,
+      width: null,
+      height: null,
+      tags: [],
+    })
+    .returning();
+
+  await db.insert(activityLogTable).values({
+    type: "asset_uploaded",
+    description: `AI-generated asset "${name}" saved to project`,
+    projectId: params.data.id,
+    projectName: project.name,
+  });
+  await db.insert(projectHistoryTable).values({
+    projectId: params.data.id,
+    type: "asset_uploaded",
+    description: `AI asset saved: ${name}`,
+    metadata: JSON.stringify({ assetId: asset.id, url, source: body.data.source }),
+  });
+
   res.status(201).json(asset);
 });
 
