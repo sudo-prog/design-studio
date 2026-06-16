@@ -55,14 +55,14 @@ export class OpenRouterAdapter implements ImageGenService {
   name = "openrouter";
   displayName = "OpenRouter";
 
-  constructor(private apiKey: string, private model = "dall-e-3") {}
+  constructor(private apiKey: string, private model = "dall-e-3", private projectId = 0) {}
 
   async generate(options: GenerateOptions): Promise<GeneratedImage[]> {
     // Falls back to backend proxy which handles real or mock response
     const res = await fetch("/api/ai/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...options, apiKey: this.apiKey, model: this.model, provider: "openrouter", projectId: 0 }),
+      body: JSON.stringify({ ...options, apiKey: this.apiKey, model: this.model, provider: "openrouter", projectId: this.projectId }),
     });
     if (!res.ok) throw new Error(`OpenRouter generation failed: ${res.status}`);
     const job = await res.json() as { resultUrls?: string[] };
@@ -75,13 +75,13 @@ export class OpenAICompatibleAdapter implements ImageGenService {
   name = "openai-compatible";
   displayName = "OpenAI / Ollama";
 
-  constructor(private baseUrl: string, private apiKey: string, private model = "dall-e-3") {}
+  constructor(private baseUrl: string, private apiKey: string, private model = "dall-e-3", private projectId = 0) {}
 
   async generate(options: GenerateOptions): Promise<GeneratedImage[]> {
     const res = await fetch("/api/ai/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...options, apiKey: this.apiKey, baseUrl: this.baseUrl, model: this.model, provider: "openai", projectId: 0 }),
+      body: JSON.stringify({ ...options, apiKey: this.apiKey, baseUrl: this.baseUrl, model: this.model, provider: "openai", projectId: this.projectId }),
     });
     if (!res.ok) throw new Error(`OpenAI-compatible generation failed: ${res.status}`);
     const job = await res.json() as { resultUrls?: string[] };
@@ -113,10 +113,10 @@ export function saveProviderConfig(cfg: ProviderConfig): void {
 
 export function buildAdapter(cfg: ProviderConfig, projectId: number): ImageGenService {
   if (cfg.provider === "openrouter" && cfg.apiKey) {
-    return new OpenRouterAdapter(cfg.apiKey, cfg.model);
+    return new OpenRouterAdapter(cfg.apiKey, cfg.model, projectId);
   }
   if (cfg.provider === "openai" && cfg.apiKey) {
-    return new OpenAICompatibleAdapter(cfg.baseUrl ?? "https://api.openai.com/v1", cfg.apiKey, cfg.model);
+    return new OpenAICompatibleAdapter(cfg.baseUrl ?? "https://api.openai.com/v1", cfg.apiKey, cfg.model, projectId);
   }
   return new LocalBackendAdapter(projectId);
 }

@@ -88,8 +88,28 @@ export default function AiHub() {
 
   const cfg = loadProviderConfig();
 
-  function handleApprove(imageUrl: string) {
-    toast({ title: "Design approved!", description: "Saved to project assets." });
+  async function handleApprove(imageUrl: string) {
+    const pid = projectId > 0 ? projectId : projects[0]?.id;
+    if (!pid) {
+      toast({ title: "Select a project first", description: "Choose a project from the dropdown to save assets.", variant: "destructive" });
+      return;
+    }
+    try {
+      await fetch(`/api/projects/${pid}/assets`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: imageUrl, type: "image", name: "AI Generated", source: "ai_generate" }),
+      });
+      await fetch("/api/activity", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "asset_added", description: "AI-generated image approved and saved", projectId: pid }),
+      }).catch(() => {});
+      toast({ title: "Design approved!", description: "Saved to project assets." });
+      refetch();
+    } catch {
+      toast({ title: "Save failed", description: "Could not save asset. Try again.", variant: "destructive" });
+    }
   }
 
   async function handleApproveJob(id: number) {

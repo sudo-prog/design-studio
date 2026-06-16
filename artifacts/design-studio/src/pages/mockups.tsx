@@ -31,7 +31,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { TemplatePicker } from "@/components/mockup/template-picker";
-import { WarpCanvas } from "@/components/mockup/warp-canvas";
+import { WarpCanvas, exportWarpComposite } from "@/components/mockup/warp-canvas";
 import { Viewer3D } from "@/components/mockup/viewer-3d";
 import { LifestyleCompositor } from "@/components/mockup/lifestyle-compositor";
 import { useToast } from "@/hooks/use-toast";
@@ -63,6 +63,10 @@ export default function MockupsPage() {
   const [blendMode, setBlendMode] = useState<BlendMode>("multiply");
   const [projectId, setProjectId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState("2d");
+  const [warpCorners, setWarpCorners] = useState([
+    { x: 0.2, y: 0.2 }, { x: 0.8, y: 0.2 }, { x: 0.8, y: 0.7 }, { x: 0.2, y: 0.7 },
+  ]);
+  const [isExporting, setIsExporting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: projects = [] } = useListProjects();
@@ -286,6 +290,7 @@ export default function MockupsPage() {
                       garmentColor={garmentColor}
                       blendMode={blendMode}
                       className="max-w-[520px] mx-auto"
+                      onCornersChange={setWarpCorners}
                     />
                     <p className="text-xs text-muted-foreground text-center">
                       {designUrl ? "Drag corner handles to warp design onto garment" : "Upload a design to enable warp controls"}
@@ -295,18 +300,32 @@ export default function MockupsPage() {
                         size="sm"
                         variant="outline"
                         className="gap-1.5"
-                        onClick={() => {
-                          const img = document.querySelector<HTMLImageElement>('[alt="template"]');
-                          if (!img) return;
-                          const a = document.createElement("a");
-                          a.href = img.src;
-                          a.download = `${selectedTemplate.id}-flat.jpg`;
-                          a.target = "_blank";
-                          a.click();
+                        disabled={isExporting}
+                        onClick={async () => {
+                          if (!selectedTemplate) return;
+                          setIsExporting(true);
+                          try {
+                            const dataUrl = await exportWarpComposite(
+                              selectedTemplate.thumbnailUrl,
+                              designUrl,
+                              garmentColor,
+                              blendMode,
+                              warpCorners,
+                              2400,
+                            );
+                            const a = document.createElement("a");
+                            a.href = dataUrl;
+                            a.download = `${selectedTemplate.id}-mockup.png`;
+                            a.click();
+                          } catch {
+                            toast({ title: "Export failed", variant: "destructive" });
+                          } finally {
+                            setIsExporting(false);
+                          }
                         }}
                       >
                         <Download className="w-3.5 h-3.5" />
-                        Flat PNG
+                        {isExporting ? "Exporting…" : "Export PNG"}
                       </Button>
                     </div>
                   </div>

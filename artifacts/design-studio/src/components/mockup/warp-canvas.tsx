@@ -12,6 +12,7 @@ interface Props {
   blendMode: BlendMode;
   className?: string;
   onExport?: (dataUrl: string) => void;
+  onCornersChange?: (corners: WarpPoint[]) => void;
 }
 
 const DEFAULT_CORNERS: WarpPoint[] = [
@@ -80,7 +81,76 @@ function computeMatrix3d(src: WarpPoint[], dst: WarpPoint[]): string {
   return `matrix3d(${m.map(v => v.toFixed(6)).join(",")})`;
 }
 
-export function WarpCanvas({ templateUrl, designUrl, garmentColor, blendMode, className, onExport }: Props) {
+export async function exportWarpComposite(
+  templateUrl: string,
+  designUrl: string | null,
+  garmentColor: string,
+  blendMode: BlendMode,
+  corners: WarpPoint[],
+  exportSize = 2400,
+): Promise<string> {
+  const canvas = document.createElement("canvas");
+  canvas.width = exportSize;
+  canvas.height = exportSize;
+  const ctx = canvas.getContext("2d")!;
+
+  function loadImg(src: string): Promise<HTMLImageElement> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = src;
+    });
+  }
+
+  // 1. Garment color fill
+  ctx.fillStyle = garmentColor;
+  ctx.globalCompositeOperation = "source-over";
+  ctx.fillRect(0, 0, exportSize, exportSize);
+
+  // 2. Template image
+  try {
+    const tmpl = await loadImg(templateUrl);
+    ctx.globalCompositeOperation = "multiply";
+    ctx.drawImage(tmpl, 0, 0, exportSize, exportSize);
+    ctx.globalCompositeOperation = "source-over";
+    ctx.drawImage(tmpl, 0, 0, exportSize, exportSize);
+  } catch { /* cross-origin fallback: skip template */ }
+
+  // 3. Design overlay with perspective warp (via CSS matrix3d → canvas transform)
+  if (designUrl) {
+    try {
+      const design = await loadImg(designUrl);
+      const matStr = computeMatrix3d(
+        [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: 0, y: 1 }],
+        corners,
+      );
+      // Extract matrix3d numbers
+      const nums = matStr.replace("matrix3d(", "").replace(")", "").split(",").map(Number);
+      // CSS matrix3d is column-major 4×4; extract 2D affine for canvas (approximate)
+      // For the export we apply the homographic scale to fill corner bounds
+      const [x1, y1] = [corners[0]!.x * exportSize, corners[0]!.y * exportSize];
+      const [x2, y2] = [corners[1]!.x * exportSize, corners[1]!.y * exportSize];
+      const [x4, y4] = [corners[3]!.x * exportSize, corners[3]!.y * exportSize];
+      ctx.save();
+      ctx.globalCompositeOperation = blendMode === "normal" ? "source-over" : blendMode as GlobalCompositeOperation;
+      ctx.globalAlpha = 0.9;
+      // Use setTransform for the affine portion (top-left, right, bottom-left vectors)
+      const a = x2 - x1, b = y2 - y1;
+      const c2 = x4 - x1, d = y4 - y1;
+      ctx.setTransform(a / design.naturalWidth, b / design.naturalWidth, c2 / design.naturalHeight, d / design.naturalHeight, x1, y1);
+      ctx.drawImage(design, 0, 0, design.naturalWidth, design.naturalHeight);
+      ctx.restore();
+      // suppress unused variable warning
+      void nums;
+    } catch { /* design load failed */ }
+  }
+
+  return canvas.toDataURL("image/png");
+}
+
+export function WarpCanvas({ templateUrl, designUrl, garmentColor, blendMode, className, onExport, onCornersChange }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [corners, setCorners] = useState<WarpPoint[]>(DEFAULT_CORNERS);
@@ -107,8 +177,12 @@ export function WarpCanvas({ templateUrl, designUrl, garmentColor, blendMode, cl
     const rect = containerRef.current!.getBoundingClientRect();
     const x = Math.max(0.01, Math.min(0.99, (e.clientX - rect.left) / rect.width));
     const y = Math.max(0.01, Math.min(0.99, (e.clientY - rect.top) / rect.height));
-    setCorners(prev => prev.map((c, i) => i === dragging ? { x, y } : c));
-  }, [dragging]);
+    setCorners(prev => {
+      const next = prev.map((c, i) => i === dragging ? { x, y } : c);
+      onCornersChange?.(next);
+      return next;
+    });
+  }, [dragging, onCornersChange]);
 
   const handleMouseUp = useCallback(() => setDragging(null), []);
 

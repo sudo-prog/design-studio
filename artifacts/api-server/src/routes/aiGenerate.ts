@@ -67,10 +67,16 @@ router.post("/ai/generate", async (req, res): Promise<void> => {
   const { projectId, prompt, quantity = 1, model, provider } = body.data;
   const resultUrls = pickImages(prompt, quantity);
 
+  // Validate that projectId references a real project before inserting FK
   const [project] = await db
     .select({ name: projectsTable.name })
     .from(projectsTable)
     .where(eq(projectsTable.id, projectId));
+
+  if (!project) {
+    res.status(400).json({ error: `Project ${projectId} not found. Select a project before generating.` });
+    return;
+  }
 
   const [job] = await db
     .insert(aiJobsTable)
@@ -149,6 +155,14 @@ router.post("/ai/remove-bg", async (req, res): Promise<void> => {
   }
 });
 
+// Allowlisted provider base URLs for SSRF prevention
+const ALLOWED_BASE_URLS = new Set([
+  "https://openrouter.ai/api/v1",
+  "https://api.openai.com/v1",
+  "https://api.anthropic.com/v1",
+  "http://localhost:11434/v1",   // Ollama local
+]);
+
 // POST /api/ai/chat — LLM chat refinement (streams if apiKey provided, falls back gracefully)
 router.post("/ai/chat", async (req, res): Promise<void> => {
   const body = z.object({
@@ -164,11 +178,20 @@ router.post("/ai/chat", async (req, res): Promise<void> => {
     return;
   }
 
-  const { messages, canvasContext, apiKey, baseUrl, model } = body.data;
+  const { messages, canvasContext, apiKey, model } = body.data;
+  const rawBaseUrl = body.data.baseUrl ?? "https://openrouter.ai/api/v1";
+
+  // SSRF guard: only allow known provider endpoints
+  const normalizedBase = rawBaseUrl.replace(/\/+$/, "");
+  if (!ALLOWED_BASE_URLS.has(normalizedBase)) {
+    res.status(400).json({ error: "Unsupported provider base URL." });
+    return;
+  }
+  const baseUrl = normalizedBase;
 
   // If caller provided a live API key, attempt actual LLM call
   if (apiKey) {
-    const endpoint = `${(baseUrl ?? "https://openrouter.ai/api/v1")}/chat/completions`;
+    const endpoint = `${baseUrl}/chat/completions`;
     try {
       const systemMsg = canvasContext
         ? { role: "system" as const, content: `You are a print-design assistant. Current canvas JSON: ${canvasContext.slice(0, 2000)}` }
