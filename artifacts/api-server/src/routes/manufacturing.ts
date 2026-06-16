@@ -49,7 +49,8 @@ router.get("/manufacturing/pricing", async (req, res): Promise<void> => {
   const base = baseCostPerUnit * quantity;
   const print = printCostPerUnit * quantity;
   const shipping = shippingCostPerUnit * quantity;
-  const totalCogs = base + print + shipping;
+  const platformFees = (base + print + shipping) * 0.03;
+  const totalCogs = base + print + shipping + platformFees;
   const suggestedRetail = totalCogs / quantity * 3.5;
   const marginPercent = ((suggestedRetail - totalCogs / quantity) / suggestedRetail) * 100;
   const bulkTiers = [
@@ -68,7 +69,7 @@ router.get("/manufacturing/pricing", async (req, res): Promise<void> => {
       baseCost: parseFloat(base.toFixed(2)),
       printingCost: parseFloat(print.toFixed(2)),
       shippingCost: parseFloat(shipping.toFixed(2)),
-      platformFees: parseFloat((totalCogs * 0.03).toFixed(2)),
+      platformFees: parseFloat(platformFees.toFixed(2)),
       totalCogs: parseFloat(totalCogs.toFixed(2)),
       suggestedRetail: parseFloat((suggestedRetail * quantity).toFixed(2)),
       marginPercent: parseFloat(marginPercent.toFixed(1)),

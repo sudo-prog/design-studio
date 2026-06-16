@@ -1,6 +1,7 @@
 import { Router, type IRouter } from "express";
 import sharp from "sharp";
 import { z } from "zod";
+import { strToU8, zip as fflateZip } from "fflate";
 
 const router: IRouter = Router();
 
@@ -141,8 +142,11 @@ router.post("/print/separate", async (req, res): Promise<void> => {
   const { imageBase64, channelCount, dpi } = parsed.data;
   const inputBuf = base64ToBuffer(imageBase64);
 
+  // Calculate pixel width from physical size + DPI (max 10" wide)
+  const targetWidth = Math.min(dpi * 10, 3000);
+
   const { data: rawPixels, info } = await sharp(inputBuf)
-    .resize({ width: 400, withoutEnlargement: true })
+    .resize({ width: targetWidth, withoutEnlargement: true })
     .removeAlpha()
     .raw()
     .toBuffer({ resolveWithObject: true });
@@ -194,10 +198,10 @@ router.post("/print/halftone-film", async (req, res): Promise<void> => {
   const { imageBase64, lpi, angle, dotShape, dpi, channelName } = parsed.data;
   const inputBuf = base64ToBuffer(imageBase64);
 
-  // Convert to greyscale at target DPI-equivalent size
-  const maxW = 800;
+  // Convert to greyscale at DPI-correct pixel dimensions (max 10" wide)
+  const targetWidth = Math.min(dpi * 10, 3000);
   const { data: greyBuf, info } = await sharp(inputBuf)
-    .resize({ width: maxW, withoutEnlargement: true })
+    .resize({ width: targetWidth, withoutEnlargement: true })
     .greyscale()
     .raw()
     .toBuffer({ resolveWithObject: true });
@@ -223,6 +227,46 @@ router.post("/print/halftone-film", async (req, res): Promise<void> => {
     width,
     height,
   });
+});
+
+// ── POST /api/print/export-zip ────────────────────────────────────────────────
+// Accepts pre-generated film base64 strings + manifest, returns a real ZIP.
+const ExportZipBody = z.object({
+  files: z.array(z.object({
+    filename: z.string().min(1),
+    dataUrl: z.string().min(1),  // data:image/png;base64,... or data:text/plain;base64,...
+  })).min(1).max(20),
+  manifest: z.string().optional(),
+});
+
+router.post("/print/export-zip", async (req, res): Promise<void> => {
+  const parsed = ExportZipBody.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: parsed.error.message }); return; }
+
+  const { files, manifest } = parsed.data;
+
+  const zipEntries: Record<string, Uint8Array> = {};
+
+  for (const f of files) {
+    const b64 = f.dataUrl.includes(",") ? f.dataUrl.split(",")[1] : f.dataUrl;
+    zipEntries[f.filename] = Buffer.from(b64, "base64") as unknown as Uint8Array;
+  }
+
+  if (manifest) {
+    zipEntries["manifest.txt"] = strToU8(manifest);
+  }
+
+  // fflate.zip is async via callback — wrap in promise
+  const zipBuf = await new Promise<Buffer>((resolve, reject) => {
+    fflateZip(zipEntries, { level: 1 }, (err, data) => {
+      if (err) reject(err);
+      else resolve(Buffer.from(data));
+    });
+  });
+
+  res.setHeader("Content-Type", "application/zip");
+  res.setHeader("Content-Disposition", `attachment; filename="print-films-${Date.now()}.zip"`);
+  res.send(zipBuf);
 });
 
 export default router;

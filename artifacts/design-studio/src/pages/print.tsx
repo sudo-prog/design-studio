@@ -129,31 +129,51 @@ export default function PrintSetup() {
     setStep(3);
   }
 
+  const [zipping, setZipping] = useState(false);
+
   async function downloadZip() {
-    const items = films.length > 0 ? films.map((f) => ({
-      name: f.channelName,
-      b64: f.imageBase64,
-    })) : channels.map((c) => ({
-      name: c.name,
-      b64: c.imageBase64,
-    }));
+    const items = films.length > 0
+      ? films.map((f, i) => ({ filename: `channel_${i + 1}_${f.channelName.toLowerCase().replace(/\s+/g, "_")}_${f.lpi}lpi_${f.angle}deg.png`, dataUrl: f.imageBase64 }))
+      : channels.map((c) => ({ filename: `channel_${c.index + 1}_${c.name.toLowerCase().replace(/\s+/g, "_")}.png`, dataUrl: c.imageBase64 }));
 
-    const manifest = `DESIGN.Studio Print Export\n` +
-      `Date: ${new Date().toISOString()}\n` +
-      `LPI: ${lpi}, DPI: ${dpi}, Dot: ${dotShape}\n\n` +
-      items.map((it, i) => `Channel ${i + 1}: ${it.name}`).join("\n");
+    const manifest = [
+      "DESIGN.Studio Print Export",
+      `Date: ${new Date().toISOString()}`,
+      `LPI: ${lpi}  DPI: ${dpi}  Dot: ${dotShape}`,
+      "",
+      ...items.map((it, i) => `Channel ${i + 1}: ${it.filename}`),
+      "",
+      "Registration marks are included on each film.",
+      "Films are print-ready at the specified DPI.",
+    ].join("\n");
 
-    const zip: { name: string; content: string }[] = [
-      ...items.map((it, i) => ({ name: `channel_${i + 1}_${it.name.toLowerCase().replace(/\s+/g, "_")}.png`, content: it.b64 })),
-      { name: "manifest.txt", content: `data:text/plain;base64,${btoa(manifest)}` },
-    ];
-
-    for (const f of zip) {
+    setZipping(true);
+    try {
+      const res = await fetch(getApiUrl("print/export-zip"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ files: items, manifest }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
-      a.href = f.content;
-      a.download = f.name;
+      a.href = url;
+      a.download = `print-films-${Date.now()}.zip`;
       a.click();
-      await new Promise((r) => setTimeout(r, 150));
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("ZIP export failed:", err);
+      // Fallback: download individually
+      for (const f of items) {
+        const a = document.createElement("a");
+        a.href = f.dataUrl;
+        a.download = f.filename;
+        a.click();
+        await new Promise((r) => setTimeout(r, 150));
+      }
+    } finally {
+      setZipping(false);
     }
   }
 
@@ -283,9 +303,9 @@ export default function PrintSetup() {
                   <p className="text-xs text-muted-foreground">45–65 LPI for screen print, 85–133 for offset.</p>
                 </div>
                 <div className="space-y-2">
-                  <Label>Screen angle: <span className="font-bold text-primary">{angle}°</span></Label>
-                  <Slider min={0} max={90} step={5} value={[angle]} onValueChange={([v]) => setAngle(v)} />
-                  <p className="text-xs text-muted-foreground">Each channel gets a unique angle to avoid moiré.</p>
+                  <Label>Default screen angle: <span className="font-bold text-primary">{angle}°</span></Label>
+                  <Slider min={0} max={360} step={5} value={[angle]} onValueChange={([v]) => setAngle(v)} />
+                  <p className="text-xs text-muted-foreground">Each channel auto-offset (CMYK: 15/75/0/45°). This sets the base angle.</p>
                 </div>
               </div>
               <div className="space-y-2">
@@ -349,8 +369,8 @@ export default function PrintSetup() {
                   <Button variant="outline" size="sm" onClick={() => { setFilms([]); setStep(2); }}>
                     <RefreshCw className="w-3 h-3 mr-1" />Re-generate
                   </Button>
-                  <Button size="sm" onClick={downloadZip}>
-                    <Download className="w-3 h-3 mr-1" />Download All Films
+                  <Button size="sm" onClick={downloadZip} disabled={zipping}>
+                    {zipping ? <><Loader2 className="w-3 h-3 mr-1 animate-spin" />Packaging…</> : <><Download className="w-3 h-3 mr-1" />Download All Films</>}
                   </Button>
                 </div>
               </CardTitle>
@@ -429,8 +449,10 @@ export default function PrintSetup() {
 
           <div className="flex gap-3">
             <Button variant="outline" onClick={() => setStep(2)}><ChevronLeft className="w-4 h-4 mr-1" />Back</Button>
-            <Button className="flex-1" onClick={downloadZip}>
-              <Archive className="w-4 h-4 mr-2" />Download ZIP (All Films + Manifest)
+            <Button className="flex-1" onClick={downloadZip} disabled={zipping}>
+              {zipping
+                ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Packaging ZIP…</>
+                : <><Archive className="w-4 h-4 mr-2" />Download ZIP (All Films + Manifest)</>}
             </Button>
           </div>
         </div>
