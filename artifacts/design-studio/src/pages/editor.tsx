@@ -29,6 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
 import {
   EditorProvider,
   useEditor,
@@ -220,9 +221,10 @@ interface HeaderProps {
   isSaving: boolean;
   onSave(): void;
   onExport(): void;
+  onSendToPrint(): void;
 }
 
-function EditorHeader({ projectId, isSaving, onSave, onExport }: HeaderProps) {
+function EditorHeader({ projectId, isSaving, onSave, onExport, onSendToPrint }: HeaderProps) {
   const { undo, redo, canUndo, canRedo } = useEditor();
 
   return (
@@ -273,10 +275,13 @@ function EditorHeader({ projectId, isSaving, onSave, onExport }: HeaderProps) {
             {isSaving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
             Save
           </Button>
-          <Button variant="ghost" size="sm" className="h-7 px-2.5 text-xs gap-1.5" asChild>
-            <Link href={`/print?projectId=${projectId}`}>
-              <Printer className="w-3 h-3" />Print
-            </Link>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 px-2.5 text-xs gap-1.5"
+            onClick={onSendToPrint}
+          >
+            <Printer className="w-3 h-3" />Print
           </Button>
         </>
       )}
@@ -297,6 +302,7 @@ interface ShellProps {
 function EditorShell({ projectId, canvasRef }: ShellProps) {
   const { canvas, exportPNG } = useEditor();
   const { toast } = useToast();
+  const [, navigate] = useLocation();
   const [zoom, setZoom] = useState(0.82);
   const [showExport, setShowExport] = useState(false);
   const [rightTab, setRightTab] = useState("layers");
@@ -335,18 +341,50 @@ function EditorShell({ projectId, canvasRef }: ShellProps) {
     if (!projectId || !canvas) return;
     setIsSaving(true);
     try {
+      const api = getApiBase();
+      const ts = Date.now();
+
+      // 1 — Export PNG and upload as project asset (also creates history event via assets route)
       const dataUrl = exportPNG(300);
       const blob = await (await fetch(dataUrl)).blob();
       const fd = new FormData();
-      fd.append("file", blob, `canvas-${Date.now()}.png`);
+      fd.append("file", blob, `canvas-${ts}.png`);
       fd.append("type", "photo");
-      fd.append("name", `Editor save — ${new Date().toLocaleString()}`);
-      const r = await fetch(`${getApiBase()}/projects/${projectId}/assets`, {
+      fd.append("name", `Editor canvas — ${new Date().toLocaleString()}`);
+      const assetRes = await fetch(`${api}/projects/${projectId}/assets`, {
         method: "POST",
         body: fd,
       });
-      if (!r.ok) throw new Error(r.statusText);
-      toast({ title: "Saved", description: "Canvas added to project assets." });
+      if (!assetRes.ok) throw new Error(await assetRes.text());
+      const assetData = await assetRes.json() as { id: number; url: string };
+
+      // 2 — Persist canvas JSON state to localStorage for session restore
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const canvasJson = (canvas as any).toJSON(["data"]);
+      const stateKey = `canvas-state-${projectId}`;
+      try {
+        localStorage.setItem(stateKey, JSON.stringify({ ts, json: canvasJson }));
+      } catch {
+        // Storage quota exceeded — silently skip local persist
+      }
+
+      // 3 — Emit explicit history event with canvas metadata
+      await fetch(`${api}/projects/${projectId}/history`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "canvas_saved",
+          description: "Canvas saved from Image Editor",
+          metadata: {
+            assetId: assetData.id,
+            assetUrl: assetData.url,
+            layerCount: canvas.getObjects().length,
+            savedAt: new Date().toISOString(),
+          },
+        }),
+      });
+
+      toast({ title: "Saved", description: "Canvas saved to project history and assets." });
     } catch (e) {
       toast({
         title: "Save failed",
@@ -358,6 +396,39 @@ function EditorShell({ projectId, canvasRef }: ShellProps) {
     }
   }
 
+  function handleSendToPrint() {
+    if (!canvas || !projectId) return;
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const canvasJson = (canvas as any).toJSON(["data"]);
+      const previewDataUrl = exportPNG(72); // low-res preview for print job
+      sessionStorage.setItem("print-canvas-json", JSON.stringify(canvasJson));
+      sessionStorage.setItem("print-canvas-preview", previewDataUrl);
+    } catch {
+      // sessionStorage unavailable — proceed without canvas payload
+    }
+    navigate(`/print?projectId=${projectId}&fromEditor=1`);
+  }
+
+  // Restore canvas state from localStorage on init
+  useEffect(() => {
+    if (!canvas || !projectId) return;
+    const stateKey = `canvas-state-${projectId}`;
+    const stored = localStorage.getItem(stateKey);
+    if (!stored) return;
+    try {
+      const { json } = JSON.parse(stored) as { ts: number; json: unknown };
+      // Only restore if canvas is currently blank
+      if (canvas.getObjects().length > 0) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (canvas as any).loadFromJSON(json, () => {
+        canvas.requestRenderAll();
+      });
+    } catch {
+      // Corrupt state — ignore
+    }
+  }, [canvas, projectId]);
+
   const isText = selectedType === "i-text" || selectedType === "text";
 
   return (
@@ -367,6 +438,7 @@ function EditorShell({ projectId, canvasRef }: ShellProps) {
         isSaving={isSaving}
         onSave={handleSave}
         onExport={() => setShowExport(true)}
+        onSendToPrint={handleSendToPrint}
       />
 
       {isText && <TextOptionsBar />}

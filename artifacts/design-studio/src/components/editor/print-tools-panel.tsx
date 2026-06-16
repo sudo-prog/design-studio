@@ -68,10 +68,40 @@ function PreviewCanvas({ dataUrl }: { dataUrl: string | null }) {
 
 // ── Halftone ───────────────────────────────────────────────────────────────
 
+// Default CMYK screen angles (standard offset printing)
+const DEFAULT_ANGLES = { c: 15, m: 75, y: 0, k: 45 };
+
+function AngleSlider({
+  label,
+  color,
+  value,
+  onChange,
+}: {
+  label: string;
+  color: string;
+  value: number;
+  onChange: (v: number) => void;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className={`text-[10px] font-bold w-3 shrink-0 ${color}`}>{label}</span>
+      <Slider
+        className="flex-1"
+        min={0}
+        max={360}
+        step={1}
+        value={[value]}
+        onValueChange={([v]) => onChange(v)}
+      />
+      <span className="text-[10px] font-mono text-muted-foreground w-7 text-right">{value}°</span>
+    </div>
+  );
+}
+
 function HalftoneTool() {
   const { canvas, addImageFromDataUrl } = useEditor();
   const [lpi, setLpi] = useState(60);
-  const [angle, setAngle] = useState(45);
+  const [angles, setAngles] = useState({ ...DEFAULT_ANGLES });
   const [dotShape, setDotShape] = useState("round");
   const [preview, setPreview] = useState<string | null>(null);
   const [working, setWorking] = useState(false);
@@ -79,7 +109,10 @@ function HalftoneTool() {
   const workerRef = useRef<Worker | null>(null);
 
   useEffect(() => {
-    const w = new Worker(new URL("../../workers/halftone.worker.ts", import.meta.url), { type: "module" });
+    const w = new Worker(
+      new URL("../../workers/halftone.worker.ts", import.meta.url),
+      { type: "module" }
+    );
     workerRef.current = w;
     w.onmessage = (e) => {
       const { imageData } = e.data;
@@ -93,14 +126,18 @@ function HalftoneTool() {
     const imgData = getImageDataFromSelected(canvas);
     if (!imgData || !workerRef.current) return;
     setWorking(true);
-    workerRef.current.postMessage({ imageData: imgData, lpi, angle, dotShape });
-  }, [canvas, lpi, angle, dotShape]);
+    workerRef.current.postMessage({ imageData: imgData, lpi, angles, dotShape });
+  }, [canvas, lpi, angles, dotShape]);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(runPreview, 200);
+    debounceRef.current = setTimeout(runPreview, 300);
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   }, [runPreview]);
+
+  function setAngle(ch: keyof typeof angles, v: number) {
+    setAngles((prev) => ({ ...prev, [ch]: v }));
+  }
 
   return (
     <div className="space-y-3">
@@ -111,13 +148,26 @@ function HalftoneTool() {
         </div>
         <Slider min={15} max={200} step={1} value={[lpi]} onValueChange={([v]) => setLpi(v)} />
       </div>
+
+      {/* Per-channel CMYK screen angles */}
       <div className="space-y-1.5">
-        <div className="flex justify-between">
-          <Label className="text-xs">Angle</Label>
-          <span className="text-xs font-mono text-muted-foreground">{angle}°</span>
+        <Label className="text-xs">Screen Angles (0–360°)</Label>
+        <div className="space-y-1">
+          <AngleSlider label="C" color="text-cyan-400"    value={angles.c} onChange={(v) => setAngle("c", v)} />
+          <AngleSlider label="M" color="text-pink-400"    value={angles.m} onChange={(v) => setAngle("m", v)} />
+          <AngleSlider label="Y" color="text-yellow-400"  value={angles.y} onChange={(v) => setAngle("y", v)} />
+          <AngleSlider label="K" color="text-muted-foreground" value={angles.k} onChange={(v) => setAngle("k", v)} />
         </div>
-        <Slider min={0} max={180} step={1} value={[angle]} onValueChange={([v]) => setAngle(v)} />
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-6 text-[10px] w-full"
+          onClick={() => setAngles({ ...DEFAULT_ANGLES })}
+        >
+          Reset to standard (15/75/0/45°)
+        </Button>
       </div>
+
       <div className="space-y-1.5">
         <Label className="text-xs">Dot Shape</Label>
         <Select value={dotShape} onValueChange={setDotShape}>
@@ -132,10 +182,18 @@ function HalftoneTool() {
       </div>
 
       <PreviewCanvas dataUrl={working ? null : preview} />
-      {working && <div className="flex items-center gap-1.5 text-xs text-muted-foreground"><Loader2 className="w-3 h-3 animate-spin" /> Computing…</div>}
+      {working && (
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <Loader2 className="w-3 h-3 animate-spin" /> Computing CMYK halftone…
+        </div>
+      )}
 
-      <Button size="sm" className="w-full text-xs" disabled={!preview || working}
-        onClick={() => { if (preview) addImageFromDataUrl(preview, "Halftone"); }}>
+      <Button
+        size="sm"
+        className="w-full text-xs"
+        disabled={!preview || working}
+        onClick={() => { if (preview) addImageFromDataUrl(preview, "Halftone"); }}
+      >
         Apply to Canvas
       </Button>
     </div>
@@ -341,18 +399,13 @@ function VectorizeTool() {
   const { canvas, addSvg } = useEditor();
   const [colorThreshold, setColorThreshold] = useState(128);
   const [maxSize, setMaxSize] = useState(512);
+  const [simplification, setSimplification] = useState(2);
   const [preview, setPreview] = useState<string | null>(null);
   const [svgStr, setSvgStr] = useState<string | null>(null);
   const [working, setWorking] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function runVectorize() {
-    const imgData = getImageDataFromSelected(canvas);
-    if (!imgData) {
-      setError("Select an image layer first.");
-      return;
-    }
-
     const active = canvas?.getActiveObject();
     if (!active || active.type !== "image") {
       setError("Select an image layer first.");
@@ -375,7 +428,7 @@ function VectorizeTool() {
       const res = await fetch(`${getApiBase()}/vectorize`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageData: b64, colorThreshold, maxSize }),
+        body: JSON.stringify({ imageData: b64, colorThreshold, maxSize, simplification }),
       });
 
       if (!res.ok) throw new Error(await res.text());
@@ -405,6 +458,16 @@ function VectorizeTool() {
           <span className="text-xs font-mono text-muted-foreground">{maxSize}px</span>
         </div>
         <Slider min={128} max={1024} step={64} value={[maxSize]} onValueChange={([v]) => setMaxSize(v)} />
+      </div>
+      <div className="space-y-1.5">
+        <div className="flex justify-between">
+          <Label className="text-xs">Path Simplification</Label>
+          <span className="text-xs font-mono text-muted-foreground">{simplification}</span>
+        </div>
+        <Slider min={0} max={20} step={1} value={[simplification]} onValueChange={([v]) => setSimplification(v)} />
+        <p className="text-[10px] text-muted-foreground">
+          Higher values merge small noise paths — reduces file size.
+        </p>
       </div>
 
       <Button size="sm" className="w-full text-xs" onClick={runVectorize} disabled={working}>

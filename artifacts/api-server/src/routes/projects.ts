@@ -187,6 +187,24 @@ router.get("/projects/:id/history", async (req, res): Promise<void> => {
   res.json(GetProjectHistoryResponse.parse(history));
 });
 
+// POST /projects/:id/history — explicit history event (editor saves, AI jobs, etc.)
+router.post("/projects/:id/history", async (req, res): Promise<void> => {
+  const id = parseInt(String(req.params.id), 10);
+  if (isNaN(id)) { res.status(400).json({ error: "Invalid project id" }); return; }
+  const body = req.body as { type?: string; description?: string; metadata?: unknown };
+  if (!body.type || !body.description) {
+    res.status(400).json({ error: "type and description are required" });
+    return;
+  }
+  const [entry] = await db.insert(projectHistoryTable).values({
+    projectId: id,
+    type: String(body.type),
+    description: String(body.description),
+    metadata: body.metadata != null ? JSON.stringify(body.metadata) : null,
+  }).returning();
+  res.status(201).json(entry);
+});
+
 router.post("/projects/:id/backup", async (req, res): Promise<void> => {
   const params = BackupProjectParams.safeParse(req.params);
   if (!params.success) {
