@@ -1,5 +1,4 @@
-import { useState } from "wouter";
-// Quick mock for a new project page
+import { useState } from "react";
 import { useLocation } from "wouter";
 import { useCreateProject, getListProjectsQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";

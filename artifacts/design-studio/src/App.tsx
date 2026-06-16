@@ -16,6 +16,7 @@ import Print from "@/pages/print";
 import TechPacks from "@/pages/tech-packs";
 import Manufacturing from "@/pages/manufacturing";
 import Collections from "@/pages/collections";
+import Settings from "@/pages/settings";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -41,6 +42,7 @@ function Router() {
         <Route path="/tech-packs" component={TechPacks} />
         <Route path="/manufacturing" component={Manufacturing} />
         <Route path="/collections" component={Collections} />
+        <Route path="/settings" component={Settings} />
         <Route component={NotFound} />
       </Switch>
     </AppLayout>

@@ -1,0 +1,32 @@
+{
+  "name": "DESIGN.Studio",
+  "short_name": "DESIGN.Studio",
+  "description": "Print-first AI design studio for screen printers and indie clothing brands",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#00ff88",
+  "orientation": "any",
+  "categories": ["design", "productivity", "graphics"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "New Project",
+      "url": "/projects/new",
+      "description": "Start a new design project"
+    },
+    {
+      "name": "AI Generation",
+      "url": "/ai",
+      "description": "Generate AI design concepts"
+    }
+  ]
+}

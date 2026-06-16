@@ -9,7 +9,8 @@ import {
   FileText, 
   Factory, 
   Library,
-  Plus
+  Plus,
+  Settings
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -80,11 +81,17 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </SidebarGroup>
           </SidebarContent>
 
-          <SidebarFooter className="border-t border-border p-4">
+          <SidebarFooter className="border-t border-border p-4 space-y-2">
             <Button asChild className="w-full justify-start gap-2" variant="outline">
               <Link href="/projects/new">
                 <Plus className="w-4 h-4" />
                 New Project
+              </Link>
+            </Button>
+            <Button asChild className="w-full justify-start gap-2" variant="ghost">
+              <Link href="/settings">
+                <Settings className="w-4 h-4" />
+                Settings
               </Link>
             </Button>
           </SidebarFooter>
