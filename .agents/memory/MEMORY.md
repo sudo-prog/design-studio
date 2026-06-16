@@ -1,0 +1,2 @@
+- [Orval params collision fix](orval-params-collision.md) — combined path+query params on same op generate TS2308; fix by removing query params from endpoints that already have a path param.
+- [api-zod dom lib](api-zod-dom-lib.md) — api-zod tsconfig must include "dom" lib when any endpoint uses multipart/form-data (File/Blob types).

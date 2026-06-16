@@ -3,13 +3,34 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: DESIGN.Studio API — print-first AI design studio
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: dashboard
+    description: Dashboard summary operations
+  - name: projects
+    description: Project management
+  - name: assets
+    description: Asset management
+  - name: colors
+    description: Color palette operations
+  - name: aiJobs
+    description: AI generation jobs
+  - name: mockups
+    description: Mockup generation
+  - name: printJobs
+    description: Print processing jobs
+  - name: techPack
+    description: Tech pack PDF generation
+  - name: manufacturing
+    description: Manufacturing hub — pricing, directory, orders
+  - name: collections
+    description: Collection management and batch processing
+
 paths:
   /healthz:
     get:
@@ -24,13 +45,1514 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  # ── Dashboard ──────────────────────────────────────────────────────────────
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Dashboard summary stats
+      responses:
+        "200":
+          description: Summary stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /dashboard/activity:
+    get:
+      operationId: getRecentActivity
+      tags: [dashboard]
+      summary: Recent activity feed
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: Activity entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityEntry"
+
+  # ── Projects ───────────────────────────────────────────────────────────────
+  /projects:
+    get:
+      operationId: listProjects
+      tags: [projects]
+      summary: List all projects
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [draft, in_progress, ready, archived]
+        - name: category
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Projects list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Project"
+    post:
+      operationId: createProject
+      tags: [projects]
+      summary: Create a new project
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProjectInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+
+  /projects/{id}:
+    get:
+      operationId: getProject
+      tags: [projects]
+      summary: Get project by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Project
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+        "404":
+          description: Not found
+    patch:
+      operationId: updateProject
+      tags: [projects]
+      summary: Update project
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProjectUpdate"
+      responses:
+        "200":
+          description: Updated project
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Project"
+    delete:
+      operationId: deleteProject
+      tags: [projects]
+      summary: Delete project
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /projects/{id}/history:
+    get:
+      operationId: getProjectHistory
+      tags: [projects]
+      summary: Get project history timeline
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: History entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/HistoryEntry"
+
+  /projects/{id}/backup:
+    post:
+      operationId: backupProject
+      tags: [projects]
+      summary: Backup project to GitHub
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Backup result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BackupResult"
+
+  # ── Assets ─────────────────────────────────────────────────────────────────
+  /projects/{id}/assets:
+    get:
+      operationId: listAssets
+      tags: [assets]
+      summary: List assets for a project
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Assets list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Asset"
+    post:
+      operationId: uploadAsset
+      tags: [assets]
+      summary: Upload an asset to project
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/AssetUploadForm"
+      responses:
+        "201":
+          description: Uploaded asset
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Asset"
+
+  /assets/{id}:
+    delete:
+      operationId: deleteAsset
+      tags: [assets]
+      summary: Delete an asset
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  # ── Colors ─────────────────────────────────────────────────────────────────
+  /projects/{id}/palettes:
+    get:
+      operationId: listPalettes
+      tags: [colors]
+      summary: List color palettes for a project
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Palettes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ColorPalette"
+    post:
+      operationId: createPalette
+      tags: [colors]
+      summary: Save a color palette
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ColorPaletteInput"
+      responses:
+        "201":
+          description: Created palette
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ColorPalette"
+
+  /colors/extract:
+    post:
+      operationId: extractColors
+      tags: [colors]
+      summary: Extract dominant colors from an image
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ColorExtractInput"
+      responses:
+        "200":
+          description: Extracted colors
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ColorExtractResult"
+
+  # ── AI Jobs ────────────────────────────────────────────────────────────────
+  /ai/jobs:
+    get:
+      operationId: listAiJobs
+      tags: [aiJobs]
+      summary: List AI jobs
+      parameters:
+        - name: projectId
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, processing, completed, failed, approved, rejected]
+      responses:
+        "200":
+          description: AI jobs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AiJob"
+    post:
+      operationId: createAiJob
+      tags: [aiJobs]
+      summary: Submit an AI generation job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AiJobInput"
+      responses:
+        "201":
+          description: Created job
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiJob"
+
+  /ai/jobs/{id}:
+    get:
+      operationId: getAiJob
+      tags: [aiJobs]
+      summary: Get AI job by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: AI job
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiJob"
+
+  /ai/jobs/{id}/approve:
+    post:
+      operationId: approveAiJob
+      tags: [aiJobs]
+      summary: Approve AI generation result
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Approved job
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiJob"
+
+  /ai/jobs/{id}/reject:
+    post:
+      operationId: rejectAiJob
+      tags: [aiJobs]
+      summary: Reject AI generation result
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Rejected job
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AiJob"
+
+  # ── Mockups ────────────────────────────────────────────────────────────────
+  /mockups:
+    get:
+      operationId: listMockups
+      tags: [mockups]
+      summary: List mockups
+      parameters:
+        - name: projectId
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Mockups
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Mockup"
+    post:
+      operationId: createMockup
+      tags: [mockups]
+      summary: Generate a mockup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MockupInput"
+      responses:
+        "201":
+          description: Created mockup
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Mockup"
+
+  /mockup-templates:
+    get:
+      operationId: listMockupTemplates
+      tags: [mockups]
+      summary: List available mockup templates
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Templates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MockupTemplate"
+
+  # ── Print Jobs ─────────────────────────────────────────────────────────────
+  /print-jobs:
+    get:
+      operationId: listPrintJobs
+      tags: [printJobs]
+      summary: List print jobs
+      parameters:
+        - name: projectId
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Print jobs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PrintJob"
+    post:
+      operationId: createPrintJob
+      tags: [printJobs]
+      summary: Create a print separation job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PrintJobInput"
+      responses:
+        "201":
+          description: Created print job
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrintJob"
+
+  /print-jobs/{id}:
+    get:
+      operationId: getPrintJob
+      tags: [printJobs]
+      summary: Get print job
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Print job
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrintJob"
+
+  # ── Tech Pack ──────────────────────────────────────────────────────────────
+  /tech-packs:
+    get:
+      operationId: listTechPacks
+      tags: [techPack]
+      summary: List tech packs
+      parameters:
+        - name: projectId
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Tech packs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TechPack"
+    post:
+      operationId: createTechPack
+      tags: [techPack]
+      summary: Generate a tech pack PDF
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TechPackInput"
+      responses:
+        "201":
+          description: Generated tech pack
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TechPack"
+
+  # ── Manufacturing ──────────────────────────────────────────────────────────
+  /manufacturing/pricing:
+    get:
+      operationId: getManufacturingPricing
+      tags: [manufacturing]
+      summary: Get pricing breakdown for a product
+      parameters:
+        - name: productType
+          in: query
+          schema:
+            type: string
+        - name: quantity
+          in: query
+          schema:
+            type: integer
+        - name: printMethod
+          in: query
+          schema:
+            type: string
+            enum: [screen_print, dtg, embroidery, sublimation]
+      responses:
+        "200":
+          description: Pricing breakdown
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PricingBreakdown"
+
+  /manufacturing/manufacturers:
+    get:
+      operationId: listManufacturers
+      tags: [manufacturing]
+      summary: List manufacturers directory
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [pod, screen_print, embroidery, mixed]
+        - name: specialty
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Manufacturers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Manufacturer"
+
+  /manufacturing/orders:
+    get:
+      operationId: listOrders
+      tags: [manufacturing]
+      summary: List manufacturing orders
+      responses:
+        "200":
+          description: Orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ManufacturingOrder"
+    post:
+      operationId: createOrder
+      tags: [manufacturing]
+      summary: Place a manufacturing order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ManufacturingOrderInput"
+      responses:
+        "201":
+          description: Created order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ManufacturingOrder"
+
+  # ── Collections ────────────────────────────────────────────────────────────
+  /collections:
+    get:
+      operationId: listCollections
+      tags: [collections]
+      summary: List collections
+      responses:
+        "200":
+          description: Collections
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Collection"
+    post:
+      operationId: createCollection
+      tags: [collections]
+      summary: Create a collection
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CollectionInput"
+      responses:
+        "201":
+          description: Created collection
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Collection"
+
+  /collections/{id}:
+    get:
+      operationId: getCollection
+      tags: [collections]
+      summary: Get collection
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Collection
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Collection"
+    patch:
+      operationId: updateCollection
+      tags: [collections]
+      summary: Update collection
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CollectionUpdate"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Collection"
+    delete:
+      operationId: deleteCollection
+      tags: [collections]
+      summary: Delete collection
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /collections/{id}/batch:
+    post:
+      operationId: startBatchExport
+      tags: [collections]
+      summary: Start a batch export job for the collection
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BatchExportInput"
+      responses:
+        "201":
+          description: Batch job started
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BatchJob"
+
+  /collections/{id}/stats:
+    get:
+      operationId: getCollectionStats
+      tags: [collections]
+      summary: Get collection stats (COGS, margins, order counts)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Collection stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CollectionStats"
+
 components:
   schemas:
     HealthStatus:
       type: object
+      required: [status]
       properties:
         status:
           type: string
-      required:
-        - status
 
+    # ── Dashboard ─────────────────────────────────────────────────────────────
+    DashboardSummary:
+      type: object
+      required: [totalProjects, activeProjects, totalAssets, pendingAiJobs, recentMockups, readyToPrint]
+      properties:
+        totalProjects:
+          type: integer
+        activeProjects:
+          type: integer
+        totalAssets:
+          type: integer
+        pendingAiJobs:
+          type: integer
+        recentMockups:
+          type: integer
+        readyToPrint:
+          type: integer
+        projectsByStatus:
+          type: object
+          additionalProperties:
+            type: integer
+        recentProjectIds:
+          type: array
+          items:
+            type: integer
+
+    ActivityEntry:
+      type: object
+      required: [id, type, description, createdAt]
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          enum: [project_created, asset_uploaded, ai_job_completed, mockup_generated, print_job_created, tech_pack_generated, backup_completed, order_placed]
+        description:
+          type: string
+        projectId:
+          type: ["integer", "null"]
+        projectName:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+
+    # ── Projects ──────────────────────────────────────────────────────────────
+    Project:
+      type: object
+      required: [id, name, status, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        category:
+          type: ["string", "null"]
+        brief:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [draft, in_progress, ready, archived]
+        coverAssetUrl:
+          type: ["string", "null"]
+        colorPalette:
+          type: array
+          items:
+            type: string
+        printMethod:
+          type: ["string", "null"]
+        estimatedQuantity:
+          type: ["integer", "null"]
+        githubRepo:
+          type: ["string", "null"]
+        lastBackupAt:
+          type: ["string", "null"]
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ProjectInput:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        category:
+          type: string
+        brief:
+          type: string
+        status:
+          type: string
+          enum: [draft, in_progress, ready, archived]
+        printMethod:
+          type: string
+        estimatedQuantity:
+          type: integer
+        colorPalette:
+          type: array
+          items:
+            type: string
+
+    ProjectUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+        category:
+          type: string
+        brief:
+          type: string
+        status:
+          type: string
+          enum: [draft, in_progress, ready, archived]
+        printMethod:
+          type: string
+        estimatedQuantity:
+          type: integer
+        colorPalette:
+          type: array
+          items:
+            type: string
+        githubRepo:
+          type: string
+        coverAssetUrl:
+          type: string
+
+    HistoryEntry:
+      type: object
+      required: [id, projectId, type, description, createdAt]
+      properties:
+        id:
+          type: integer
+        projectId:
+          type: integer
+        type:
+          type: string
+        description:
+          type: string
+        metadata:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+
+    BackupResult:
+      type: object
+      required: [success, message]
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        commitUrl:
+          type: ["string", "null"]
+
+    # ── Assets ────────────────────────────────────────────────────────────────
+    AssetUploadForm:
+      type: object
+      required: [file]
+      properties:
+        file:
+          type: string
+          format: binary
+        type:
+          type: string
+          enum: [photo, vector, texture, reference, generated, export]
+        tags:
+          type: string
+
+    Asset:
+      type: object
+      required: [id, projectId, filename, url, type, createdAt]
+      properties:
+        id:
+          type: integer
+        projectId:
+          type: integer
+        filename:
+          type: string
+        url:
+          type: string
+        thumbnailUrl:
+          type: ["string", "null"]
+        type:
+          type: string
+          enum: [photo, vector, texture, reference, generated, export]
+        mimeType:
+          type: ["string", "null"]
+        width:
+          type: ["integer", "null"]
+        height:
+          type: ["integer", "null"]
+        fileSize:
+          type: ["integer", "null"]
+        tags:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    # ── Colors ────────────────────────────────────────────────────────────────
+    ColorSwatch:
+      type: object
+      required: [hex, rgb, name]
+      properties:
+        hex:
+          type: string
+        rgb:
+          type: string
+        cmyk:
+          type: ["string", "null"]
+        pantone:
+          type: ["string", "null"]
+        name:
+          type: string
+        percentage:
+          type: ["number", "null"]
+
+    ColorPalette:
+      type: object
+      required: [id, projectId, name, colors, createdAt]
+      properties:
+        id:
+          type: integer
+        projectId:
+          type: integer
+        name:
+          type: string
+        colors:
+          type: array
+          items:
+            $ref: "#/components/schemas/ColorSwatch"
+        createdAt:
+          type: string
+          format: date-time
+
+    ColorPaletteInput:
+      type: object
+      required: [name, colors]
+      properties:
+        name:
+          type: string
+        colors:
+          type: array
+          items:
+            $ref: "#/components/schemas/ColorSwatch"
+
+    ColorExtractInput:
+      type: object
+      required: [assetUrl]
+      properties:
+        assetUrl:
+          type: string
+        colorCount:
+          type: integer
+          default: 6
+
+    ColorExtractResult:
+      type: object
+      required: [colors]
+      properties:
+        colors:
+          type: array
+          items:
+            $ref: "#/components/schemas/ColorSwatch"
+
+    # ── AI Jobs ───────────────────────────────────────────────────────────────
+    AiJob:
+      type: object
+      required: [id, projectId, type, status, prompt, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        projectId:
+          type: integer
+        type:
+          type: string
+          enum: [image_generation, background_removal, style_transfer, upscale, vectorize]
+        status:
+          type: string
+          enum: [pending, processing, completed, failed, approved, rejected]
+        prompt:
+          type: string
+        provider:
+          type: ["string", "null"]
+        model:
+          type: ["string", "null"]
+        resultUrls:
+          type: array
+          items:
+            type: string
+        selectedResultUrl:
+          type: ["string", "null"]
+        errorMessage:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    AiJobInput:
+      type: object
+      required: [projectId, type, prompt]
+      properties:
+        projectId:
+          type: integer
+        type:
+          type: string
+          enum: [image_generation, background_removal, style_transfer, upscale, vectorize]
+        prompt:
+          type: string
+        negativePrompt:
+          type: string
+        provider:
+          type: string
+        model:
+          type: string
+        aspectRatio:
+          type: string
+        quantity:
+          type: integer
+          default: 1
+        sourceAssetUrl:
+          type: string
+
+    # ── Mockups ───────────────────────────────────────────────────────────────
+    Mockup:
+      type: object
+      required: [id, projectId, templateId, status, createdAt]
+      properties:
+        id:
+          type: integer
+        projectId:
+          type: integer
+        templateId:
+          type: string
+        name:
+          type: ["string", "null"]
+        designAssetUrl:
+          type: ["string", "null"]
+        resultUrl:
+          type: ["string", "null"]
+        garmentColor:
+          type: ["string", "null"]
+        blendMode:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [pending, processing, completed, failed]
+        createdAt:
+          type: string
+          format: date-time
+
+    MockupInput:
+      type: object
+      required: [projectId, templateId, designAssetUrl]
+      properties:
+        projectId:
+          type: integer
+        templateId:
+          type: string
+        designAssetUrl:
+          type: string
+        garmentColor:
+          type: string
+        blendMode:
+          type: string
+
+    MockupTemplate:
+      type: object
+      required: [id, name, category, thumbnailUrl]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        category:
+          type: string
+        thumbnailUrl:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+
+    # ── Print Jobs ────────────────────────────────────────────────────────────
+    PrintJob:
+      type: object
+      required: [id, projectId, status, createdAt]
+      properties:
+        id:
+          type: integer
+        projectId:
+          type: integer
+        sourceAssetUrl:
+          type: ["string", "null"]
+        channelCount:
+          type: integer
+        lpi:
+          type: integer
+        dotShape:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [pending, processing, completed, failed]
+        outputZipUrl:
+          type: ["string", "null"]
+        channels:
+          type: array
+          items:
+            $ref: "#/components/schemas/PrintChannel"
+        createdAt:
+          type: string
+          format: date-time
+
+    PrintChannel:
+      type: object
+      required: [name, color, angle]
+      properties:
+        name:
+          type: string
+        color:
+          type: string
+        angle:
+          type: number
+        outputUrl:
+          type: ["string", "null"]
+
+    PrintJobInput:
+      type: object
+      required: [projectId, sourceAssetUrl]
+      properties:
+        projectId:
+          type: integer
+        sourceAssetUrl:
+          type: string
+        channelCount:
+          type: integer
+          default: 4
+        lpi:
+          type: integer
+          default: 65
+        dotShape:
+          type: string
+          enum: [round, ellipse, line, diamond]
+          default: round
+        channels:
+          type: array
+          items:
+            $ref: "#/components/schemas/PrintChannel"
+
+    # ── Tech Pack ─────────────────────────────────────────────────────────────
+    TechPack:
+      type: object
+      required: [id, projectId, status, createdAt]
+      properties:
+        id:
+          type: integer
+        projectId:
+          type: integer
+        title:
+          type: ["string", "null"]
+        pdfUrl:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [pending, processing, completed, failed]
+        garmentType:
+          type: ["string", "null"]
+        printMethod:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+
+    TechPackInput:
+      type: object
+      required: [projectId]
+      properties:
+        projectId:
+          type: integer
+        title:
+          type: string
+        garmentType:
+          type: string
+        printMethod:
+          type: string
+        placement:
+          type: string
+        dimensions:
+          type: string
+        colorCount:
+          type: integer
+        notes:
+          type: string
+        mockupAssetUrl:
+          type: string
+
+    # ── Manufacturing ─────────────────────────────────────────────────────────
+    PricingBreakdown:
+      type: object
+      required: [baseCost, printingCost, shippingCost, totalCogs, suggestedRetail, marginPercent]
+      properties:
+        baseCost:
+          type: number
+        printingCost:
+          type: number
+        shippingCost:
+          type: number
+        platformFees:
+          type: number
+        totalCogs:
+          type: number
+        suggestedRetail:
+          type: number
+        marginPercent:
+          type: number
+        bulkTiers:
+          type: array
+          items:
+            $ref: "#/components/schemas/BulkTier"
+
+    BulkTier:
+      type: object
+      required: [quantity, pricePerUnit, totalCost]
+      properties:
+        quantity:
+          type: integer
+        pricePerUnit:
+          type: number
+        totalCost:
+          type: number
+        marginAtRetail:
+          type: ["number", "null"]
+
+    Manufacturer:
+      type: object
+      required: [id, name, type, turnaround]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        type:
+          type: string
+          enum: [pod, screen_print, embroidery, mixed]
+        website:
+          type: ["string", "null"]
+        logoUrl:
+          type: ["string", "null"]
+        moq:
+          type: ["integer", "null"]
+        turnaround:
+          type: string
+        sustainable:
+          type: boolean
+        specialties:
+          type: array
+          items:
+            type: string
+        countries:
+          type: array
+          items:
+            type: string
+        hasApi:
+          type: boolean
+        rating:
+          type: ["number", "null"]
+
+    ManufacturingOrder:
+      type: object
+      required: [id, projectId, manufacturerId, status, createdAt]
+      properties:
+        id:
+          type: integer
+        projectId:
+          type: integer
+        manufacturerId:
+          type: integer
+        status:
+          type: string
+          enum: [draft, submitted, confirmed, in_production, shipped, delivered, cancelled]
+        quantity:
+          type: integer
+        totalCost:
+          type: ["number", "null"]
+        externalOrderId:
+          type: ["string", "null"]
+        trackingUrl:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+
+    ManufacturingOrderInput:
+      type: object
+      required: [projectId, manufacturerId, quantity]
+      properties:
+        projectId:
+          type: integer
+        manufacturerId:
+          type: integer
+        quantity:
+          type: integer
+        notes:
+          type: string
+        mockupAssetUrl:
+          type: string
+
+    # ── Collections ───────────────────────────────────────────────────────────
+    Collection:
+      type: object
+      required: [id, name, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        season:
+          type: ["string", "null"]
+        coverUrl:
+          type: ["string", "null"]
+        projectIds:
+          type: array
+          items:
+            type: integer
+        status:
+          type: string
+          enum: [planning, active, archived]
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CollectionInput:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        season:
+          type: string
+        projectIds:
+          type: array
+          items:
+            type: integer
+
+    CollectionUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        season:
+          type: string
+        status:
+          type: string
+          enum: [planning, active, archived]
+        projectIds:
+          type: array
+          items:
+            type: integer
+
+    BatchExportInput:
+      type: object
+      required: [action]
+      properties:
+        action:
+          type: string
+          enum: [mockups, separations, tech_packs]
+        dpi:
+          type: integer
+          default: 300
+        lpi:
+          type: integer
+          default: 65
+
+    BatchJob:
+      type: object
+      required: [id, collectionId, action, status, totalItems, completedItems, createdAt]
+      properties:
+        id:
+          type: integer
+        collectionId:
+          type: integer
+        action:
+          type: string
+        status:
+          type: string
+          enum: [pending, processing, completed, failed]
+        totalItems:
+          type: integer
+        completedItems:
+          type: integer
+        outputZipUrl:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+
+    CollectionStats:
+      type: object
+      required: [collectionId, totalDesigns, readyToPrint, orderedCount, projectedCogs, projectedRevenue]
+      properties:
+        collectionId:
+          type: integer
+        totalDesigns:
+          type: integer
+        readyToPrint:
+          type: integer
+        orderedCount:
+          type: integer
+        projectedCogs:
+          type: number
+        projectedRevenue:
+          type: number
+        projectedMarginPercent:
+          type: number
