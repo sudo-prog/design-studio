@@ -353,8 +353,12 @@ router.post("/projects/:id/restore/:historyId", async (req, res): Promise<void> 
   }
   const allowedFields = ["name", "category", "brief", "vibe", "status", "printMethod", "estimatedQuantity", "colorPalette", "coverAssetUrl"];
   const restoreData: Record<string, unknown> = {};
+  const source: Record<string, unknown> =
+    metadata.previous !== null && typeof metadata.previous === "object"
+      ? (metadata.previous as Record<string, unknown>)
+      : metadata;
   for (const field of allowedFields) {
-    if (metadata[field] !== undefined) restoreData[field] = metadata[field];
+    if (source[field] !== undefined) restoreData[field] = source[field];
   }
   if (Object.keys(restoreData).length === 0) {
     res.status(400).json({ error: "No restorable fields in this history entry" });

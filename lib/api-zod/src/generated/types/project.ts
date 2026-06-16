@@ -27,8 +27,6 @@ export interface Project {
   /** @nullable */
   githubRepo?: string | null;
   /** @nullable */
-  githubPat?: string | null;
-  /** @nullable */
   lastBackupAt?: Date | null;
   moodBoard?: unknown;
   createdAt: Date;
