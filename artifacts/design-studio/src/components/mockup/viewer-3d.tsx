@@ -103,19 +103,21 @@ export function Viewer3D({ designUrl, garmentColor, className }: Props) {
     scene.add(mesh);
     meshRef.current = mesh;
 
-    // Design decal plane on front face
+    // Design decal plane — add as child of garment mesh so it rotates with it
     if (designTex) {
       designTex.colorSpace = THREE.SRGBColorSpace;
       const decalGeo = new THREE.PlaneGeometry(0.6, 0.6);
       const decalMat = new THREE.MeshStandardMaterial({
         map: designTex,
         transparent: true,
+        depthWrite: false,
         roughness: 0.9,
         metalness: 0,
       });
       const decal = new THREE.Mesh(decalGeo, decalMat);
+      // Position relative to garment mesh (local space): centre of front face
       decal.position.set(0, 0.1, 0.06);
-      scene.add(decal);
+      mesh.add(decal);  // child of mesh — rotates/translates with garment
     }
 
     // Lights

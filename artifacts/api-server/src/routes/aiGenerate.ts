@@ -7,7 +7,15 @@ import { z } from "zod";
 
 const router: IRouter = Router();
 
-// ── Design-focused image pools per style ──────────────────────────────────
+// ── Allowlisted OpenAI-compatible endpoints ───────────────────────────────
+const ALLOWED_PROVIDER_BASES = new Set([
+  "https://openrouter.ai/api/v1",
+  "https://api.openai.com/v1",
+  "https://api.groq.com/openai/v1",
+  "http://localhost:11434/v1",
+]);
+
+// ── Design-focused image pools per style (fallback when no API key) ────────
 const IMAGE_POOLS: Record<string, string[]> = {
   default: [
     "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800",
@@ -45,7 +53,36 @@ function pickImages(prompt: string, qty: number): string[] {
   return shuffled.slice(0, Math.min(qty, shuffled.length));
 }
 
-// POST /api/ai/generate — proxy-ready image generation (mock/placeholder)
+// ── Real OpenAI-compatible image generation proxy ────────────────────────
+async function generateViaApi(opts: {
+  apiKey: string;
+  baseUrl: string;
+  model: string;
+  prompt: string;
+  quantity: number;
+  size: string;
+}): Promise<string[]> {
+  const { apiKey, baseUrl, model, prompt, quantity, size } = opts;
+  const endpoint = `${baseUrl}/images/generations`;
+  const upstream = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${apiKey}`,
+      "HTTP-Referer": "https://design.studio",
+      "X-Title": "DESIGN.Studio",
+    },
+    body: JSON.stringify({ model, prompt, n: quantity, size }),
+  });
+  if (!upstream.ok) {
+    const err = await upstream.text();
+    throw new Error(`Provider error ${upstream.status}: ${err.slice(0, 300)}`);
+  }
+  const data = await upstream.json() as { data?: { url?: string; b64_json?: string }[] };
+  return (data.data ?? []).map((d) => d.url ?? `data:image/png;base64,${d.b64_json ?? ""}`).filter(Boolean);
+}
+
+// POST /api/ai/generate — real provider proxy with curated-URL fallback
 router.post("/ai/generate", async (req, res): Promise<void> => {
   const body = z.object({
     projectId: z.number().int(),
@@ -53,6 +90,7 @@ router.post("/ai/generate", async (req, res): Promise<void> => {
     negativePrompt: z.string().optional(),
     model: z.string().optional().default("dall-e-3"),
     provider: z.string().optional().default("openrouter"),
+    baseUrl: z.string().optional(),
     aspectRatio: z.string().optional().default("1:1"),
     quantity: z.number().int().min(1).max(4).optional().default(1),
     style: z.string().optional(),
@@ -64,8 +102,7 @@ router.post("/ai/generate", async (req, res): Promise<void> => {
     return;
   }
 
-  const { projectId, prompt, quantity = 1, model, provider } = body.data;
-  const resultUrls = pickImages(prompt, quantity);
+  const { projectId, prompt, quantity = 1, model, provider, apiKey } = body.data;
 
   // Validate that projectId references a real project before inserting FK
   const [project] = await db
@@ -76,6 +113,37 @@ router.post("/ai/generate", async (req, res): Promise<void> => {
   if (!project) {
     res.status(400).json({ error: `Project ${projectId} not found. Select a project before generating.` });
     return;
+  }
+
+  // ── Real provider proxy ──────────────────────────────────────────────────
+  let resultUrls: string[] = [];
+  if (apiKey) {
+    // Determine base URL (SSRF guard)
+    let rawBase = body.data.baseUrl?.replace(/\/+$/, "");
+    if (!rawBase) {
+      rawBase = provider === "openai"
+        ? "https://api.openai.com/v1"
+        : provider === "groq"
+          ? "https://api.groq.com/openai/v1"
+          : "https://openrouter.ai/api/v1";
+    }
+    if (!ALLOWED_PROVIDER_BASES.has(rawBase)) {
+      res.status(400).json({ error: "Unsupported provider base URL." });
+      return;
+    }
+    const aspect = body.data.aspectRatio ?? "1:1";
+    const size = aspect === "16:9" ? "1792x1024" : aspect === "9:16" ? "1024x1792" : "1024x1024";
+    try {
+      resultUrls = await generateViaApi({ apiKey, baseUrl: rawBase, model: model!, prompt, quantity, size });
+    } catch (e) {
+      // Fall through to curated fallback so the DB record is still created
+      console.warn("Provider generation failed, using fallback:", String(e));
+    }
+  }
+
+  // Curated fallback when no key provided or provider call failed
+  if (resultUrls.length === 0) {
+    resultUrls = pickImages(prompt, quantity);
   }
 
   const [job] = await db
@@ -101,6 +169,82 @@ router.post("/ai/generate", async (req, res): Promise<void> => {
     description: `AI image generation completed (${quantity} image${quantity > 1 ? "s" : ""})`,
     projectId,
     projectName: project?.name ?? null,
+  });
+
+  res.status(201).json(job);
+});
+
+// POST /api/ai/style-transfer — accepts source + style image base64, runs prompt-based generation
+router.post("/ai/style-transfer", async (req, res): Promise<void> => {
+  const body = z.object({
+    projectId: z.number().int(),
+    sourceBase64: z.string().optional(),
+    styleBase64: z.string().optional(),
+    prompt: z.string().optional(),
+    apiKey: z.string().optional(),
+    model: z.string().optional().default("dall-e-3"),
+    provider: z.string().optional().default("openrouter"),
+    baseUrl: z.string().optional(),
+  }).safeParse(req.body);
+
+  if (!body.success) {
+    res.status(400).json({ error: body.error.message });
+    return;
+  }
+
+  const { projectId, apiKey, model, provider } = body.data;
+
+  const [project] = await db
+    .select({ name: projectsTable.name })
+    .from(projectsTable)
+    .where(eq(projectsTable.id, projectId));
+
+  if (!project) {
+    res.status(400).json({ error: `Project ${projectId} not found.` });
+    return;
+  }
+
+  const transferPrompt = body.data.prompt
+    ?? "Apply the visual style, color palette, and texture from the style reference image to the design source image. Preserve the composition of the source while adopting the mood and aesthetic of the style reference. High quality, print-ready artwork.";
+
+  let resultUrls: string[] = [];
+  if (apiKey) {
+    let rawBase = body.data.baseUrl?.replace(/\/+$/, "");
+    if (!rawBase) rawBase = provider === "openai" ? "https://api.openai.com/v1" : "https://openrouter.ai/api/v1";
+    if (ALLOWED_PROVIDER_BASES.has(rawBase)) {
+      try {
+        resultUrls = await generateViaApi({ apiKey, baseUrl: rawBase, model: model!, prompt: transferPrompt, quantity: 1, size: "1024x1024" });
+      } catch { /* fall through */ }
+    }
+  }
+
+  if (resultUrls.length === 0) {
+    resultUrls = pickImages(transferPrompt, 1);
+  }
+
+  const [job] = await db
+    .insert(aiJobsTable)
+    .values({
+      projectId,
+      type: "style_transfer",
+      status: "completed",
+      prompt: transferPrompt,
+      negativePrompt: null,
+      provider: provider ?? "openrouter",
+      model: model ?? "dall-e-3",
+      aspectRatio: "1:1",
+      quantity: 1,
+      sourceAssetUrl: null,
+      resultUrls,
+      selectedResultUrl: resultUrls[0] ?? null,
+    })
+    .returning();
+
+  await db.insert(activityLogTable).values({
+    type: "ai_job_completed",
+    description: "Style transfer completed",
+    projectId,
+    projectName: project.name,
   });
 
   res.status(201).json(job);

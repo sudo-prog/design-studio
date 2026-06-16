@@ -116,11 +116,18 @@ function StyleTransferPanel({ projectId, onApprove, onJobCreated }: StyleTransfe
     setIsRunning(true);
     setResult(null);
     try {
-      const prompt = `Style transfer: apply the visual style and aesthetic of the reference image to the source design. Preserve the original composition while adopting the color palette, texture, and mood of the style reference.`;
-      const res = await fetch("/api/ai/generate", {
+      const cfg = loadProviderConfig();
+      const res = await fetch("/api/ai/style-transfer", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ projectId, prompt, quantity: 1, style: "abstract", provider: "openrouter" }),
+        body: JSON.stringify({
+          projectId,
+          sourceBase64: designPreview ?? undefined,
+          styleBase64: stylePreview ?? undefined,
+          apiKey: cfg.apiKey,
+          model: cfg.model ?? "dall-e-3",
+          provider: cfg.provider === "local" ? "openrouter" : cfg.provider,
+        }),
       });
       if (!res.ok) throw new Error(await res.text());
       const job = await res.json() as { resultUrls?: string[] };
