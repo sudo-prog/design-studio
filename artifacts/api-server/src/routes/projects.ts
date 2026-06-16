@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 import { db } from "@workspace/db";
 import {
   projectsTable,
@@ -33,6 +33,7 @@ router.get("/projects", async (req, res): Promise<void> => {
   const projects = await db
     .select()
     .from(projectsTable)
+    .where(where.length > 0 ? and(...where) : undefined)
     .orderBy(desc(projectsTable.updatedAt));
   res.json(ListProjectsResponse.parse(projects));
 });

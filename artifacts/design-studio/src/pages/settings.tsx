@@ -6,7 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Check, Cpu, Key, Globe, Zap } from "lucide-react";
+import { Loader2, Check, Cpu, Key, Globe, Zap, Download, CheckCircle2 } from "lucide-react";
+import { usePWAInstall } from "@/hooks/use-pwa-install";
 
 export type AIProvider = "openai" | "openrouter" | "groq" | "ollama";
 
@@ -70,6 +71,7 @@ export function saveLLMConfig(config: LLMConfig): void {
 
 export default function Settings() {
   const { toast } = useToast();
+  const { canInstall, installed, install } = usePWAInstall();
   const [config, setConfig] = useState<LLMConfig>(loadLLMConfig);
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState<"ok" | "fail" | null>(null);
@@ -123,6 +125,32 @@ export default function Settings() {
         <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
         <p className="text-muted-foreground mt-1">Configure your AI provider and studio preferences.</p>
       </div>
+
+      {(canInstall || installed) && (
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              {installed
+                ? <CheckCircle2 className="w-5 h-5 text-green-500" />
+                : <Download className="w-5 h-5 text-primary" />}
+              <CardTitle>{installed ? "App Installed" : "Install App"}</CardTitle>
+            </div>
+            <CardDescription>
+              {installed
+                ? "DESIGN.Studio is installed on your device and runs in standalone mode."
+                : "Install DESIGN.Studio to your home screen for faster access and offline support."}
+            </CardDescription>
+          </CardHeader>
+          {!installed && (
+            <CardContent>
+              <Button onClick={install} className="gap-2">
+                <Download className="w-4 h-4" />
+                Install DESIGN.Studio
+              </Button>
+            </CardContent>
+          )}
+        </Card>
+      )}
 
       <Card>
         <CardHeader>

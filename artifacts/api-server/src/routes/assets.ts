@@ -3,6 +3,7 @@ import { eq, desc } from "drizzle-orm";
 import path from "path";
 import fs from "fs";
 import multer from "multer";
+import sharp from "sharp";
 import { db } from "@workspace/db";
 import { assetsTable, activityLogTable, projectsTable } from "@workspace/db";
 import {
@@ -59,15 +60,41 @@ router.post("/projects/:id/assets", upload.single("file"), async (req, res): Pro
     .where(eq(projectsTable.id, params.data.id));
   const fileUrl = `/uploads/${req.file.filename}`;
   const tags = req.body.tags ? req.body.tags.split(",").map((t: string) => t.trim()) : [];
+
+  let width: number | null = null;
+  let height: number | null = null;
+  let thumbnailUrl: string | null = null;
+  const isImage = req.file.mimetype.startsWith("image/");
+
+  if (isImage) {
+    try {
+      const meta = await sharp(req.file.path).metadata();
+      width = meta.width ?? null;
+      height = meta.height ?? null;
+
+      const thumbName = `thumb_${req.file.filename.replace(/\.[^.]+$/, ".webp")}`;
+      const thumbPath = path.join(uploadsDir, thumbName);
+      await sharp(req.file.path)
+        .resize({ width: 400, height: 400, fit: "inside", withoutEnlargement: true })
+        .webp({ quality: 80 })
+        .toFile(thumbPath);
+      thumbnailUrl = `/uploads/${thumbName}`;
+    } catch {
+    }
+  }
+
   const [asset] = await db
     .insert(assetsTable)
     .values({
       projectId: params.data.id,
       filename: req.file.originalname,
       url: fileUrl,
+      thumbnailUrl,
       type: req.body.type ?? "photo",
       mimeType: req.file.mimetype,
       fileSize: req.file.size,
+      width,
+      height,
       tags,
     })
     .returning();
