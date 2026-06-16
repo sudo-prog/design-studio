@@ -108,27 +108,39 @@ export default function ProjectDetail() {
     setIsSavingBoard(true);
     try {
       const base = getApiBase();
-      await fetch(`${base}/projects/${id}/mood-board`, {
+      const res = await fetch(`${base}/projects/${id}/mood-board`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ items }),
       });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: "Save failed" }));
+        throw new Error((err as { error?: string }).error ?? "Save failed");
+      }
       queryClient.invalidateQueries({ queryKey: getGetProjectQueryKey(id) });
-    } catch {
-      toast({ title: "Failed to save mood board", variant: "destructive" });
+    } catch (err) {
+      toast({ title: "Failed to save mood board", description: err instanceof Error ? err.message : undefined, variant: "destructive" });
     } finally {
       setIsSavingBoard(false);
     }
   }
 
   async function saveGithubConfig() {
-    const base = getApiBase();
-    await fetch(`${base}/projects/${id}/github`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ repo: githubRepo, pat: githubPat }),
-    });
-    toast({ title: "GitHub config saved" });
+    try {
+      const base = getApiBase();
+      const res = await fetch(`${base}/projects/${id}/github`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ repo: githubRepo, pat: githubPat }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: "Save failed" }));
+        throw new Error((err as { error?: string }).error ?? "Save failed");
+      }
+      toast({ title: "GitHub config saved" });
+    } catch (err) {
+      toast({ title: "Failed to save GitHub config", description: err instanceof Error ? err.message : undefined, variant: "destructive" });
+    }
   }
 
   function triggerBackup() {

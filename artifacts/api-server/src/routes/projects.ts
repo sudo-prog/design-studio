@@ -335,7 +335,12 @@ router.post("/projects/:id/restore/:historyId", async (req, res): Promise<void> 
   const [entry] = await db
     .select()
     .from(projectHistoryTable)
-    .where(eq(projectHistoryTable.id, historyId));
+    .where(
+      and(
+        eq(projectHistoryTable.id, historyId),
+        eq(projectHistoryTable.projectId, projectId)
+      )
+    );
   if (!entry) {
     res.status(404).json({ error: "History entry not found" });
     return;

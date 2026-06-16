@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FolderOpen, Grid3X3, List, Plus, Search } from "lucide-react";
+import { FolderOpen, GitBranch, Grid3X3, List, Plus, Search } from "lucide-react";
 
 const STATUS_COLORS: Record<string, string> = {
   draft: "secondary",
@@ -220,7 +220,15 @@ export default function Projects() {
                 </CardHeader>
                 <CardContent className="px-4 pb-4 pt-0">
                   <PaletteSwatches palette={project.colorPalette ?? []} />
-                  <p className="text-xs text-muted-foreground mt-2">{timeAgo(project.updatedAt)}</p>
+                  <div className="flex items-center justify-between mt-2">
+                    <p className="text-xs text-muted-foreground">{timeAgo(project.updatedAt)}</p>
+                    {project.lastBackupAt && (
+                      <span className="flex items-center gap-1 text-[10px] text-emerald-500/70">
+                        <GitBranch className="w-3 h-3" />
+                        {timeAgo(project.lastBackupAt)}
+                      </span>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             </Link>
@@ -248,7 +256,15 @@ export default function Projects() {
                     <PaletteSwatches palette={project.colorPalette ?? []} />
                   </div>
                 </div>
-                <span className="text-xs text-muted-foreground flex-shrink-0 hidden sm:block">{timeAgo(project.updatedAt)}</span>
+                <div className="flex flex-col items-end gap-0.5 flex-shrink-0 hidden sm:flex">
+                  <span className="text-xs text-muted-foreground">{timeAgo(project.updatedAt)}</span>
+                  {project.lastBackupAt && (
+                    <span className="flex items-center gap-1 text-[10px] text-emerald-500/70">
+                      <GitBranch className="w-2.5 h-2.5" />
+                      {timeAgo(project.lastBackupAt)}
+                    </span>
+                  )}
+                </div>
               </div>
             </Link>
           ))}

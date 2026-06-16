@@ -5,7 +5,7 @@ import fs from "fs";
 import multer from "multer";
 import sharp from "sharp";
 import { db } from "@workspace/db";
-import { assetsTable, activityLogTable, projectsTable } from "@workspace/db";
+import { assetsTable, activityLogTable, projectsTable, projectHistoryTable } from "@workspace/db";
 import {
   ListAssetsParams,
   DeleteAssetParams,
@@ -103,6 +103,12 @@ router.post("/projects/:id/assets", upload.single("file"), async (req, res): Pro
     description: `Asset "${req.file.originalname}" uploaded`,
     projectId: params.data.id,
     projectName: project?.name ?? null,
+  });
+  await db.insert(projectHistoryTable).values({
+    projectId: params.data.id,
+    type: "asset_uploaded",
+    description: `Asset uploaded: ${req.file.originalname}`,
+    metadata: JSON.stringify({ assetId: asset.id, filename: req.file.originalname, type: req.body.type ?? "photo" }),
   });
   res.status(201).json(asset);
 });
