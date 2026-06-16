@@ -7,6 +7,8 @@ import {
   CreateTechPackBody,
   ListTechPacksResponse,
 } from "@workspace/api-zod";
+import { z } from "zod";
+import { generateTechPackPdf, type TechPackData, type ColorSpec } from "./pdfGen";
 
 const router: IRouter = Router();
 
@@ -53,6 +55,63 @@ router.post("/tech-packs", async (req, res): Promise<void> => {
     projectName: project?.name ?? null,
   });
   res.status(201).json(pack);
+});
+
+// ── POST /api/tech-pack/generate — returns PDF binary ─────────────────────
+const GenerateTechPackBody = z.object({
+  projectName: z.string().min(1),
+  date: z.string().default(new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })),
+  designer: z.string().optional(),
+  garmentType: z.string().optional(),
+  printMethod: z.string().optional(),
+  placement: z.string().optional(),
+  dimensions: z.string().optional(),
+  colorCount: z.number().optional(),
+  colors: z.array(z.object({
+    name: z.string(),
+    hex: z.string(),
+    pantone: z.string().optional(),
+    cmyk: z.string().optional(),
+  })).default([]),
+  notes: z.string().optional(),
+  designImageBase64: z.string().optional(),
+  mockupImageBase64: z.string().optional(),
+});
+
+router.post("/tech-pack/generate", async (req, res): Promise<void> => {
+  const parsed = GenerateTechPackBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  const data = parsed.data;
+  const techPackData: TechPackData = {
+    projectName: data.projectName,
+    date: data.date,
+    designer: data.designer,
+    garmentType: data.garmentType,
+    printMethod: data.printMethod,
+    placement: data.placement,
+    dimensions: data.dimensions,
+    colorCount: data.colorCount,
+    colors: data.colors.map((c) => ({
+      name: c.name,
+      hex: c.hex,
+      pantone: c.pantone,
+      cmyk: c.cmyk ? (() => {
+        const parts = c.cmyk.split(/[,/\s]+/).map(Number);
+        if (parts.length >= 4) return { c: parts[0], m: parts[1], y: parts[2], k: parts[3] };
+        return undefined;
+      })() : undefined,
+    } as ColorSpec)),
+    notes: data.notes,
+    designImageBase64: data.designImageBase64,
+    mockupImageBase64: data.mockupImageBase64,
+  };
+  const pdfBuf = await generateTechPackPdf(techPackData);
+  res.setHeader("Content-Type", "application/pdf");
+  res.setHeader("Content-Disposition", `attachment; filename="tech-pack-${Date.now()}.pdf"`);
+  res.send(pdfBuf);
 });
 
 export default router;

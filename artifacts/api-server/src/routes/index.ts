@@ -12,6 +12,7 @@ import manufacturingRouter from "./manufacturing";
 import collectionsRouter from "./collections";
 import vectorizeRouter from "./vectorize";
 import aiGenerateRouter from "./aiGenerate";
+import printProcessingRouter from "./printProcessing";
 
 const router: IRouter = Router();
 
@@ -28,5 +29,6 @@ router.use(manufacturingRouter);
 router.use(collectionsRouter);
 router.use(vectorizeRouter);
 router.use(aiGenerateRouter);
+router.use(printProcessingRouter);
 
 export default router;
