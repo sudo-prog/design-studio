@@ -214,6 +214,11 @@ export default function ProjectDetail() {
             {project.category && `${project.category} · `}Updated {timeAgo(project.updatedAt)}
           </p>
         </div>
+        <Button asChild size="sm" className="gap-1.5">
+          <Link href={`/projects/${id}/editor`}>
+            <Layers className="w-3.5 h-3.5" /> Open Editor
+          </Link>
+        </Button>
         <Button variant="outline" size="sm" onClick={downloadDesignJson} className="gap-1.5 hidden sm:flex">
           <Download className="w-3.5 h-3.5" /> design.json
         </Button>

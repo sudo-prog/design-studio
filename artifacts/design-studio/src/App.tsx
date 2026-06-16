@@ -9,6 +9,7 @@ import Dashboard from "@/pages/dashboard";
 import Projects from "@/pages/projects";
 import NewProject from "@/pages/project-new";
 import ProjectDetail from "@/pages/project-detail";
+import Editor from "@/pages/editor";
 import AiHub from "@/pages/ai";
 import Colors from "@/pages/colors";
 import Mockups from "@/pages/mockups";
@@ -29,23 +30,32 @@ const queryClient = new QueryClient({
 
 function Router() {
   return (
-    <AppLayout>
-      <Switch>
-        <Route path="/" component={Dashboard} />
-        <Route path="/projects" component={Projects} />
-        <Route path="/projects/new" component={NewProject} />
-        <Route path="/projects/:id" component={ProjectDetail} />
-        <Route path="/ai" component={AiHub} />
-        <Route path="/colors" component={Colors} />
-        <Route path="/mockups" component={Mockups} />
-        <Route path="/print" component={Print} />
-        <Route path="/tech-packs" component={TechPacks} />
-        <Route path="/manufacturing" component={Manufacturing} />
-        <Route path="/collections" component={Collections} />
-        <Route path="/settings" component={Settings} />
-        <Route component={NotFound} />
-      </Switch>
-    </AppLayout>
+    <Switch>
+      {/* Full-screen editor — rendered outside AppLayout */}
+      <Route path="/editor" component={Editor} />
+      <Route path="/projects/:id/editor" component={Editor} />
+
+      {/* App shell with sidebar */}
+      <Route>
+        <AppLayout>
+          <Switch>
+            <Route path="/" component={Dashboard} />
+            <Route path="/projects" component={Projects} />
+            <Route path="/projects/new" component={NewProject} />
+            <Route path="/projects/:id" component={ProjectDetail} />
+            <Route path="/ai" component={AiHub} />
+            <Route path="/colors" component={Colors} />
+            <Route path="/mockups" component={Mockups} />
+            <Route path="/print" component={Print} />
+            <Route path="/tech-packs" component={TechPacks} />
+            <Route path="/manufacturing" component={Manufacturing} />
+            <Route path="/collections" component={Collections} />
+            <Route path="/settings" component={Settings} />
+            <Route component={NotFound} />
+          </Switch>
+        </AppLayout>
+      </Route>
+    </Switch>
   );
 }
 

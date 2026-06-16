@@ -10,6 +10,7 @@ import printJobsRouter from "./printJobs";
 import techPacksRouter from "./techPacks";
 import manufacturingRouter from "./manufacturing";
 import collectionsRouter from "./collections";
+import vectorizeRouter from "./vectorize";
 
 const router: IRouter = Router();
 
@@ -24,5 +25,6 @@ router.use(printJobsRouter);
 router.use(techPacksRouter);
 router.use(manufacturingRouter);
 router.use(collectionsRouter);
+router.use(vectorizeRouter);
 
 export default router;
