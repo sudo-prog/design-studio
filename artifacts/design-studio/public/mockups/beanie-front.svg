@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 360" width="400" height="360">
+  <defs>
+    <linearGradient id="fabric" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#d8d8d8"/>
+      <stop offset="100%" style="stop-color:#c0c0c0"/>
+    </linearGradient>
+    <filter id="shadow"><feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.15"/></filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <!-- Beanie dome -->
+    <path d="M 90 220 Q 85 100 200 80 Q 315 100 310 220 Z" fill="url(#fabric)" stroke="#bbb" stroke-width="1.5"/>
+    <!-- Pom pom -->
+    <circle cx="200" cy="85" r="22" fill="#d0d0d0" stroke="#bbb" stroke-width="1.5"/>
+    <circle cx="200" cy="85" r="14" fill="#c0c0c0" stroke="#bbb" stroke-width="1"/>
+    <!-- Ribbed cuff -->
+    <rect x="90" y="210" width="220" height="50" rx="4" fill="#c8c8c8" stroke="#bbb" stroke-width="1.5"/>
+    <!-- Cuff ribbing lines -->
+    {[100,115,130,145,160,175,190,205,220,235,250,265,280,295].map(x =>
+      `<line x1="${x}" y1="212" x2="${x}" y2="258" stroke="#b8b8b8" stroke-width="1.5"/>`
+    ).join("")}
+  </g>
+  <rect x="150" y="125" width="100" height="85" rx="4" fill="none" stroke="#999" stroke-width="1" stroke-dasharray="5 3" opacity="0.5"/>
+  <text x="200" y="173" text-anchor="middle" font-family="sans-serif" font-size="9" fill="#aaa">Embroidery</text>
+</svg>

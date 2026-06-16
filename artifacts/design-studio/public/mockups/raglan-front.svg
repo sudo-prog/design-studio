@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 420" width="400" height="420">
+  <defs>
+    <linearGradient id="body" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f5f5f5"/>
+      <stop offset="100%" style="stop-color:#e0e0e0"/>
+    </linearGradient>
+    <linearGradient id="sleeve" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#c0c0d8"/>
+      <stop offset="100%" style="stop-color:#a0a0c0"/>
+    </linearGradient>
+    <filter id="shadow"><feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.15"/></filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <!-- Left sleeve (contrast color) -->
+    <path d="M 55 60 L 10 140 L 65 158 L 110 80" fill="url(#sleeve)" stroke="#9090b0" stroke-width="1.5"/>
+    <!-- Right sleeve (contrast color) -->
+    <path d="M 345 60 L 390 140 L 335 158 L 290 80" fill="url(#sleeve)" stroke="#9090b0" stroke-width="1.5"/>
+    <!-- Body (white) -->
+    <path d="M 110 80 Q 145 35 162 32 Q 178 60 200 62 Q 222 60 238 32 Q 255 35 290 80 L 335 158 L 335 410 L 65 410 L 65 158 Z" fill="url(#body)" stroke="#ddd" stroke-width="1.5"/>
+    <!-- Collar -->
+    <path d="M 162 32 Q 178 56 200 58 Q 222 56 238 32" fill="none" stroke="#ccc" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <rect x="130" y="120" width="140" height="160" rx="4" fill="none" stroke="#999" stroke-width="1" stroke-dasharray="6 4" opacity="0.5"/>
+  <text x="200" y="208" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#aaa">Print area</text>
+</svg>

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 380" width="400" height="380">
+  <defs>
+    <linearGradient id="mug" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f0f0f0"/>
+      <stop offset="100%" style="stop-color:#dcdcdc"/>
+    </linearGradient>
+    <filter id="shadow"><feDropShadow dx="2" dy="4" stdDeviation="5" flood-opacity="0.18"/></filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <!-- Mug body -->
+    <path d="M 60 80 Q 60 60 200 58 Q 340 60 340 80 L 330 340 Q 330 360 200 362 Q 70 360 70 340 Z" fill="url(#mug)" stroke="#ccc" stroke-width="1.5"/>
+    <!-- Mug handle -->
+    <path d="M 330 140 Q 390 140 390 200 Q 390 270 330 270" fill="none" stroke="#ccc" stroke-width="14" stroke-linecap="round"/>
+    <path d="M 330 140 Q 375 140 375 200 Q 375 260 330 260" fill="none" stroke="#e8e8e8" stroke-width="6" stroke-linecap="round"/>
+    <!-- Rim highlight -->
+    <path d="M 60 80 Q 60 60 200 58 Q 340 60 340 80" fill="none" stroke="#d4d4d4" stroke-width="4" stroke-linecap="round"/>
+    <!-- Inner rim -->
+    <ellipse cx="200" cy="70" rx="130" ry="22" fill="#e4e4e4" stroke="#ccc" stroke-width="1"/>
+  </g>
+  <rect x="88" y="105" width="234" height="208" rx="4" fill="none" stroke="#999" stroke-width="1" stroke-dasharray="6 4" opacity="0.5"/>
+  <text x="205" y="213" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#aaa">Wrap print area</text>
+</svg>

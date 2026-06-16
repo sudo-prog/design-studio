@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 450" width="400" height="450">
+  <defs>
+    <linearGradient id="fabric" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e2e2e2"/>
+      <stop offset="100%" style="stop-color:#cacaca"/>
+    </linearGradient>
+    <filter id="shadow"><feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.15"/></filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <path d="M 55 75 L 5 200 L 65 218 L 100 108" fill="url(#fabric)" stroke="#bbb" stroke-width="1.5"/>
+    <path d="M 345 75 L 395 200 L 335 218 L 300 108" fill="url(#fabric)" stroke="#bbb" stroke-width="1.5"/>
+    <path d="M 100 65 Q 145 22 172 24 L 190 75 L 200 72 L 210 75 L 228 24 Q 255 22 300 65 L 300 108 L 335 218 L 335 430 L 65 430 L 65 218 L 100 108 Z" fill="url(#fabric)" stroke="#bbb" stroke-width="1.5"/>
+    <!-- V-collar with hood peaks -->
+    <path d="M 172 24 Q 160 10 155 2 Q 170 12 190 14 L 200 18 L 210 14 Q 230 12 245 2 Q 240 10 228 24" fill="url(#fabric)" stroke="#bbb" stroke-width="1.5"/>
+    <!-- Zip -->
+    <line x1="200" y1="18" x2="200" y2="430" stroke="#999" stroke-width="3" stroke-linecap="round"/>
+    <!-- Zip teeth -->
+    {[80,110,140,170,200,230,260,290,320,350,380,410].map(y => 
+      `<rect x="195" y="${y}" width="10" height="6" rx="1" fill="#888"/>`
+    ).join("")}
+  </g>
+  <rect x="125" y="120" width="65" height="150" rx="4" fill="none" stroke="#999" stroke-width="1" stroke-dasharray="6 4" opacity="0.5"/>
+  <text x="157" y="200" text-anchor="middle" font-family="sans-serif" font-size="9" fill="#aaa">Left chest</text>
+</svg>

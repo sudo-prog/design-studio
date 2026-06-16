@@ -132,7 +132,15 @@ router.post("/ai/generate", async (req, res): Promise<void> => {
       return;
     }
     const aspect = body.data.aspectRatio ?? "1:1";
-    const size = aspect === "16:9" ? "1792x1024" : aspect === "9:16" ? "1024x1792" : "1024x1024";
+    // Map all 5 frontend aspect ratios to OpenAI-compatible size strings
+    const SIZE_MAP: Record<string, string> = {
+      "1:1":  "1024x1024",
+      "16:9": "1792x1024",
+      "9:16": "1024x1792",
+      "4:5":  "1024x1280",
+      "3:2":  "1536x1024",
+    };
+    const size = SIZE_MAP[aspect] ?? "1024x1024";
     try {
       resultUrls = await generateViaApi({ apiKey, baseUrl: rawBase, model: model!, prompt, quantity, size });
     } catch (e) {
