@@ -1,19 +1,238 @@
-import { useListAiJobs } from "@workspace/api-client-react";
+import { useState } from "react";
+import { useListProjects, useListAiJobs, useApproveAiJob, useRejectAiJob } from "@workspace/api-client-react";
+import type { AiJob } from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Sparkles,
+  Clock,
+  CheckCircle,
+  XCircle,
+  Image as ImageIcon,
+  Eraser,
+  MessageSquare,
+  Zap,
+  Settings2,
+} from "lucide-react";
+import { AiModuleRunner } from "@/components/ai/ai-module-runner";
+import { loadProviderConfig, saveProviderConfig } from "@/lib/ai-adapters";
+import { useToast } from "@/hooks/use-toast";
+import { formatDistanceToNow } from "date-fns";
+
+const STATUS_ICON: Record<string, React.ReactNode> = {
+  completed: <CheckCircle className="w-3 h-3 text-green-500" />,
+  approved: <CheckCircle className="w-3 h-3 text-primary" />,
+  rejected: <XCircle className="w-3 h-3 text-destructive" />,
+  failed: <XCircle className="w-3 h-3 text-destructive" />,
+  pending: <Clock className="w-3 h-3 text-yellow-500 animate-pulse" />,
+  processing: <Clock className="w-3 h-3 text-blue-500 animate-spin" />,
+};
+
+const TYPE_LABELS: Record<string, string> = {
+  image_generation: "Image Gen",
+  background_removal: "BG Remove",
+  style_transfer: "Style Transfer",
+  upscale: "Upscale",
+  vectorize: "Vectorize",
+};
+
+function JobCard({ job, onApprove, onReject }: { job: AiJob; onApprove: () => void; onReject: () => void }) {
+  return (
+    <div className="border border-border rounded-lg p-3 space-y-2">
+      <div className="flex items-center gap-2">
+        {STATUS_ICON[job.status] ?? <Clock className="w-3 h-3" />}
+        <Badge variant="outline" className="text-[10px]">{TYPE_LABELS[job.type] ?? job.type}</Badge>
+        <span className="text-[10px] text-muted-foreground ml-auto">
+          {formatDistanceToNow(new Date(job.createdAt), { addSuffix: true })}
+        </span>
+      </div>
+      <p className="text-xs line-clamp-2 text-muted-foreground">{job.prompt}</p>
+      {job.resultUrls && job.resultUrls.length > 0 && (
+        <div className="flex gap-1.5 flex-wrap">
+          {job.resultUrls.slice(0, 4).map((url, i) => (
+            <img key={i} src={url} alt="" className="w-14 h-14 object-cover rounded border border-border" />
+          ))}
+        </div>
+      )}
+      {job.status === "completed" && (
+        <div className="flex gap-1.5">
+          <Button size="sm" className="h-6 text-[10px] gap-1" onClick={onApprove}>
+            <CheckCircle className="w-3 h-3" />Approve
+          </Button>
+          <Button size="sm" variant="outline" className="h-6 text-[10px] gap-1" onClick={onReject}>
+            <XCircle className="w-3 h-3" />Reject
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function AiHub() {
-  const { data: jobs, isLoading } = useListAiJobs();
+  const { toast } = useToast();
+  const [projectId, setProjectId] = useState<number>(0);
+  const { data: projects = [] } = useListProjects();
+  const { data: jobs = [], refetch } = useListAiJobs(projectId && projectId > 0 ? { projectId } : undefined);
+  const approveJob = useApproveAiJob();
+  const rejectJob = useRejectAiJob();
+
+  const cfg = loadProviderConfig();
+
+  function handleApprove(imageUrl: string) {
+    toast({ title: "Design approved!", description: "Saved to project assets." });
+  }
+
+  async function handleApproveJob(id: number) {
+    await approveJob.mutateAsync({ id });
+    refetch();
+    toast({ title: "Job approved" });
+  }
+
+  async function handleRejectJob(id: number) {
+    await rejectJob.mutateAsync({ id });
+    refetch();
+  }
+
+  const completedJobs = jobs.filter((j) => j.status === "completed" || j.status === "approved" || j.status === "rejected");
+  const activeJobs = jobs.filter((j) => j.status === "pending" || j.status === "processing");
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">AI Concept Generation</h1>
-        <p className="text-muted-foreground">Generate, upscale, and vectorize artwork.</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">AI Concept Generation</h1>
+          <p className="text-muted-foreground">Generate, remove backgrounds, and refine designs with AI assistance.</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Badge
+            variant="outline"
+            className="text-[10px] gap-1 cursor-pointer"
+            onClick={() => {
+              const key = prompt("Enter OpenRouter API key (optional — enables live AI):");
+              if (key !== null) {
+                saveProviderConfig({ ...cfg, provider: "openrouter", apiKey: key || undefined });
+                toast({ title: "Provider config saved" });
+              }
+            }}
+          >
+            <Zap className="w-3 h-3" />
+            {cfg.provider === "local" ? "Built-in AI" : cfg.provider}
+          </Badge>
+          <Select value={String(projectId)} onValueChange={(v) => setProjectId(Number(v))}>
+            <SelectTrigger className="h-8 text-xs w-44">
+              <SelectValue placeholder="Filter by project…" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="0">All projects</SelectItem>
+              {projects.map((p) => (
+                <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
-      <div className="p-12 text-center border border-dashed rounded-lg bg-card/50">
-        <p className="text-muted-foreground">AI tool suite coming soon...</p>
+      {/* Stats */}
+      <div className="grid grid-cols-4 gap-3">
+        {[
+          { label: "Total Jobs", value: jobs.length, icon: <Sparkles className="w-4 h-4" /> },
+          { label: "Completed", value: completedJobs.length, icon: <CheckCircle className="w-4 h-4 text-green-500" /> },
+          { label: "Approved", value: jobs.filter(j => j.status === "approved").length, icon: <CheckCircle className="w-4 h-4 text-primary" /> },
+          { label: "Active", value: activeJobs.length, icon: <Clock className="w-4 h-4 text-yellow-500" /> },
+        ].map((stat) => (
+          <Card key={stat.label}>
+            <CardContent className="pt-4 pb-3">
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-muted-foreground">{stat.label}</p>
+                {stat.icon}
+              </div>
+              <p className="text-2xl font-bold mt-1">{stat.value}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-[340px_1fr] gap-6">
+        {/* ── AI Module runner ─────────────────────────────────────────────── */}
+        <Card>
+          <CardHeader className="pb-2 pt-4">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <Sparkles className="w-4 h-4" />
+              AI Tools
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pb-4">
+            <AiModuleRunner
+              projectId={projectId ?? (projects[0]?.id ?? 1)}
+              onApprove={handleApprove}
+            />
+          </CardContent>
+        </Card>
+
+        {/* ── Job history ──────────────────────────────────────────────────── */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-semibold">Generation History</h2>
+            <Button size="sm" variant="ghost" onClick={() => refetch()} className="h-7 text-xs">
+              Refresh
+            </Button>
+          </div>
+
+          {jobs.length === 0 ? (
+            <div className="h-64 border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center gap-3 text-center">
+              <ImageIcon className="w-10 h-10 text-muted-foreground/40" />
+              <div>
+                <p className="font-medium">No generations yet</p>
+                <p className="text-sm text-muted-foreground">Use the AI Tools panel to generate your first concept.</p>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3">
+              {jobs.map((job) => (
+                <JobCard
+                  key={job.id}
+                  job={job}
+                  onApprove={() => handleApproveJob(job.id)}
+                  onReject={() => handleRejectJob(job.id)}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Style Transfer stub */}
+          <Separator />
+          <div className="rounded-lg border border-border p-4 bg-muted/30">
+            <div className="flex items-center gap-2 mb-2">
+              <Badge variant="outline" className="text-[10px]">Beta</Badge>
+              <p className="text-sm font-medium">Style Transfer</p>
+            </div>
+            <p className="text-xs text-muted-foreground mb-3">
+              Apply the style of a reference image to your design. Upload both images to get started.
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="h-20 border-2 border-dashed border-border rounded flex items-center justify-center text-xs text-muted-foreground">
+                Your design
+              </div>
+              <div className="h-20 border-2 border-dashed border-border rounded flex items-center justify-center text-xs text-muted-foreground">
+                Style reference
+              </div>
+            </div>
+            <Button className="w-full mt-3 h-8 text-xs gap-1.5" variant="outline" disabled>
+              <Sparkles className="w-3.5 h-3.5" />
+              Transfer Style (coming soon)
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );
