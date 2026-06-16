@@ -3,6 +3,57 @@ import sharp from "sharp";
 import { z } from "zod";
 import { strToU8, zip as fflateZip } from "fflate";
 
+// ── Pixel-trace SVG (reused from vectorize logic) ─────────────────────────────
+function pixelTraceToSVG(buffer: Buffer, width: number, height: number, simplification = 0): string {
+  const pixels = new Uint8Array(buffer);
+  const minSpan = Math.max(0, Math.round(simplification));
+  const rowSpans: Array<Array<[number, number]>> = [];
+  for (let y = 0; y < height; y++) {
+    const spans: Array<[number, number]> = [];
+    let startX = -1;
+    for (let x = 0; x <= width; x++) {
+      const isOn = x < width && pixels[y * width + x] === 0;
+      if (isOn && startX === -1) startX = x;
+      else if (!isOn && startX !== -1) {
+        if (x - startX > minSpan) spans.push([startX, x]);
+        startX = -1;
+      }
+    }
+    rowSpans.push(spans);
+  }
+  type ActiveRect = { x: number; y: number; w: number; bottom: number };
+  const rects: string[] = [];
+  const active = new Map<string, ActiveRect>();
+  function flushRect(r: ActiveRect) {
+    rects.push(`<rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.bottom - r.y}"/>`);
+  }
+  for (let y = 0; y < height; y++) {
+    const currentKeys = new Set<string>();
+    for (const [sx, ex] of rowSpans[y]) {
+      const key = `${sx},${ex}`;
+      currentKeys.add(key);
+      const existing = active.get(key);
+      if (existing) { existing.bottom = y + 1; }
+      else { active.set(key, { x: sx, y, w: ex - sx, bottom: y + 1 }); }
+    }
+    for (const [key, rect] of active) {
+      if (!currentKeys.has(key)) { flushRect(rect); active.delete(key); }
+    }
+  }
+  for (const rect of active.values()) flushRect(rect);
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><g fill="#000000">${rects.join("")}</g></svg>`;
+}
+
+// Build SVG for a grayscale channel PNG buffer
+async function channelPngToSvg(pngBuf: Buffer): Promise<string> {
+  const { data, info } = await sharp(pngBuf)
+    .greyscale()
+    .threshold(128)
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  return pixelTraceToSVG(data, info.width, info.height, 0);
+}
+
 const router: IRouter = Router();
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -165,11 +216,15 @@ router.post("/print/separate", async (req, res): Promise<void> => {
     centers.map(async (color, idx) => {
       const pngBuf = await buildChannelPng(rawPixels, width, height, color);
       const b64 = pngBuf.toString("base64");
+      // Generate SVG channel split for print-ready vector export
+      const svg = await channelPngToSvg(pngBuf);
+      const svgB64 = Buffer.from(svg).toString("base64");
       return {
         index: idx,
         name: `Channel ${idx + 1}`,
         color: rgbToHex(color),
         imageBase64: `data:image/png;base64,${b64}`,
+        svgData: `data:image/svg+xml;base64,${svgB64}`,
         width,
         height,
         dpi,

@@ -58,6 +58,9 @@ router.post("/tech-packs", async (req, res): Promise<void> => {
 });
 
 // ── POST /api/tech-pack/generate — returns PDF binary ─────────────────────
+const PAGE_IDS = ["cover", "colors", "specs", "mockup", "notes"] as const;
+type PageId = typeof PAGE_IDS[number];
+
 const GenerateTechPackBody = z.object({
   projectName: z.string().min(1),
   date: z.string().default(new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })),
@@ -76,6 +79,7 @@ const GenerateTechPackBody = z.object({
   notes: z.string().optional(),
   designImageBase64: z.string().optional(),
   mockupImageBase64: z.string().optional(),
+  pageOrder: z.array(z.enum(PAGE_IDS)).optional(),
 });
 
 router.post("/tech-pack/generate", async (req, res): Promise<void> => {
@@ -108,7 +112,7 @@ router.post("/tech-pack/generate", async (req, res): Promise<void> => {
     designImageBase64: data.designImageBase64,
     mockupImageBase64: data.mockupImageBase64,
   };
-  const pdfBuf = await generateTechPackPdf(techPackData);
+  const pdfBuf = await generateTechPackPdf(techPackData, data.pageOrder as PageId[] | undefined);
   res.setHeader("Content-Type", "application/pdf");
   res.setHeader("Content-Disposition", `attachment; filename="tech-pack-${Date.now()}.pdf"`);
   res.send(pdfBuf);

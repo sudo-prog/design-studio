@@ -51,6 +51,8 @@ export default function Manufacturing() {
   const [retailPrice, setRetailPrice] = useState(35);
   const [mfrSearch, setMfrSearch] = useState("");
   const [mfrTypeFilter, setMfrTypeFilter] = useState("all");
+  const [moqMax, setMoqMax] = useState(500);
+  const [turnaroundMax, setTurnaroundMax] = useState(30);
   const [rfqForm, setRfqForm] = useState({ company: "", email: "", garment: "", qty: 100, method: "Screen Print", colors: 4, dimensions: "", delivery: "", notes: "" });
   const [rfqGenerating, setRfqGenerating] = useState(false);
   const [orderProjectId, setOrderProjectId] = useState<number | null>(null);
@@ -67,10 +69,20 @@ export default function Manufacturing() {
   const margin = retailPrice > 0 ? ((retailPrice - perUnit) / retailPrice) * 100 : 0;
   const profit = retailPrice - perUnit;
 
+  // Parse max turnaround days from strings like "3-5 days", "14-21 days"
+  function parseTurnaroundMax(str: string | null): number {
+    if (!str) return 999;
+    const nums = str.match(/\d+/g);
+    if (!nums) return 999;
+    return Math.max(...nums.map(Number));
+  }
+
   const filteredMfrs = manufacturers.filter((m) => {
     const matchSearch = !mfrSearch || m.name.toLowerCase().includes(mfrSearch.toLowerCase());
     const matchType = mfrTypeFilter === "all" || m.type === mfrTypeFilter;
-    return matchSearch && matchType;
+    const matchMoq = (m.moq ?? 0) <= moqMax;
+    const matchTurnaround = parseTurnaroundMax(m.turnaround ?? null) <= turnaroundMax;
+    return matchSearch && matchType && matchMoq && matchTurnaround;
   });
 
   async function placeOrder() {
@@ -349,7 +361,40 @@ export default function Manufacturing() {
                 <SelectItem value="mixed">Mixed</SelectItem>
               </SelectContent>
             </Select>
+            <Select value={String(moqMax)} onValueChange={(v) => setMoqMax(Number(v))}>
+              <SelectTrigger className="w-40">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="500">Any MOQ</SelectItem>
+                <SelectItem value="1">MOQ = 1 (POD)</SelectItem>
+                <SelectItem value="12">MOQ ≤ 12</SelectItem>
+                <SelectItem value="48">MOQ ≤ 48</SelectItem>
+                <SelectItem value="100">MOQ ≤ 100</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={String(turnaroundMax)} onValueChange={(v) => setTurnaroundMax(Number(v))}>
+              <SelectTrigger className="w-44">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="30">Any turnaround</SelectItem>
+                <SelectItem value="5">≤ 5 days</SelectItem>
+                <SelectItem value="7">≤ 7 days</SelectItem>
+                <SelectItem value="14">≤ 14 days</SelectItem>
+                <SelectItem value="21">≤ 21 days</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
+          {(moqMax < 500 || turnaroundMax < 30) && (
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Filter className="w-3 h-3" />
+              Showing {filteredMfrs.length} of {manufacturers.length} manufacturers
+              {moqMax < 500 && <Badge variant="secondary" className="text-xs">MOQ ≤ {moqMax}</Badge>}
+              {turnaroundMax < 30 && <Badge variant="secondary" className="text-xs">≤ {turnaroundMax} days</Badge>}
+              <button onClick={() => { setMoqMax(500); setTurnaroundMax(30); setMfrTypeFilter("all"); setMfrSearch(""); }} className="text-primary hover:underline ml-1">Clear all</button>
+            </div>
+          )}
 
           {filteredMfrs.length === 0 ? (
             <div className="p-12 text-center border border-dashed rounded-lg">

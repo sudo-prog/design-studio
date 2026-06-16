@@ -12,6 +12,7 @@ import {
 } from "@workspace/api-zod";
 import { z } from "zod";
 import { generateRfqPdf } from "./pdfGen";
+import { getProviderStatuses, getPrintfulPricing, getPrintifyPricing } from "../lib/printProviders";
 
 // ── Seed curated manufacturers if table is empty ───────────────────────────
 const SEED_MANUFACTURERS = [
@@ -153,6 +154,32 @@ router.post("/manufacturing/rfq", async (req, res): Promise<void> => {
   res.setHeader("Content-Type", "application/pdf");
   res.setHeader("Content-Disposition", `attachment; filename="rfq-${Date.now()}.pdf"`);
   res.send(pdfBuf);
+});
+
+// ── GET /api/manufacturing/providers ─ provider status + auth ──────────────
+router.get("/manufacturing/providers", (_req, res): void => {
+  res.json(getProviderStatuses());
+});
+
+// ── GET /api/manufacturing/providers/pricing ─ live or heuristic pricing ───
+const ProviderPricingQuery = z.object({
+  provider: z.enum(["printful", "printify"]).default("printful"),
+  printMethod: z.string().default("screen_print"),
+  quantity: z.coerce.number().int().min(1).max(10000).default(100),
+  productId: z.coerce.number().int().positive().optional(),
+});
+
+router.get("/manufacturing/providers/pricing", async (req, res): Promise<void> => {
+  const q = ProviderPricingQuery.safeParse(req.query);
+  if (!q.success) { res.status(400).json({ error: q.error.message }); return; }
+  const { provider, printMethod, quantity, productId } = q.data;
+  if (provider === "printful") {
+    const result = await getPrintfulPricing(productId ?? null, printMethod, quantity);
+    res.json(result);
+  } else {
+    const result = await getPrintifyPricing(printMethod, quantity);
+    res.json(result);
+  }
 });
 
 export default router;

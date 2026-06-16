@@ -16,6 +16,7 @@ type Channel = {
   name: string;
   color: string;
   imageBase64: string;
+  svgData?: string;
   width: number;
   height: number;
   dpi: number;
@@ -132,9 +133,16 @@ export default function PrintSetup() {
   const [zipping, setZipping] = useState(false);
 
   async function downloadZip() {
-    const items = films.length > 0
+    // Include both PNG halftone films and SVG channel splits
+    const pngItems = films.length > 0
       ? films.map((f, i) => ({ filename: `channel_${i + 1}_${f.channelName.toLowerCase().replace(/\s+/g, "_")}_${f.lpi}lpi_${f.angle}deg.png`, dataUrl: f.imageBase64 }))
       : channels.map((c) => ({ filename: `channel_${c.index + 1}_${c.name.toLowerCase().replace(/\s+/g, "_")}.png`, dataUrl: c.imageBase64 }));
+
+    const svgItems = channels
+      .filter((c) => c.svgData)
+      .map((c) => ({ filename: `channel_${c.index + 1}_${c.name.toLowerCase().replace(/\s+/g, "_")}_vector.svg`, dataUrl: c.svgData! }));
+
+    const items = [...pngItems, ...svgItems];
 
     const manifest = [
       "DESIGN.Studio Print Export",

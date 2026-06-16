@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useListTechPacks, useCreateTechPack, useListProjects } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,12 +8,57 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Plus, FileText, Download, Loader2, Trash2, X, ChevronDown, ChevronUp } from "lucide-react";
+import { Plus, FileText, Download, Loader2, Trash2, X, GripVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getApiUrl } from "@/lib/api-url";
 import { format } from "date-fns";
 
 type ColorSpec = { name: string; hex: string; pantone: string; cmyk: string };
+
+type PageId = "cover" | "colors" | "specs" | "mockup" | "notes";
+const PAGE_LABELS: Record<PageId, string> = {
+  cover: "Cover / Design Image",
+  colors: "Color Specifications",
+  specs: "Print Specifications",
+  mockup: "Garment Mockup",
+  notes: "Production Notes",
+};
+const DEFAULT_PAGE_ORDER: PageId[] = ["cover", "colors", "specs", "mockup", "notes"];
+
+function PageOrderEditor({ order, onChange }: { order: PageId[]; onChange: (o: PageId[]) => void }) {
+  const dragIdx = useRef<number | null>(null);
+
+  function onDragStart(i: number) { dragIdx.current = i; }
+  function onDragOver(e: React.DragEvent, i: number) {
+    e.preventDefault();
+    if (dragIdx.current === null || dragIdx.current === i) return;
+    const newOrder = [...order];
+    const [moved] = newOrder.splice(dragIdx.current, 1);
+    newOrder.splice(i, 0, moved);
+    dragIdx.current = i;
+    onChange(newOrder);
+  }
+  function onDragEnd() { dragIdx.current = null; }
+
+  return (
+    <div className="space-y-1.5">
+      {order.map((pageId, i) => (
+        <div
+          key={pageId}
+          draggable
+          onDragStart={() => onDragStart(i)}
+          onDragOver={(e) => onDragOver(e, i)}
+          onDragEnd={onDragEnd}
+          className="flex items-center gap-2 px-3 py-2 rounded-md border bg-card cursor-grab active:cursor-grabbing hover:border-primary/50 transition-colors select-none"
+        >
+          <GripVertical className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+          <span className="text-xs font-medium">{i + 1}.</span>
+          <span className="text-sm">{PAGE_LABELS[pageId]}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 const GARMENT_TYPES = ["T-Shirt", "Hoodie", "Sweatshirt", "Tank Top", "Polo", "Long Sleeve", "Jacket", "Cap", "Tote Bag", "Other"];
 const PRINT_METHODS = ["Screen Print", "DTG (Direct to Garment)", "Embroidery", "Sublimation", "Heat Transfer", "Discharge Print"];
@@ -36,6 +81,7 @@ export default function TechPacks() {
   const [showForm, setShowForm] = useState(false);
   const [generatingPdf, setGeneratingPdf] = useState(false);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [pageOrder, setPageOrder] = useState<PageId[]>([...DEFAULT_PAGE_ORDER]);
 
   // Form state
   const [title, setTitle] = useState("");
@@ -79,6 +125,7 @@ export default function TechPacks() {
           colorCount: colors.length,
           colors,
           notes,
+          pageOrder,
         }),
       });
       if (!res.ok) throw new Error(await res.text());
@@ -248,6 +295,24 @@ export default function TechPacks() {
                 onChange={(e) => setNotes(e.target.value)}
                 rows={4}
               />
+            </div>
+
+            <Separator />
+
+            {/* Page reorder */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <Label className="text-base font-semibold">PDF Page Order</Label>
+                <button
+                  type="button"
+                  className="text-xs text-primary hover:underline"
+                  onClick={() => setPageOrder([...DEFAULT_PAGE_ORDER])}
+                >
+                  Reset default
+                </button>
+              </div>
+              <p className="text-xs text-muted-foreground">Drag pages to reorder them in the exported PDF.</p>
+              <PageOrderEditor order={pageOrder} onChange={setPageOrder} />
             </div>
 
             {/* Generate + PDF preview */}
