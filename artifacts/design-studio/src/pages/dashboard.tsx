@@ -1,8 +1,9 @@
 import { useGetDashboardSummary, useGetRecentActivity } from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Activity, Folder, Image as ImageIcon, Printer, CheckCircle } from "lucide-react";
+import { Activity, Folder, Image as ImageIcon, Printer, CheckCircle, Sparkles } from "lucide-react";
 import { Link } from "wouter";
+import { AIStyleEngineWidget, MultiAiImageStudioWidget, AiGeneratorWidget } from "@/components/widgets";
 
 export default function Dashboard() {
   const { data: summary, isLoading: loadingSummary } = useGetDashboardSummary();
@@ -15,33 +16,49 @@ export default function Dashboard() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <StatCard 
-          title="Active Projects" 
-          value={summary?.activeProjects} 
-          loading={loadingSummary} 
-          icon={Folder} 
+        <StatCard
+          title="Active Projects"
+          value={summary?.activeProjects}
+          loading={loadingSummary}
+          icon={Folder}
           trend={`${summary?.totalProjects} total`}
         />
-        <StatCard 
-          title="Ready to Print" 
-          value={summary?.readyToPrint} 
-          loading={loadingSummary} 
-          icon={Printer} 
+        <StatCard
+          title="Ready to Print"
+          value={summary?.readyToPrint}
+          loading={loadingSummary}
+          icon={Printer}
           className="border-primary/50 bg-primary/5"
         />
-        <StatCard 
-          title="Pending AI Jobs" 
-          value={summary?.pendingAiJobs} 
-          loading={loadingSummary} 
-          icon={Activity} 
+        <StatCard
+          title="Pending AI Jobs"
+          value={summary?.pendingAiJobs}
+          loading={loadingSummary}
+          icon={Activity}
         />
-        <StatCard 
-          title="Total Assets" 
-          value={summary?.totalAssets} 
-          loading={loadingSummary} 
-          icon={ImageIcon} 
+        <StatCard
+          title="Total Assets"
+          value={summary?.totalAssets}
+          loading={loadingSummary}
+          icon={ImageIcon}
         />
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-primary" />
+            AI Studio Widgets
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-6 lg:grid-cols-3">
+            <AIStyleEngineWidget />
+            <MultiAiImageStudioWidget />
+            <AiGeneratorWidget />
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid gap-8 lg:grid-cols-3">
         <Card className="col-span-2">
