@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, Check, Cpu, Key, Globe, Zap, Download, CheckCircle2 } from "lucide-react";
 import { usePWAInstall } from "@/hooks/use-pwa-install";
 
-export type AIProvider = "openai" | "openrouter" | "groq" | "ollama";
+export type AIProvider = "gemini-web2api" | "openai" | "openrouter" | "groq" | "ollama";
 
 export interface LLMConfig {
   provider: AIProvider;
@@ -19,6 +19,12 @@ export interface LLMConfig {
 }
 
 const PROVIDER_DEFAULTS: Record<AIProvider, { baseUrl: string; models: string[]; label: string; keyLabel: string }> = {
+  "gemini-web2api": {
+    baseUrl: "https://saint-examine-clearance-growth.trycloudflare.com/v1",
+    models: ["gemini-3.5-flash", "gemini-3.5-flash-thinking", "gemini-3.1-pro"],
+    label: "Gemini (Free)",
+    keyLabel: "No key needed",
+  },
   openai: {
     baseUrl: "https://api.openai.com/v1",
     models: ["gpt-4o", "gpt-4o-mini", "dall-e-3", "dall-e-2"],
@@ -99,7 +105,9 @@ export default function Settings() {
     try {
       const url = config.provider === "ollama"
         ? `${config.baseUrl.replace("/v1", "")}/api/tags`
-        : `${config.baseUrl}/models`;
+        : config.provider === "gemini-web2api"
+          ? `${config.baseUrl}/models`
+          : `${config.baseUrl}/models`;
 
       const res = await fetch(url, {
         headers: config.apiKey ? { Authorization: `Bearer ${config.apiKey}` } : {},
@@ -191,7 +199,7 @@ export default function Settings() {
             <Input
               id="api-key"
               type="password"
-              placeholder={config.provider === "ollama" ? "Leave blank for local" : "Paste your API key"}
+              placeholder={config.provider === "ollama" ? "Leave blank for local" : config.provider === "gemini-web2api" ? "No key needed" : "Paste your API key"}
               value={config.apiKey}
               onChange={(e) => setConfig((prev) => ({ ...prev, apiKey: e.target.value }))}
             />

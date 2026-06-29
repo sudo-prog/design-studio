@@ -81,7 +81,7 @@ export function ChatRefinement({ projectId: _projectId, canvasJson }: Props) {
   const [showSettings, setShowSettings] = useState(false);
   const [providerCfg, setProviderCfg] = useState(loadProviderConfig);
   const [tempApiKey, setTempApiKey] = useState(providerCfg.apiKey ?? "");
-  const [tempProvider, setTempProvider] = useState<"local" | "openrouter" | "openai" | "groq">(providerCfg.provider);
+  const [tempProvider, setTempProvider] = useState<"local" | "gemini-web2api" | "openrouter" | "openai" | "groq">(providerCfg.provider);
   const [acceptedDiffs, setAcceptedDiffs] = useState<Set<string>>(new Set());
   const [rejectedDiffs, setRejectedDiffs] = useState<Set<string>>(new Set());
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -282,12 +282,13 @@ export function ChatRefinement({ projectId: _projectId, canvasJson }: Props) {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="local">Built-in (no key needed)</SelectItem>
+                  <SelectItem value="gemini-web2api">Gemini (Free)</SelectItem>
                   <SelectItem value="openrouter">OpenRouter</SelectItem>
                   <SelectItem value="openai">OpenAI / compatible</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            {tempProvider !== "local" && (
+            {tempProvider !== "local" && tempProvider !== "gemini-web2api" && (
               <div className="space-y-1.5">
                 <Label className="text-xs">API Key</Label>
                 <Input

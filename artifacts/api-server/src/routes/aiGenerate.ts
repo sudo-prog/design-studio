@@ -13,6 +13,7 @@ const ALLOWED_PROVIDER_BASES = new Set([
   "https://api.openai.com/v1",
   "https://api.groq.com/openai/v1",
   "http://localhost:11434/v1",
+  "https://saint-examine-clearance-growth.trycloudflare.com/v1",
 ]);
 
 // ── Design-focused image pools per style (fallback when no API key) ────────
@@ -125,7 +126,9 @@ router.post("/ai/generate", async (req, res): Promise<void> => {
         ? "https://api.openai.com/v1"
         : provider === "groq"
           ? "https://api.groq.com/openai/v1"
-          : "https://openrouter.ai/api/v1";
+          : provider === "gemini-web2api"
+            ? "https://saint-examine-clearance-growth.trycloudflare.com/v1"
+            : "https://openrouter.ai/api/v1";
     }
     if (!ALLOWED_PROVIDER_BASES.has(rawBase)) {
       res.status(400).json({ error: "Unsupported provider base URL." });
@@ -218,7 +221,13 @@ router.post("/ai/style-transfer", async (req, res): Promise<void> => {
   let resultUrls: string[] = [];
   if (apiKey) {
     let rawBase = body.data.baseUrl?.replace(/\/+$/, "");
-    if (!rawBase) rawBase = provider === "openai" ? "https://api.openai.com/v1" : "https://openrouter.ai/api/v1";
+    if (!rawBase) {
+      rawBase = provider === "openai"
+        ? "https://api.openai.com/v1"
+        : provider === "gemini-web2api"
+          ? "https://saint-examine-clearance-growth.trycloudflare.com/v1"
+          : "https://openrouter.ai/api/v1";
+    }
     if (ALLOWED_PROVIDER_BASES.has(rawBase)) {
       try {
         resultUrls = await generateViaApi({ apiKey, baseUrl: rawBase, model: model!, prompt: transferPrompt, quantity: 1, size: "1024x1024" });
@@ -313,6 +322,7 @@ const ALLOWED_BASE_URLS = new Set([
   "https://api.openai.com/v1",
   "https://api.anthropic.com/v1",
   "http://localhost:11434/v1",   // Ollama local
+  "https://saint-examine-clearance-growth.trycloudflare.com/v1",  // Gemini Web2API proxy
 ]);
 
 // POST /api/ai/chat — LLM chat refinement (streams if apiKey provided, falls back gracefully)
@@ -323,6 +333,7 @@ router.post("/ai/chat", async (req, res): Promise<void> => {
     apiKey: z.string().optional(),
     baseUrl: z.string().optional(),
     model: z.string().optional().default("openai/gpt-4o-mini"),
+    provider: z.string().optional(),
   }).safeParse(req.body);
 
   if (!body.success) {
@@ -331,7 +342,11 @@ router.post("/ai/chat", async (req, res): Promise<void> => {
   }
 
   const { messages, canvasContext, apiKey, model } = body.data;
-  const rawBaseUrl = body.data.baseUrl ?? "https://openrouter.ai/api/v1";
+  let rawBaseUrl = body.data.baseUrl ?? "https://openrouter.ai/api/v1";
+  // If provider is gemini-web2api, use the proxy URL
+  if (body.data.provider === "gemini-web2api") {
+    rawBaseUrl = "https://saint-examine-clearance-growth.trycloudflare.com/v1";
+  }
 
   // SSRF guard: only allow known provider endpoints
   const normalizedBase = rawBaseUrl.replace(/\/+$/, "");
@@ -342,7 +357,9 @@ router.post("/ai/chat", async (req, res): Promise<void> => {
   const baseUrl = normalizedBase;
 
   // If caller provided a live API key, attempt actual LLM call
-  if (apiKey) {
+  // For gemini-web2api, no key is needed — use empty string
+  const effectiveApiKey = apiKey || (body.data.provider === "gemini-web2api" ? "" : apiKey);
+  if (effectiveApiKey) {
     const endpoint = `${baseUrl}/chat/completions`;
     try {
       const systemMsg = canvasContext
@@ -351,7 +368,7 @@ router.post("/ai/chat", async (req, res): Promise<void> => {
 
       const upstream = await fetch(endpoint, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` },
+        headers: { "Content-Type": "application/json", ...(effectiveApiKey ? { "Authorization": `Bearer ${effectiveApiKey}` } : {}) },
         body: JSON.stringify({ model, max_tokens: 1024, messages: [systemMsg, ...messages] }),
       });
 

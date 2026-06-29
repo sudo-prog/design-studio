@@ -41,7 +41,7 @@ export class LocalBackendAdapter implements ImageGenService {
         quantity: options.quantity ?? 1,
         style: options.style,
         model: options.model ?? "dall-e-3",
-        provider: "openrouter",
+        provider: "gemini-web2api",
       }),
     });
     if (!res.ok) throw new Error(`Generation failed: ${res.status}`);
@@ -91,7 +91,7 @@ export class OpenAICompatibleAdapter implements ImageGenService {
 
 // ── Provider config (stored in localStorage) ─────────────────────────────────
 export interface ProviderConfig {
-  provider: "local" | "openrouter" | "openai" | "groq";
+  provider: "local" | "gemini-web2api" | "openrouter" | "openai" | "groq";
   apiKey?: string;
   baseUrl?: string;
   model?: string;
@@ -104,7 +104,7 @@ export function loadProviderConfig(): ProviderConfig {
     const raw = localStorage.getItem(CONFIG_KEY);
     if (raw) return JSON.parse(raw) as ProviderConfig;
   } catch { /* ignore */ }
-  return { provider: "local" };
+  return { provider: "gemini-web2api" };
 }
 
 export function saveProviderConfig(cfg: ProviderConfig): void {
@@ -120,6 +120,9 @@ export function buildAdapter(cfg: ProviderConfig, projectId: number): ImageGenSe
   }
   if (cfg.provider === "groq" && cfg.apiKey) {
     return new OpenAICompatibleAdapter("https://api.groq.com/openai/v1", cfg.apiKey, cfg.model ?? "llama-3.3-70b-versatile", projectId);
+  }
+  if (cfg.provider === "gemini-web2api") {
+    return new OpenAICompatibleAdapter("https://saint-examine-clearance-growth.trycloudflare.com/v1", "", cfg.model ?? "gemini-3.5-flash", projectId);
   }
   return new LocalBackendAdapter(projectId);
 }

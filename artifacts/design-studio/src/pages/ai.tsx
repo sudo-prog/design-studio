@@ -126,7 +126,7 @@ function StyleTransferPanel({ projectId, onApprove, onJobCreated }: StyleTransfe
           styleBase64: stylePreview ?? undefined,
           apiKey: cfg.apiKey,
           model: cfg.model ?? "dall-e-3",
-          provider: cfg.provider === "local" ? "openrouter" : cfg.provider,
+          provider: cfg.provider === "local" ? "gemini-web2api" : cfg.provider,
         }),
       });
       if (!res.ok) throw new Error(await res.text());
@@ -262,12 +262,12 @@ export default function AiHub() {
             variant="outline"
             className="text-[10px] gap-1 cursor-pointer"
             onClick={() => {
-              const providerChoice = prompt("Provider (local / openrouter / openai / groq):", cfg.provider);
+              const providerChoice = prompt("Provider (local / gemini-web2api / openrouter / openai / groq):", cfg.provider);
               if (providerChoice === null) return;
-              const p = providerChoice.trim() as "local" | "openrouter" | "openai" | "groq";
-              if (!["local","openrouter","openai","groq"].includes(p)) return;
-              if (p === "local") {
-                saveProviderConfig({ provider: "local" });
+              const p = providerChoice.trim() as "local" | "gemini-web2api" | "openrouter" | "openai" | "groq";
+              if (!["local","gemini-web2api","openrouter","openai","groq"].includes(p)) return;
+              if (p === "local" || p === "gemini-web2api") {
+                saveProviderConfig({ provider: p });
               } else {
                 const key = prompt(`API key for ${p}:`, cfg.apiKey ?? "");
                 if (key === null) return;
@@ -295,7 +295,7 @@ export default function AiHub() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
           { label: "Total Jobs", value: jobs.length, icon: <Sparkles className="w-4 h-4" /> },
           { label: "Completed", value: completedJobs.length, icon: <CheckCircle className="w-4 h-4 text-green-500" /> },
