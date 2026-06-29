@@ -91,7 +91,7 @@ export class OpenAICompatibleAdapter implements ImageGenService {
 
 // ── Provider config (stored in localStorage) ─────────────────────────────────
 export interface ProviderConfig {
-  provider: "local" | "gemini-web2api" | "openrouter" | "openai" | "groq";
+  provider: "local" | "nous" | "gemini-web2api" | "openrouter" | "openai" | "groq";
   apiKey?: string;
   baseUrl?: string;
   model?: string;
@@ -104,7 +104,7 @@ export function loadProviderConfig(): ProviderConfig {
     const raw = localStorage.getItem(CONFIG_KEY);
     if (raw) return JSON.parse(raw) as ProviderConfig;
   } catch { /* ignore */ }
-  return { provider: "gemini-web2api" };
+  return { provider: "nous", baseUrl: "https://inference-api.nousresearch.com/v1", model: "openrouter/owl-alpha" };
 }
 
 export function saveProviderConfig(cfg: ProviderConfig): void {
@@ -112,6 +112,9 @@ export function saveProviderConfig(cfg: ProviderConfig): void {
 }
 
 export function buildAdapter(cfg: ProviderConfig, projectId: number): ImageGenService {
+  if (cfg.provider === "nous") {
+    return new OpenAICompatibleAdapter("https://inference-api.nousresearch.com/v1", "", cfg.model ?? "openrouter/owl-alpha", projectId);
+  }
   if (cfg.provider === "openrouter" && cfg.apiKey) {
     return new OpenRouterAdapter(cfg.apiKey, cfg.model, projectId);
   }

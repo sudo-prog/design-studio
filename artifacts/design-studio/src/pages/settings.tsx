@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, Check, Cpu, Key, Globe, Zap, Download, CheckCircle2 } from "lucide-react";
 import { usePWAInstall } from "@/hooks/use-pwa-install";
 
-export type AIProvider = "gemini-web2api" | "openai" | "openrouter" | "groq" | "ollama";
+export type AIProvider = "nous" | "gemini-web2api" | "openai" | "openrouter" | "groq" | "ollama";
 
 export interface LLMConfig {
   provider: AIProvider;
@@ -19,6 +19,12 @@ export interface LLMConfig {
 }
 
 const PROVIDER_DEFAULTS: Record<AIProvider, { baseUrl: string; models: string[]; label: string; keyLabel: string }> = {
+  "nous": {
+    baseUrl: "https://inference-api.nousresearch.com/v1",
+    models: ["openrouter/owl-alpha", "openrouter/anthropic/claude-3.5-sonnet", "openrouter/openai/gpt-4o", "openrouter/google/gemini-2.0-flash-001"],
+    label: "Hermes (Nous)",
+    keyLabel: "No key needed",
+  },
   "gemini-web2api": {
     baseUrl: "https://saint-examine-clearance-growth.trycloudflare.com/v1",
     models: ["gemini-3.5-flash", "gemini-3.5-flash-thinking", "gemini-3.1-pro"],
@@ -64,10 +70,10 @@ export function loadLLMConfig(): LLMConfig {
     if (raw) return JSON.parse(raw) as LLMConfig;
   } catch {}
   return {
-    provider: "openai",
+    provider: "nous",
     apiKey: "",
-    baseUrl: PROVIDER_DEFAULTS.openai.baseUrl,
-    model: "dall-e-3",
+    baseUrl: PROVIDER_DEFAULTS.nous.baseUrl,
+    model: "openrouter/owl-alpha",
   };
 }
 

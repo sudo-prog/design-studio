@@ -126,7 +126,7 @@ function StyleTransferPanel({ projectId, onApprove, onJobCreated }: StyleTransfe
           styleBase64: stylePreview ?? undefined,
           apiKey: cfg.apiKey,
           model: cfg.model ?? "dall-e-3",
-          provider: cfg.provider === "local" ? "gemini-web2api" : cfg.provider,
+          provider: cfg.provider === "local" ? "gemini-web2api" : cfg.provider === "nous" ? "nous" : cfg.provider,
         }),
       });
       if (!res.ok) throw new Error(await res.text());
@@ -265,11 +265,11 @@ export default function AiHub() {
             variant="outline"
             className="text-[10px] gap-1 cursor-pointer"
             onClick={() => {
-              const providerChoice = prompt("Provider (local / gemini-web2api / openrouter / openai / groq):", cfg.provider);
+              const providerChoice = prompt("Provider (local / nous / gemini-web2api / openrouter / openai / groq):", cfg.provider);
               if (providerChoice === null) return;
-              const p = providerChoice.trim() as "local" | "gemini-web2api" | "openrouter" | "openai" | "groq";
-              if (!["local","gemini-web2api","openrouter","openai","groq"].includes(p)) return;
-              if (p === "local" || p === "gemini-web2api") {
+              const p = providerChoice.trim() as "local" | "nous" | "gemini-web2api" | "openrouter" | "openai" | "groq";
+              if (!["local","nous","gemini-web2api","openrouter","openai","groq"].includes(p)) return;
+              if (p === "local" || p === "gemini-web2api" || p === "nous") {
                 saveProviderConfig({ provider: p });
               } else {
                 const key = prompt(`API key for ${p}:`, cfg.apiKey ?? "");

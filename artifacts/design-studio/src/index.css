@@ -103,5 +103,29 @@
   }
   body {
     @apply font-sans antialiased bg-background text-foreground;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    overflow-x: hidden;
   }
+  /* Ensure tables scroll on mobile */
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  /* Touch target minimum 44px */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Mobile-safe horizontal scroll for tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+@utility scroll-x-touch {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
