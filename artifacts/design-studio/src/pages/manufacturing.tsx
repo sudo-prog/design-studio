@@ -59,11 +59,15 @@ export default function Manufacturing() {
   const [orderMfrId, setOrderMfrId] = useState<number | null>(null);
   const [orderQty, setOrderQty] = useState(100);
 
-  const { data: projects = [] } = useListProjects();
-  const { data: pricing, isLoading: pricingLoading } = useGetManufacturingPricing({ quantity, printMethod });
-  const { data: manufacturers = [] } = useListManufacturers();
-  const { data: orders = [], refetch: refetchOrders } = useListOrders();
+  const { data: projects = [], error: projectsError } = useListProjects();
+  const { data: pricing, isLoading: pricingLoading, error: pricingError } = useGetManufacturingPricing({ quantity, printMethod });
+  const { data: manufacturers = [], error: mfrsError } = useListManufacturers();
+  const { data: orders = [], refetch: refetchOrders, error: ordersError } = useListOrders();
   const createOrderMutation = useCreateOrder();
+
+  const safeProjects = projectsError ? [] : projects;
+  const safeManufacturers = mfrsError ? [] : manufacturers;
+  const safeOrders = ordersError ? [] : orders;
 
   const perUnit = pricing ? pricing.totalCogs / quantity : 0;
   const margin = retailPrice > 0 ? ((retailPrice - perUnit) / retailPrice) * 100 : 0;
@@ -77,7 +81,7 @@ export default function Manufacturing() {
     return Math.max(...nums.map(Number));
   }
 
-  const filteredMfrs = manufacturers.filter((m) => {
+  const filteredMfrs = safeManufacturers.filter((m) => {
     const matchSearch = !mfrSearch || m.name.toLowerCase().includes(mfrSearch.toLowerCase());
     const matchType = mfrTypeFilter === "all" || m.type === mfrTypeFilter;
     const matchMoq = (m.moq ?? 0) <= moqMax;
@@ -154,8 +158,8 @@ export default function Manufacturing() {
         </TabsList>
 
         {/* ── Cost Calculator ── */}
-        <TabsContent value="cost" className="space-y-4 mt-4">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <TabsContent value="cost" className="space-y-2 sm:space-y-4 mt-2 sm:mt-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4">
             <Card className="lg:col-span-1">
               <CardHeader><CardTitle className="text-base">Configure</CardTitle></CardHeader>
               <CardContent className="space-y-4">
@@ -209,8 +213,8 @@ export default function Manufacturing() {
                     </div>
 
                     {/* Bulk tiers */}
-                    <div>
-                      <p className="text-sm font-semibold mb-2">Bulk Pricing Tiers</p>
+                    <div className="overflow-x-auto -mx-4 sm:mx-0">
+                      <p className="text-sm font-semibold mb-2 px-4 sm:px-0">Bulk Pricing Tiers</p>
                       <Table>
                         <TableHeader>
                           <TableRow>
@@ -301,7 +305,7 @@ export default function Manufacturing() {
               {pricing && (
                 <Card>
                   <CardHeader><CardTitle className="text-base">Margin by Volume</CardTitle></CardHeader>
-                  <CardContent>
+                  <CardContent className="overflow-x-auto">
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -389,7 +393,7 @@ export default function Manufacturing() {
           {(moqMax < 500 || turnaroundMax < 30) && (
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <Filter className="w-3 h-3" />
-              Showing {filteredMfrs.length} of {manufacturers.length} manufacturers
+              Showing {filteredMfrs.length} of {safeManufacturers.length} manufacturers
               {moqMax < 500 && <Badge variant="secondary" className="text-xs">MOQ ≤ {moqMax}</Badge>}
               {turnaroundMax < 30 && <Badge variant="secondary" className="text-xs">≤ {turnaroundMax} days</Badge>}
               <button onClick={() => { setMoqMax(500); setTurnaroundMax(30); setMfrTypeFilter("all"); setMfrSearch(""); }} className="text-primary hover:underline ml-1">Clear all</button>
@@ -513,7 +517,7 @@ export default function Manufacturing() {
                   <Select value={orderProjectId?.toString() ?? ""} onValueChange={(v) => setOrderProjectId(Number(v))}>
                     <SelectTrigger><SelectValue placeholder="Select project…" /></SelectTrigger>
                     <SelectContent>
-                      {projects.map((p) => <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>)}
+                      {safeProjects.map((p) => <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
@@ -522,7 +526,7 @@ export default function Manufacturing() {
                   <Select value={orderMfrId?.toString() ?? ""} onValueChange={(v) => setOrderMfrId(Number(v))}>
                     <SelectTrigger><SelectValue placeholder="Select manufacturer…" /></SelectTrigger>
                     <SelectContent>
-                      {manufacturers.map((m) => <SelectItem key={m.id} value={String(m.id)}>{m.name}</SelectItem>)}
+                      {safeManufacturers.map((m) => <SelectItem key={m.id} value={String(m.id)}>{m.name}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
@@ -542,14 +546,14 @@ export default function Manufacturing() {
             </CardContent>
           </Card>
 
-          {orders.length === 0 ? (
+          {safeOrders.length === 0 ? (
             <div className="p-12 text-center border border-dashed rounded-lg">
               <ShoppingCart className="w-10 h-10 mx-auto text-muted-foreground mb-3" />
               <p className="text-muted-foreground">No orders yet.</p>
             </div>
           ) : (
             <Card>
-              <CardContent className="p-0">
+              <CardContent className="p-0 overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -562,7 +566,7 @@ export default function Manufacturing() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {orders.map((order) => (
+                    {safeOrders.map((order) => (
                       <TableRow key={order.id}>
                         <TableCell className="font-mono text-xs">#{order.id}</TableCell>
                         <TableCell>P-{order.projectId}</TableCell>

@@ -72,15 +72,17 @@ export default function Projects() {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [sortBy, setSortBy] = useState<"updated" | "name" | "created">("updated");
 
-  const { data: projects = [], isLoading } = useListProjects();
+  const { data: projects = [], isLoading, error: projectsError } = useListProjects();
+  const safeProjects = projectsError ? [] : projects;
+  const showSkeletons = isLoading && !projectsError;
 
   const categories = useMemo(() => {
-    const cats = new Set(projects.map((p) => p.category).filter(Boolean));
+    const cats = new Set(safeProjects.map((p) => p.category).filter(Boolean));
     return Array.from(cats) as string[];
-  }, [projects]);
+  }, [safeProjects]);
 
   const filtered = useMemo(() => {
-    let list = [...projects];
+    let list = [...safeProjects];
     if (search) {
       const q = search.toLowerCase();
       list = list.filter(
@@ -98,7 +100,7 @@ export default function Projects() {
       return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
     });
     return list;
-  }, [projects, search, statusFilter, categoryFilter, sortBy]);
+  }, [safeProjects, search, statusFilter, categoryFilter, sortBy]);
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -106,7 +108,7 @@ export default function Projects() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Projects</h1>
           <p className="text-muted-foreground">
-            {isLoading ? "Loading…" : `${filtered.length} of ${projects.length} project${projects.length !== 1 ? "s" : ""}`}
+            {showSkeletons ? "Loading…" : `${filtered.length} of ${safeProjects.length} project${safeProjects.length !== 1 ? "s" : ""}`}
           </p>
         </div>
         <Button asChild>
@@ -116,6 +118,11 @@ export default function Projects() {
           </Link>
         </Button>
       </div>
+      {projectsError && (
+        <div className="rounded-md border border-yellow-500/30 bg-yellow-500/10 px-4 py-3 text-sm text-yellow-600 dark:text-yellow-400">
+          ⚠️ Could not load projects. Showing empty state. Check your API connection.
+        </div>
+      )}
 
       <div className="flex flex-wrap gap-2 items-center">
         <div className="relative flex-1 min-w-[200px] max-w-sm">
@@ -178,7 +185,7 @@ export default function Projects() {
         </div>
       </div>
 
-      {isLoading ? (
+      {showSkeletons ? (
         <div className={view === "grid" ? "grid gap-4 md:grid-cols-2 lg:grid-cols-3" : "flex flex-col gap-3"}>
           {[1,2,3,4,5,6].map((i) => <Skeleton key={i} className={view === "grid" ? "h-52 w-full" : "h-20 w-full"} />)}
         </div>

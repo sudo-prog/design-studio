@@ -6,8 +6,14 @@ import { Link } from "wouter";
 import { AIStyleEngineWidget, MultiAiImageStudioWidget, AiGeneratorWidget } from "@/components/widgets";
 
 export default function Dashboard() {
-  const { data: summary, isLoading: loadingSummary } = useGetDashboardSummary();
-  const { data: activity, isLoading: loadingActivity } = useGetRecentActivity({ limit: 10 });
+  const { data: summary, isLoading: loadingSummary, error: summaryError } = useGetDashboardSummary();
+  const { data: activity, isLoading: loadingActivity, error: activityError } = useGetRecentActivity({ limit: 10 });
+
+  // Gracefully handle API errors (e.g. on Vercel SPA rewrite, /api/* returns HTML)
+  const hasError = summaryError || activityError;
+  const safeSummary = hasError ? null : summary;
+  const safeActivity = hasError ? [] : (activity ?? []);
+  const showSkeletons = loadingSummary && !hasError;
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -18,31 +24,36 @@ export default function Dashboard() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="Active Projects"
-          value={summary?.activeProjects}
-          loading={loadingSummary}
+          value={safeSummary?.activeProjects}
+          loading={showSkeletons}
           icon={Folder}
-          trend={`${summary?.totalProjects} total`}
+          trend={safeSummary ? `${safeSummary.totalProjects} total` : undefined}
         />
         <StatCard
           title="Ready to Print"
-          value={summary?.readyToPrint}
-          loading={loadingSummary}
+          value={safeSummary?.readyToPrint}
+          loading={showSkeletons}
           icon={Printer}
           className="border-primary/50 bg-primary/5"
         />
         <StatCard
           title="Pending AI Jobs"
-          value={summary?.pendingAiJobs}
-          loading={loadingSummary}
+          value={safeSummary?.pendingAiJobs}
+          loading={showSkeletons}
           icon={Activity}
         />
         <StatCard
           title="Total Assets"
-          value={summary?.totalAssets}
-          loading={loadingSummary}
+          value={safeSummary?.totalAssets}
+          loading={showSkeletons}
           icon={ImageIcon}
         />
       </div>
+      {hasError && (
+        <div className="rounded-md border border-yellow-500/30 bg-yellow-500/10 px-4 py-3 text-sm text-yellow-600 dark:text-yellow-400">
+          ⚠️ Dashboard data could not be loaded. Showing empty state. Check your API connection.
+        </div>
+      )}
 
       <Card>
         <CardHeader>
@@ -60,19 +71,19 @@ export default function Dashboard() {
         </CardContent>
       </Card>
 
-      <div className="grid gap-8 lg:grid-cols-3">
-        <Card className="col-span-2">
+      <div className="grid gap-8 grid-cols-1 lg:grid-cols-3">
+        <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle>Recent Activity</CardTitle>
           </CardHeader>
           <CardContent>
-            {loadingActivity ? (
+            {loadingActivity && !hasError ? (
               <div className="space-y-4">
                 {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-12 w-full" />)}
               </div>
-            ) : activity && activity.length > 0 ? (
+            ) : safeActivity && safeActivity.length > 0 ? (
               <div className="space-y-6">
-                {activity.map((entry) => (
+                {safeActivity.map((entry) => (
                   <div key={entry.id} className="flex items-start gap-4">
                     <div className="p-2 rounded-full bg-secondary text-secondary-foreground">
                       <CheckCircle className="w-4 h-4" />

@@ -207,12 +207,15 @@ function StyleTransferPanel({ projectId, onApprove, onJobCreated }: StyleTransfe
 
 export default function AiHub() {
   const { toast } = useToast();
-  const { data: projects = [] } = useListProjects();
+  const { data: projects = [], error: projectsError } = useListProjects();
   const [projectId, setProjectId] = useState<number>(0);
   const activeProjectId = projectId > 0 ? projectId : (projects[0]?.id ?? 0);
-  const { data: jobs = [], refetch } = useListAiJobs(projectId && projectId > 0 ? { projectId } : undefined);
+  const { data: jobs = [], refetch, error: jobsError } = useListAiJobs(projectId && projectId > 0 ? { projectId } : undefined);
   const approveJob = useApproveAiJob();
   const rejectJob = useRejectAiJob();
+
+  const safeProjects = projectsError ? [] : projects;
+  const safeJobs = jobsError ? [] : jobs;
 
   const cfg = loadProviderConfig();
 
@@ -247,8 +250,8 @@ export default function AiHub() {
     refetch();
   }
 
-  const completedJobs = jobs.filter((j) => j.status === "completed" || j.status === "approved" || j.status === "rejected");
-  const activeJobs = jobs.filter((j) => j.status === "pending" || j.status === "processing");
+  const completedJobs = safeJobs.filter((j) => j.status === "completed" || j.status === "approved" || j.status === "rejected");
+  const activeJobs = safeJobs.filter((j) => j.status === "pending" || j.status === "processing");
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -286,7 +289,7 @@ export default function AiHub() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="0">All projects</SelectItem>
-              {projects.map((p) => (
+              {safeProjects.map((p) => (
                 <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>
               ))}
             </SelectContent>
@@ -297,10 +300,10 @@ export default function AiHub() {
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: "Total Jobs", value: jobs.length, icon: <Sparkles className="w-4 h-4" /> },
-          { label: "Completed", value: completedJobs.length, icon: <CheckCircle className="w-4 h-4 text-green-500" /> },
-          { label: "Approved", value: jobs.filter(j => j.status === "approved").length, icon: <CheckCircle className="w-4 h-4 text-primary" /> },
-          { label: "Active", value: activeJobs.length, icon: <Clock className="w-4 h-4 text-yellow-500" /> },
+        { label: "Total Jobs", value: safeJobs.length, icon: <Sparkles className="w-4 h-4" /> },
+        { label: "Completed", value: completedJobs.length, icon: <CheckCircle className="w-4 h-4 text-green-500" /> },
+        { label: "Approved", value: safeJobs.filter(j => j.status === "approved").length, icon: <CheckCircle className="w-4 h-4 text-primary" /> },
+        { label: "Active", value: activeJobs.length, icon: <Clock className="w-4 h-4 text-yellow-500" /> },
         ].map((stat) => (
           <Card key={stat.label}>
             <CardContent className="pt-4 pb-3">
@@ -340,7 +343,7 @@ export default function AiHub() {
             </Button>
           </div>
 
-          {jobs.length === 0 ? (
+          {safeJobs.length === 0 ? (
             <div className="h-64 border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center gap-3 text-center">
               <ImageIcon className="w-10 h-10 text-muted-foreground/40" />
               <div>
@@ -350,7 +353,7 @@ export default function AiHub() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {jobs.map((job) => (
+              {safeJobs.map((job) => (
                 <JobCard
                   key={job.id}
                   job={job}

@@ -69,11 +69,14 @@ export default function MockupsPage() {
   const [isExporting, setIsExporting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { data: projects = [] } = useListProjects();
-  const { data: savedMockups = [] } = useListMockups(
+  const { data: projects = [], error: projectsError } = useListProjects();
+  const { data: savedMockups = [], error: mockupsError } = useListMockups(
     projectId ? { projectId } : undefined,
   );
   const createMockup = useCreateMockup();
+
+  const safeProjects = projectsError ? [] : projects;
+  const safeSavedMockups = mockupsError ? [] : savedMockups;
 
   function handleDesignUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -113,7 +116,7 @@ export default function MockupsPage() {
               <SelectValue placeholder="Link to project…" />
             </SelectTrigger>
             <SelectContent>
-              {projects.map((p) => (
+              {safeProjects.map((p) => (
                 <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>
               ))}
             </SelectContent>
@@ -125,7 +128,7 @@ export default function MockupsPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-4 md:gap-6">
         {/* ── Left panel ─────────────────────────────────────────────────────── */}
         <div className="space-y-4">
           {/* Template picker */}
@@ -231,14 +234,14 @@ export default function MockupsPage() {
           </Card>
 
           {/* Saved mockups */}
-          {savedMockups.length > 0 && (
+          {safeSavedMockups.length > 0 && (
             <Card>
               <CardHeader className="pb-2 pt-3 px-3">
                 <CardTitle className="text-sm">Saved Mockups</CardTitle>
               </CardHeader>
               <CardContent className="px-3 pb-3">
                 <div className="grid grid-cols-2 gap-2">
-                  {savedMockups.slice(0, 6).map((m) => (
+                  {safeSavedMockups.slice(0, 6).map((m) => (
                     <div key={m.id} className="relative aspect-square rounded overflow-hidden border border-border">
                       <img src={m.resultUrl ?? m.designAssetUrl ?? ""} alt="" className="w-full h-full object-cover" />
                     </div>

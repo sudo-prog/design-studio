@@ -55,7 +55,7 @@ export default function ProjectDetail() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const { data: project, isLoading } = useGetProject(id, {
+  const { data: project, isLoading, error: projectError } = useGetProject(id, {
     query: { enabled: !!id, queryKey: getGetProjectQueryKey(id) },
   });
 
@@ -176,10 +176,12 @@ export default function ProjectDetail() {
     );
   }
 
-  if (!project) {
+  if (projectError || !project) {
     return (
       <div className="text-center py-20">
-        <p className="text-muted-foreground mb-4">Project not found.</p>
+        <p className="text-muted-foreground mb-4">
+          {projectError ? "Could not load project. The API may be unavailable." : "Project not found."}
+        </p>
         <Button asChild variant="outline">
           <Link href="/projects">
             <ArrowLeft className="w-4 h-4 mr-2" />Back to Projects

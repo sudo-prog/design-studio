@@ -70,13 +70,16 @@ function HexSwatch({ hex }: { hex: string }) {
 }
 
 export default function TechPacks() {
-  const { data: projects = [] } = useListProjects();
+  const { data: projects = [], error: projectsError } = useListProjects();
   const [selectedProject, setSelectedProject] = useState<number | null>(null);
-  const { data: techPacks = [], refetch } = useListTechPacks(
+  const { data: techPacks = [], refetch, error: techPacksError } = useListTechPacks(
     selectedProject ? { projectId: selectedProject } : {}
   );
 
   const createMutation = useCreateTechPack();
+
+  const safeProjects = projectsError ? [] : projects;
+  const safeTechPacks = techPacksError ? [] : techPacks;
 
   const [showForm, setShowForm] = useState(false);
   const [generatingPdf, setGeneratingPdf] = useState(false);
@@ -190,7 +193,7 @@ export default function TechPacks() {
                 <Select value={selectedProject?.toString() ?? ""} onValueChange={(v) => setSelectedProject(Number(v))}>
                   <SelectTrigger><SelectValue placeholder="Select project…" /></SelectTrigger>
                   <SelectContent>
-                    {projects.map((p) => (
+                    {safeProjects.map((p) => (
                       <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>
                     ))}
                   </SelectContent>
@@ -359,7 +362,7 @@ export default function TechPacks() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All projects</SelectItem>
-              {projects.map((p) => <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>)}
+              {safeProjects.map((p) => <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>)}
             </SelectContent>
           </Select>
         </div>
@@ -371,7 +374,7 @@ export default function TechPacks() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {techPacks.map((pack) => (
+            {safeTechPacks.map((pack) => (
               <Card key={pack.id} className="hover:border-primary/50 transition-colors">
                 <CardContent className="p-4 space-y-3">
                   <div className="flex items-start justify-between gap-2">
