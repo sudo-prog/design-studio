@@ -252,12 +252,12 @@ export default function AiHub() {
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">AI Concept Generation</h1>
-          <p className="text-muted-foreground">Generate, remove backgrounds, and refine designs with AI assistance.</p>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">AI Concept Generation</h1>
+          <p className="text-sm text-muted-foreground">Generate, remove backgrounds, and refine designs with AI assistance.</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Badge
             variant="outline"
             className="text-[10px] gap-1 cursor-pointer"
@@ -295,7 +295,7 @@ export default function AiHub() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
           { label: "Total Jobs", value: jobs.length, icon: <Sparkles className="w-4 h-4" /> },
           { label: "Completed", value: completedJobs.length, icon: <CheckCircle className="w-4 h-4 text-green-500" /> },
@@ -314,7 +314,7 @@ export default function AiHub() {
         ))}
       </div>
 
-      <div className="grid grid-cols-[340px_1fr] gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-[340px_1fr] gap-6">
         {/* ── AI Module runner ─────────────────────────────────────────────── */}
         <Card>
           <CardHeader className="pb-2 pt-4">
@@ -349,7 +349,7 @@ export default function AiHub() {
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {jobs.map((job) => (
                 <JobCard
                   key={job.id}

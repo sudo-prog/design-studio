@@ -102,12 +102,12 @@ export default function MockupsPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Mockup Generator</h1>
-          <p className="text-muted-foreground">Preview your design on 20+ garment and product templates.</p>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Mockup Generator</h1>
+          <p className="text-sm text-muted-foreground">Preview your design on 20+ garment and product templates.</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Select value={projectId ? String(projectId) : ""} onValueChange={(v) => setProjectId(Number(v))}>
             <SelectTrigger className="h-8 text-xs w-44">
               <SelectValue placeholder="Link to project…" />
@@ -125,7 +125,7 @@ export default function MockupsPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-[280px_1fr] gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-6">
         {/* ── Left panel ─────────────────────────────────────────────────────── */}
         <div className="space-y-4">
           {/* Template picker */}

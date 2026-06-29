@@ -162,12 +162,18 @@ importers:
       '@types/three':
         specifier: ^0.184.1
         version: 0.184.1
+      date-fns:
+        specifier: ^3.6.0
+        version: 3.6.0
       fabric:
         specifier: ^6.9.1
         version: 6.9.1
       three:
         specifier: ^0.184.0
         version: 0.184.0
+      zod:
+        specifier: 'catalog:'
+        version: 3.25.76
     devDependencies:
       '@hookform/resolvers':
         specifier: ^3.10.0
@@ -289,9 +295,6 @@ importers:
       cmdk:
         specifier: ^1.1.1
         version: 1.1.1(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      date-fns:
-        specifier: ^3.6.0
-        version: 3.6.0
       embla-carousel-react:
         specifier: ^8.6.0
         version: 8.6.0(react@19.1.0)

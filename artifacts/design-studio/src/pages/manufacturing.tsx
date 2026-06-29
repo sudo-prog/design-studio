@@ -138,7 +138,7 @@ export default function Manufacturing() {
       </div>
 
       <Tabs defaultValue="cost">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
           <TabsTrigger value="cost" className="flex items-center gap-1.5">
             <Calculator className="w-3.5 h-3.5" />Cost
           </TabsTrigger>

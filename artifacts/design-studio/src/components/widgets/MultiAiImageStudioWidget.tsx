@@ -152,7 +152,7 @@ export default function MultiAiImageStudioWidget() {
   )
 
   return (
-    <div className="perspective-1000 w-full min-h-[420px]">
+    <div className="perspective-1000 w-full min-h-[300px] md:min-h-[420px]">
       <motion.div className="relative w-full h-full preserve-3d" animate={{ rotateY: isFlipped ? 180 : 0 }} transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}>
         <div className="absolute inset-0 backface-hidden">{front}</div>
         <div className="absolute inset-0 backface-hidden" style={{ transform: 'rotateY(180deg)' }}>{back}</div>

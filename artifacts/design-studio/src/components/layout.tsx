@@ -98,11 +98,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </Sidebar>
 
         <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
-          <header className="h-16 flex items-center px-6 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-10 sticky top-0">
+          <header className="h-16 flex items-center px-4 md:px-6 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-10 sticky top-0">
             <SidebarTrigger className="mr-4 lg:hidden" />
             <div className="flex-1" />
           </header>
-          <div className="flex-1 overflow-auto p-6 md:p-8">
+          <div className="flex-1 overflow-auto p-4 md:p-8">
             <div className="mx-auto max-w-6xl">
               {children}
             </div>
