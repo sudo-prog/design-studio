@@ -1,7 +1,7 @@
 {
   "framework": "vite",
   "buildCommand": "pnpm --filter design-studio build",
-  "outputDirectory": "artifacts/design-studio/dist",
+  "outputDirectory": "artifacts/design-studio/dist/public",
   "installCommand": "pnpm install --no-frozen-lockfile",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
