@@ -13,7 +13,7 @@ const ALLOWED_PROVIDER_BASES = new Set([
   "https://api.openai.com/v1",
   "https://api.groq.com/openai/v1",
   "http://localhost:11434/v1",
-  "https://https://navigator-aim-disciplinary-couples.trycloudflare.com/v1",
+  "https://navigator-aim-disciplinary-couples.trycloudflare.com/v1",
 ]);
 
 // ── Design-focused image pools per style (fallback when no API key) ────────
@@ -127,7 +127,7 @@ router.post("/ai/generate", async (req, res): Promise<void> => {
         : provider === "groq"
           ? "https://api.groq.com/openai/v1"
           : provider === "gemini-web2api"
-            ? "https://https://navigator-aim-disciplinary-couples.trycloudflare.com/v1"
+            ? "https://navigator-aim-disciplinary-couples.trycloudflare.com/v1"
             : "https://openrouter.ai/api/v1";
     }
     if (!ALLOWED_PROVIDER_BASES.has(rawBase)) {
@@ -225,7 +225,7 @@ router.post("/ai/style-transfer", async (req, res): Promise<void> => {
       rawBase = provider === "openai"
         ? "https://api.openai.com/v1"
         : provider === "gemini-web2api"
-          ? "https://https://navigator-aim-disciplinary-couples.trycloudflare.com/v1"
+          ? "https://navigator-aim-disciplinary-couples.trycloudflare.com/v1"
           : "https://openrouter.ai/api/v1";
     }
     if (ALLOWED_PROVIDER_BASES.has(rawBase)) {
@@ -322,7 +322,7 @@ const ALLOWED_BASE_URLS = new Set([
   "https://api.openai.com/v1",
   "https://api.anthropic.com/v1",
   "http://localhost:11434/v1",   // Ollama local
-  "https://https://navigator-aim-disciplinary-couples.trycloudflare.com/v1",  // Gemini Web2API proxy
+  "https://navigator-aim-disciplinary-couples.trycloudflare.com/v1",  // Gemini Web2API proxy
 ]);
 
 // POST /api/ai/chat — LLM chat refinement (streams if apiKey provided, falls back gracefully)
@@ -345,7 +345,7 @@ router.post("/ai/chat", async (req, res): Promise<void> => {
   let rawBaseUrl = body.data.baseUrl ?? "https://openrouter.ai/api/v1";
   // If provider is gemini-web2api, use the proxy URL
   if (body.data.provider === "gemini-web2api") {
-    rawBaseUrl = "https://https://navigator-aim-disciplinary-couples.trycloudflare.com/v1";
+    rawBaseUrl = "https://navigator-aim-disciplinary-couples.trycloudflare.com/v1";
   }
 
   // SSRF guard: only allow known provider endpoints
