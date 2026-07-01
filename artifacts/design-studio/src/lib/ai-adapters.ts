@@ -125,7 +125,7 @@ export function buildAdapter(cfg: ProviderConfig, projectId: number): ImageGenSe
     return new OpenAICompatibleAdapter("https://api.groq.com/openai/v1", cfg.apiKey, cfg.model ?? "llama-3.3-70b-versatile", projectId);
   }
   if (cfg.provider === "gemini-web2api") {
-    return new OpenAICompatibleAdapter("https://saint-examine-clearance-growth.trycloudflare.com/v1", "", cfg.model ?? "gemini-3.5-flash", projectId);
+    return new OpenAICompatibleAdapter("https://https://navigator-aim-disciplinary-couples.trycloudflare.com/v1", "", cfg.model ?? "gemini-3.5-flash", projectId);
   }
   return new LocalBackendAdapter(projectId);
 }

@@ -26,7 +26,7 @@ const PROVIDER_DEFAULTS: Record<AIProvider, { baseUrl: string; models: string[];
     keyLabel: "No key needed",
   },
   "gemini-web2api": {
-    baseUrl: "https://saint-examine-clearance-growth.trycloudflare.com/v1",
+    baseUrl: "https://https://navigator-aim-disciplinary-couples.trycloudflare.com/v1",
     models: ["gemini-3.5-flash", "gemini-3.5-flash-thinking", "gemini-3.1-pro"],
     label: "Gemini (Free)",
     keyLabel: "No key needed",
