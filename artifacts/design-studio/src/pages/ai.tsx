@@ -59,7 +59,7 @@ function JobCard({ job, onApprove, onReject }: { job: AiJob; onApprove: () => vo
         </span>
       </div>
       <p className="text-xs line-clamp-2 text-muted-foreground">{job.prompt}</p>
-      {job.resultUrls && job.resultUrls.length > 0 && (
+      {job.resultUrls && Array.isArray(job.resultUrls) && job.resultUrls.length > 0 && (
         <div className="flex gap-1.5 flex-wrap">
           {job.resultUrls.slice(0, 4).map((url, i) => (
             <img key={i} src={url} alt="" className="w-14 h-14 object-cover rounded border border-border" />
