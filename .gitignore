@@ -49,3 +49,5 @@ Thumbs.db
 .local/
 .vercel
 .env*
+# But track .env.example as documentation
+!.env.example
