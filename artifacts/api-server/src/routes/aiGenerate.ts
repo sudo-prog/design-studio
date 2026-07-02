@@ -8,7 +8,10 @@ import { z } from "zod";
 const router: IRouter = Router();
 
 // ── Allowlisted OpenAI-compatible endpoints ───────────────────────────────
+// DEFAULT: gemini-web2api (local proxy at localhost:8081)
+// FALLBACK: OpenRouter (free tier: openrouter/free)
 const ALLOWED_PROVIDER_BASES = new Set([
+  "http://localhost:8081/v1",  // Gemini Web2API (default)
   "https://openrouter.ai/api/v1",
   "https://api.openai.com/v1",
   "https://api.groq.com/openai/v1",
@@ -90,7 +93,7 @@ router.post("/ai/generate", async (req, res): Promise<void> => {
     prompt: z.string().min(1),
     negativePrompt: z.string().optional(),
     model: z.string().optional().default("dall-e-3"),
-    provider: z.string().optional().default("openrouter"),
+    provider: z.string().optional().default("gemini-web2api"),
     baseUrl: z.string().optional(),
     aspectRatio: z.string().optional().default("1:1"),
     quantity: z.number().int().min(1).max(4).optional().default(1),
@@ -194,7 +197,7 @@ router.post("/ai/style-transfer", async (req, res): Promise<void> => {
     prompt: z.string().optional(),
     apiKey: z.string().optional(),
     model: z.string().optional().default("dall-e-3"),
-    provider: z.string().optional().default("openrouter"),
+    provider: z.string().optional().default("gemini-web2api"),
     baseUrl: z.string().optional(),
   }).safeParse(req.body);
 
@@ -318,6 +321,7 @@ router.post("/ai/remove-bg", async (req, res): Promise<void> => {
 
 // Allowlisted provider base URLs for SSRF prevention
 const ALLOWED_BASE_URLS = new Set([
+  "http://localhost:8081/v1",   // Gemini Web2API (default)
   "https://openrouter.ai/api/v1",
   "https://api.openai.com/v1",
   "https://api.anthropic.com/v1",
@@ -332,7 +336,7 @@ router.post("/ai/chat", async (req, res): Promise<void> => {
     canvasContext: z.string().optional(),
     apiKey: z.string().optional(),
     baseUrl: z.string().optional(),
-    model: z.string().optional().default("openai/gpt-4o-mini"),
+    model: z.string().optional().default("gemini-3.5-flash"),
     provider: z.string().optional(),
   }).safeParse(req.body);
 
@@ -342,10 +346,10 @@ router.post("/ai/chat", async (req, res): Promise<void> => {
   }
 
   const { messages, canvasContext, apiKey, model } = body.data;
-  let rawBaseUrl = body.data.baseUrl ?? "https://openrouter.ai/api/v1";
+  let rawBaseUrl = body.data.baseUrl ?? "http://localhost:8081/v1";
   // If provider is gemini-web2api, use the proxy URL
   if (body.data.provider === "gemini-web2api") {
-    rawBaseUrl = "https://navigator-aim-disciplinary-couples.trycloudflare.com/v1";
+    rawBaseUrl = "http://localhost:8081/v1";
   }
 
   // SSRF guard: only allow known provider endpoints

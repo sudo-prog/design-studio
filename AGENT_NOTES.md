@@ -1,6 +1,6 @@
 # Agent Notes — DESIGN.Studio
-**Last updated:** 2026-06-22
-**Status:** Full-stack application complete — needs deployment and testing
+**Last updated:** 2026-07-02
+**Status:** Build + typecheck clean, deployed to Vercel (monorepo workspace root configured)
 
 ---
 
@@ -8,9 +8,10 @@
 
 Print-first AI design studio. Full-stack pnpm monorepo for managing design projects from concept through manufacturing. Handles project management, asset uploads, AI-generated designs, mockup generation, print job processing, tech pack PDF generation, and manufacturing order management with Printful/Printify integration.
 
+- **Live URL:** https://design-studio-beryl.vercel.app
 - **Stack:** pnpm monorepo, Node.js 24, TypeScript 5.9, Express 5, React 19, Vite, PostgreSQL, Drizzle ORM, OpenRouter AI
 - **Artifacts:** design-studio (frontend), api-server (backend), mockup-sandbox
-- **DB tables:** 16 tables (projects, assets, colorPalettes, aiJobs, mockups, printJobs, techPacks, manufacturers, manufacturingOrders, collections, collectionProjects, batchJobs, activityLog, projectHistory, conversations, messages)
+- **Deploy:** Vercel (linked from workspace root, buildCommand: `pnpm --filter design-studio build`)
 
 ---
 
@@ -31,6 +32,13 @@ lib/
     openrouter-ai/  — OpenRouter AI client wrapper
 scripts/            — Build/merge scripts
 ```
+
+### Vercel Setup
+- **Root Directory:** workspace root (`04_Design-Studio-Pro/`)
+- **Build Command:** `pnpm --filter design-studio build`
+- **Output Directory:** `artifacts/design-studio/dist/public`
+- **Install:** `pnpm install --no-frozen-lockfile`
+- **vercel.json:** at workspace root (not package subdirectory)
 
 ### API Routes (14 files)
 | Route | Key Endpoints |
@@ -76,65 +84,25 @@ ai/, editor/, layout.tsx, mockup/ (warp-canvas, template-picker, viewer-3d, life
 
 ---
 
-## Key Features
+## AI Configuration
+- **Default Provider:** `gemini-web2api` (model: `gemini-3.5-flash`) — runs locally via gemini-web2api proxy at `http://localhost:8081/v1`
+- **Fallback Provider:** OpenRouter — uses `OPENROUTER_API_KEY` env var, defaults to `openrouter/free` model
+- **Self-Heal:** `artifacts/design-studio/src/lib/ai-self-heal.ts` — provides DOM snapshot, EVAL, FIX_NOTIFICATIONS, and CLEAR_STALE operations
+- **Provider Fallback Order:** Gemini Web2API → OpenRouter → Ollama (local)
+- **Key Files:**
+  - `artifacts/api-server/src/routes/aiGenerate.ts` — AI generation routes with gemini-web2api default
+  - `lib/integrations/openrouter-ai/src/client.ts` — OpenRouter AI client wrapper
+  - `artifacts/design-studio/src/lib/ai-self-heal.ts` — Self-healing AI capability
 
-### AI Integration
-- **OpenRouter AI** — allowlisted providers (OpenRouter, OpenAI, Groq, Ollama/local)
-- **AI Jobs** — async job queue with approval workflow
-- **AI Generate** — image generation with provider allowlist
-- **Color extraction** — extract palette from uploaded images (sharp)
-
-### Print Workflow
-- **Mockup generation** — template-based with 3D viewer, warp canvas, lifestyle compositor
-- **Print processing** — pixel trace to SVG, zip export
-- **Tech pack PDF** — full PDF generation with pdf-lib (colors, pantone, CMYK, garment specs)
-- **Manufacturing** — Printful/Printify pricing integration, manufacturer directory, order management, RFQ PDF generation
-
-### Asset Management
-- **Multer + Sharp** — image upload with thumbnail generation
-- **Vectorize** — raster image → SVG pixel trace (sharp + fflate)
-- **Project history** — snapshot-based versioning
-- **Activity log** — audit trail of all actions
+## Session History
+- **2026-07-03:** Updated default AI provider from `openrouter` to `gemini-web2api` with model `gemini-3.5-flash`. Added localhost:8081 to allowlisted provider endpoints. Added `ai-self-heal.ts` — self-healing AI capability for DOM inspection, JS fixes, notification dismissal, and stale element cleanup. Added OpenRouter fallback support.
+- **2026-07-02:** Fixed `prompt()` blocking calls in `src/pages/ai.tsx` replaced with inline form. TypeScript typecheck passes. Local build succeeds (16.5s). Fixed Vercel monorepo deployment by linking from workspace root with correct `vercel.json`. Redeployed successfully.
+- **2026-06-22:** Initial project notes recorded.
 
 ---
 
-## Development Roadmap
-
-### Completed
-- [x] pnpm monorepo scaffold
-- [x] PostgreSQL + Drizzle ORM schema (16 tables)
-- [x] Express API server (CORS, pino logging, file uploads)
-- [x] Full REST API (14 route files)
-- [x] OpenRouter AI integration (allowlisted providers)
-- [x] PDF generation (tech packs, RFQ)
-- [x] Image processing (sharp: thumbnails, color extraction, vectorization)
-- [x] Printful/Printify pricing integration
-- [x] React/Vite frontend (14 pages)
-- [x] Full-screen editor with project context
-- [x] Wouter routing, React Query
-- [x] Tailwind CSS v4 + shadcn-style UI library
-- [x] PWA service worker
-- [x] Mockup sandbox
-
-### In Progress / Not Yet Built
-- [ ] Frontend-backend integration (API client hooks → pages)
-- [ ] Project CRUD UI wiring
-- [ ] Asset upload UI wiring
-- [ ] AI job queue UI
-- [ ] Mockup 3D viewer implementation
-- [ ] Print job management UI
-- [ ] Tech pack PDF preview
-- [ ] Manufacturing order flow
-- [ ] Collection management UI
-- [ ] Settings page implementation
-- [ ] GitHub backup integration
-- [ ] Database migrations
-- [ ] Authentication
-- [ ] Deployment pipeline
-- [ ] E2E tests
-
-### Known Issues
-- pnpm-workspace.yaml has Replit-specific packages in catalog
+## Known Issues
+- **Vercel monorepo:** must link from workspace root, not package subdirectory
 - No authentication implemented yet
 - OpenRouter API key required for AI features
 - Printful/Printify API keys required for manufacturing pricing
@@ -150,12 +118,15 @@ ai/, editor/, layout.tsx, mockup/ (warp-canvas, template-picker, viewer-3d, life
 - **Vectorize** — pixel trace can be memory-intensive on large images
 - **OpenRouter** — provider allowlist must be updated for new AI providers
 - **API client hooks** — run `pnpm --filter @workspace/api-client-react run codegen` after schema changes
+- **pnpm catalog:** — `catalog:` refs only resolve from workspace root; Vercel rootDirectory must be workspace root
 
 ---
 
 ## File Reference
 | Path | Purpose |
 |------|---------|
+| `artifacts/api-server/src/routes/aiGenerate.ts` | AI generation routes (default: gemini-web2api, fallback: openrouter) |
+| `artifacts/design-studio/src/lib/ai-self-heal.ts` | Self-healing AI capability |
 | `artifacts/api-server/src/app.ts` | Express app setup |
 | `artifacts/api-server/src/routes/index.ts` | Route aggregation (14 routes) |
 | `artifacts/api-server/src/routes/projects.ts` | Project CRUD + history |
@@ -171,6 +142,8 @@ ai/, editor/, layout.tsx, mockup/ (warp-canvas, template-picker, viewer-3d, life
 | `artifacts/api-server/src/routes/printProcessing.ts` | Print processing pipeline |
 | `artifacts/design-studio/src/App.tsx` | React app root with routing |
 | `artifacts/design-studio/src/pages/editor.tsx` | Full-screen design editor |
+| `artifacts/design-studio/src/pages/ai.tsx` | AI hub (fixed: removed blocking prompt() calls) |
 | `artifacts/design-studio/src/components/mockup/` | Mockup components (3D, warp, lifestyle) |
 | `lib/db/src/schema/` | All 16 Drizzle table definitions |
 | `lib/integrations/openrouter-ai/` | OpenRouter AI client |
+| `vercel.json` | Vercel config at workspace root |

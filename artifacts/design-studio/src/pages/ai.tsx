@@ -218,6 +218,22 @@ export default function AiHub() {
   const safeJobs = jobsError ? [] : jobs;
 
   const cfg = loadProviderConfig();
+  const [showProviderForm, setShowProviderForm] = useState(false);
+  const [providerChoice, setProviderChoice] = useState<string>(cfg.provider);
+  const [providerKey, setProviderKey] = useState<string>(cfg.apiKey ?? "");
+  const [providerModel, setProviderModel] = useState<string>(cfg.model ?? "");
+
+  const saveProviderForm = () => {
+    const p = providerChoice.trim() as "local" | "nous" | "gemini-web2api" | "openrouter" | "openai" | "groq";
+    if (!["local","nous","gemini-web2api","openrouter","openai","groq"].includes(p)) return;
+    if (p === "local" || p === "gemini-web2api" || p === "nous") {
+      saveProviderConfig({ provider: p });
+    } else {
+      saveProviderConfig({ provider: p, apiKey: providerKey || undefined, model: providerModel || undefined });
+    }
+    toast({ title: "Provider config saved" });
+    setShowProviderForm(false);
+  };
 
   async function handleApprove(imageUrl: string) {
     const pid = activeProjectId;
@@ -264,25 +280,42 @@ export default function AiHub() {
           <Badge
             variant="outline"
             className="text-[10px] gap-1 cursor-pointer"
-            onClick={() => {
-              const providerChoice = prompt("Provider (local / nous / gemini-web2api / openrouter / openai / groq):", cfg.provider);
-              if (providerChoice === null) return;
-              const p = providerChoice.trim() as "local" | "nous" | "gemini-web2api" | "openrouter" | "openai" | "groq";
-              if (!["local","nous","gemini-web2api","openrouter","openai","groq"].includes(p)) return;
-              if (p === "local" || p === "gemini-web2api" || p === "nous") {
-                saveProviderConfig({ provider: p });
-              } else {
-                const key = prompt(`API key for ${p}:`, cfg.apiKey ?? "");
-                if (key === null) return;
-                const model = prompt("Model (leave blank for default):", cfg.model ?? "");
-                saveProviderConfig({ provider: p, apiKey: key || undefined, model: model || undefined });
-              }
-              toast({ title: "Provider config saved" });
-            }}
+            onClick={() => setShowProviderForm((v) => !v)}
           >
             <Zap className="w-3 h-3" />
             {cfg.provider === "local" ? "Built-in AI" : cfg.provider}
           </Badge>
+          {showProviderForm && (
+            <div className="flex items-center gap-2 flex-wrap bg-background border border-border rounded-md p-2">
+              <input
+                type="text"
+                value={providerChoice}
+                onChange={(e) => setProviderChoice(e.target.value)}
+                placeholder="Provider"
+                className="h-7 text-xs rounded border border-border bg-background px-2"
+              />
+              {!["local","nous","gemini-web2api"].includes(providerChoice) && (
+                <>
+                  <input
+                    type="text"
+                    value={providerKey}
+                    onChange={(e) => setProviderKey(e.target.value)}
+                    placeholder="API key"
+                    className="h-7 text-xs rounded border border-border bg-background px-2 w-40"
+                  />
+                  <input
+                    type="text"
+                    value={providerModel}
+                    onChange={(e) => setProviderModel(e.target.value)}
+                    placeholder="Model"
+                    className="h-7 text-xs rounded border border-border bg-background px-2 w-40"
+                  />
+                </>
+              )}
+              <Button size="sm" className="h-7 text-[10px] gap-1" onClick={saveProviderForm}>Save</Button>
+              <Button size="sm" variant="ghost" className="h-7 text-[10px]" onClick={() => setShowProviderForm(false)}>Cancel</Button>
+            </div>
+          )}
           <Select value={String(projectId)} onValueChange={(v) => setProjectId(Number(v))}>
             <SelectTrigger className="h-8 text-xs w-44">
               <SelectValue placeholder="Filter by project…" />
