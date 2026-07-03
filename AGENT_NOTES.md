@@ -101,6 +101,16 @@ ai/, editor/, layout.tsx, mockup/ (warp-canvas, template-picker, viewer-3d, life
 
 ---
 
+## Vercel Deployment Configuration (2026-07-03)
+
+**GitHub Workflow:** `.github/workflows/deploy.yml`
+- Updated to use Vercel deployment instead of GitHub Pages
+- Triggers on push to `main` and pull requests
+- Build: `pnpm --filter @workspace/design-studio run build`
+- Requires secrets: `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`, `VERCEL_GITHUB_TOKEN`
+
+---
+
 ## Known Issues
 - **Vercel monorepo:** must link from workspace root, not package subdirectory
 - No authentication implemented yet
