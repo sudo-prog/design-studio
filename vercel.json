@@ -1,20 +1,10 @@
 {
-  "framework": "vite",
-  "buildCommand": "BASE_PATH=/ pnpm --filter design-studio build",
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "cd artifacts/design-studio && pnpm install && pnpm build",
+  "installCommand": "echo 'install handled in buildCommand'",
   "outputDirectory": "artifacts/design-studio/dist/public",
-  "installCommand": "pnpm install --no-frozen-lockfile",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ],
-  "headers": [
-    {
-      "source": "/index.html",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=0, must-revalidate"
-        }
-      ]
-    }
-  ]
+  "framework": "vite",
+  "env": {
+    "BASE_PATH": "/"
+  }
 }
