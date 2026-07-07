@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "cd artifacts/design-studio && pnpm install && pnpm build",
-  "installCommand": "echo 'install handled in buildCommand'",
+  "buildCommand": "cd artifacts/design-studio && pnpm build",
+  "installCommand": "pnpm install",
   "outputDirectory": "artifacts/design-studio/dist/public",
   "framework": "vite",
   "env": {
