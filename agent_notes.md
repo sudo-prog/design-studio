@@ -61,3 +61,10 @@ Architecture decisions, file structure, API patterns, and known issues.
 - [ ] Apply database migrations (`pnpm db:push` or direct SQL)
 - [ ] Configure `VITE_API_BASE_URL` in Vercel dashboard to point to API server
 - [ ] Configure `OPENROUTER_API_KEY` for AI image generation fallback
+
+## Audit History
+- 2026-07-09: Frontend route audit (chief-of-staff agent)
+  - **Routes**: 14 routes crawled headless (wouter router, no auth gate). All render correct headings + real content (Dashboard, Projects, AI Concept Generation, Color Tools, Mockup Generator, Print Setup, Tech Packs, Manufacturing Hub, Collections, Settings, etc.). 0 JS/React errors, 0 missing chunks.
+  - **Console errors**: All are `/api/*` 500s (api-server needs Postgres/Drizzle — not running locally) + `favicon.svg` 404 (dev-only artifact of forced base path; resolves correctly in Vercel where `BASE_PATH=/`). NOT code bugs.
+  - **Build**: `cd artifacts/design-studio && pnpm build` passes (`vite build && cp -r api dist/public/`, 9.43s, `dist/public/index.html` + assets emitted). Sourcemap warnings harmless.
+  - **Verdict**: UI not broken. No code fixes required. Backend (Postgres) must be provisioned for live data.
