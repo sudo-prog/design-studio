@@ -51,6 +51,7 @@ export function GenerateResultGrid({ images, selected, onSelect, onApprove, onRe
             size="icon"
             variant="ghost"
             className="shrink-0"
+            aria-label="More options"
             onClick={() => {
               const a = document.createElement("a");
               a.href = selected.url;

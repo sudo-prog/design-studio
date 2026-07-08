@@ -161,11 +161,11 @@ function TextOptionsBar() {
       <Separator orientation="vertical" className="h-4" />
 
       {/* Bold / Italic */}
-      <Button size="icon" variant={bold ? "default" : "ghost"} className="w-6 h-6"
+      <Button size="icon" variant={bold ? "default" : "ghost"} className="w-6 h-6" aria-label="Bold"
         onClick={() => { const next = !bold; setBold(next); applyProp({ fontWeight: next ? "bold" : "normal" }); }}>
         <Bold className="w-3 h-3" />
       </Button>
-      <Button size="icon" variant={italic ? "default" : "ghost"} className="w-6 h-6"
+      <Button size="icon" variant={italic ? "default" : "ghost"} className="w-6 h-6" aria-label="Italic"
         onClick={() => { const next = !italic; setItalic(next); applyProp({ fontStyle: next ? "italic" : "normal" }); }}>
         <Italic className="w-3 h-3" />
       </Button>
@@ -176,7 +176,7 @@ function TextOptionsBar() {
       {(["left", "center", "right"] as const).map((align, i) => {
         const Icon = [AlignLeft, AlignCenter, AlignRight][i];
         return (
-          <Button key={align} size="icon" variant="ghost" className="w-6 h-6"
+          <Button key={align} size="icon" variant="ghost" className="w-6 h-6" aria-label={`Align ${align}`}
             onClick={() => applyProp({ textAlign: align })}>
             <Icon className="w-3 h-3" />
           </Button>
@@ -231,7 +231,7 @@ function EditorHeader({ projectId, isSaving, onSave, onExport, onSendToPrint }: 
     <header className="h-10 flex items-center px-2 gap-1 border-b border-border bg-card shrink-0">
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" className="w-8 h-8" asChild>
+          <Button variant="ghost" size="icon" className="w-8 h-8" asChild aria-label="Back to project">
             <Link href={projectId ? `/projects/${projectId}` : "/projects"}>
               <ArrowLeft className="w-4 h-4" />
             </Link>
@@ -248,7 +248,7 @@ function EditorHeader({ projectId, isSaving, onSave, onExport, onSendToPrint }: 
 
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" className="w-8 h-8" onClick={undo} disabled={!canUndo}>
+          <Button variant="ghost" size="icon" className="w-8 h-8" onClick={undo} disabled={!canUndo} aria-label="Undo">
             <Undo2 className="w-3.5 h-3.5" />
           </Button>
         </TooltipTrigger>
@@ -256,7 +256,7 @@ function EditorHeader({ projectId, isSaving, onSave, onExport, onSendToPrint }: 
       </Tooltip>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" className="w-8 h-8" onClick={redo} disabled={!canRedo}>
+          <Button variant="ghost" size="icon" className="w-8 h-8" onClick={redo} disabled={!canRedo} aria-label="Redo">
             <Redo2 className="w-3.5 h-3.5" />
           </Button>
         </TooltipTrigger>

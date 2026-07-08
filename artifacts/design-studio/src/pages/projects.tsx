@@ -175,12 +175,14 @@ export default function Projects() {
             size="icon"
             className="rounded-none h-9 w-9"
             onClick={() => setView("grid")}
+            aria-label="Grid view"
           ><Grid3X3 className="w-4 h-4" /></Button>
           <Button
             variant={view === "list" ? "secondary" : "ghost"}
             size="icon"
             className="rounded-none h-9 w-9"
             onClick={() => setView("list")}
+            aria-label="List view"
           ><List className="w-4 h-4" /></Button>
         </div>
       </div>

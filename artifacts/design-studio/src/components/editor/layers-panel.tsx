@@ -163,7 +163,7 @@ export function LayersPanel() {
         <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Layers</span>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button size="icon" variant="ghost" className="w-6 h-6">
+            <Button size="icon" variant="ghost" className="w-6 h-6" aria-label="Add layer">
               <Plus className="w-3.5 h-3.5" />
             </Button>
           </DropdownMenuTrigger>

@@ -35,7 +35,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen w-full bg-background">
+    <div className="flex min-h-dvh w-full bg-background">
       {/* Mobile overlay */}
       {mobileMenuOpen && (
         <div 
@@ -46,7 +46,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* Sidebar - desktop always visible, mobile drawer */}
       <aside className={cn(
-        "fixed lg:sticky top-0 left-0 z-50 flex flex-col h-screen w-64 border-r border-border bg-background transition-transform duration-300 ease-in-out lg:translate-x-0 lg:w-auto lg:flex-shrink-0",
+        "fixed lg:sticky top-0 left-0 z-50 flex flex-col h-dvh w-64 border-r border-border bg-background transition-transform duration-300 ease-in-out lg:translate-x-0 lg:w-auto lg:flex-shrink-0",
         mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         {/* Mobile header with close */}
@@ -57,7 +57,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </span>
             DESIGN.Studio
           </Link>
-          <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setMobileMenuOpen(false)}>
+          <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setMobileMenuOpen(false)} aria-label="Close menu">
             <X className="w-5 h-5" />
           </Button>
         </div>

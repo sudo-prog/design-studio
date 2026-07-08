@@ -199,7 +199,7 @@ export default function ProjectDetail() {
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex items-center gap-3">
-        <Button asChild variant="ghost" size="icon" className="h-8 w-8">
+        <Button asChild variant="ghost" size="icon" className="h-8 w-8" aria-label="Back to projects">
           <Link href="/projects"><ArrowLeft className="w-4 h-4" /></Link>
         </Button>
         <div className="flex-1 min-w-0">

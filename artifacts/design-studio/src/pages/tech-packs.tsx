@@ -279,7 +279,7 @@ export default function TechPacks() {
                       className="w-32 h-8 text-xs"
                     />
                     {colors.length > 1 && (
-                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => removeColor(i)}>
+                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => removeColor(i)} aria-label={`Remove color ${i + 1}`}>
                         <Trash2 className="w-3 h-3 text-muted-foreground" />
                       </Button>
                     )}

@@ -35,7 +35,7 @@ export default function AiGeneratorWidget() {
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
           <Badge variant="secondary" className="text-[10px]">Ready</Badge>
-          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setIsFlipped(true)}><Settings className="h-3.5 w-3.5" /></Button>
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setIsFlipped(true)} aria-label="Open AI Generator settings"><Settings className="h-3.5 w-3.5" /></Button>
         </div>
       </CardHeader>
       <CardContent className="space-y-3">

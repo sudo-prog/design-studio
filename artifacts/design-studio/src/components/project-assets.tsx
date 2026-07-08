@@ -205,6 +205,7 @@ export function ProjectAssets({ projectId }: ProjectAssetsProps) {
                     variant="destructive"
                     className="h-6 w-6"
                     onClick={(e) => { e.stopPropagation(); handleDelete(asset.id); }}
+                    aria-label={`Delete ${asset.filename ?? "asset"}`}
                   >
                     <Trash2 className="w-3 h-3" />
                   </Button>

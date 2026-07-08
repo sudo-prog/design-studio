@@ -51,7 +51,7 @@ export default function MultiAiImageStudioWidget() {
         <div className="flex items-center gap-2"><Zap className="w-4 h-4 text-blue-400" /><CardTitle className="text-sm">Multi Studio</CardTitle></div>
         <div className="flex items-center gap-2">
           <Badge variant="secondary" className="text-[10px]">{store.generators.filter(g => g.status === 'online').length}/{store.generators.length} active</Badge>
-          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setIsFlipped(true)}><Settings className="h-3.5 w-3.5" /></Button>
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setIsFlipped(true)} aria-label="Open Multi Studio generator settings"><Settings className="h-3.5 w-3.5" /></Button>
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -113,10 +113,10 @@ export default function MultiAiImageStudioWidget() {
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium">{g.name}</span>
               <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => testConnection(g)}>
+                <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => testConnection(g)} aria-label={`Test connection for ${g.name}`}>
                   {g.status === 'online' ? <Power className="w-3 h-3 text-green-400" /> : <PowerOff className="w-3 h-3 text-muted-foreground" />}
                 </Button>
-                <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => store.removeGenerator(g.id)}><Trash2 className="w-3 h-3 text-muted-foreground hover:text-destructive" /></Button>
+                <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => store.removeGenerator(g.id)} aria-label={`Remove generator ${g.name}`}><Trash2 className="w-3 h-3 text-muted-foreground hover:text-destructive" /></Button>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-1.5">

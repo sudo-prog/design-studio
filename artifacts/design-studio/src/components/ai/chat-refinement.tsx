@@ -150,7 +150,7 @@ export function ChatRefinement({ projectId: _projectId, canvasJson }: Props) {
         <p className="text-xs text-muted-foreground">
           AI returns structured change suggestions — accept or reject each one
         </p>
-        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setShowSettings(true)}>
+        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setShowSettings(true)} aria-label="Open chat refinement settings">
           <Settings2 className="w-3.5 h-3.5" />
         </Button>
       </div>
@@ -256,7 +256,7 @@ export function ChatRefinement({ projectId: _projectId, canvasJson }: Props) {
           onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
           className="text-xs h-8"
         />
-        <Button size="icon" className="h-8 w-8 shrink-0" onClick={handleSend} disabled={isSending}>
+        <Button size="icon" className="h-8 w-8 shrink-0" onClick={handleSend} disabled={isSending} aria-label="Send message">
           <Send className="w-3.5 h-3.5" />
         </Button>
       </div>

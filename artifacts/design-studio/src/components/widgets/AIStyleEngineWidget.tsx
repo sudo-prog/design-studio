@@ -90,7 +90,7 @@ export default function AIStyleEngineWidget() {
         </div>
         <div className="flex items-center gap-2">
           <Badge variant="secondary" className="text-[10px]">{store.generators.filter(g => g.status === 'online').length} online</Badge>
-          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setIsFlipped(true)}>
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setIsFlipped(true)} aria-label="Open AI Style Engine settings">
             <Settings className="h-3.5 w-3.5" />
           </Button>
         </div>
