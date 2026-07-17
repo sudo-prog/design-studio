@@ -21,6 +21,7 @@ import { Calculator, Factory, ShoppingCart, TrendingUp, Globe, CheckCircle, Load
 import { cn } from "@/lib/utils";
 import { getApiUrl } from "@/lib/api-url";
 import { format } from "date-fns";
+import { useToast } from "@/hooks/use-toast";
 
 const PRINT_METHODS = [
   { value: "screen_print", label: "Screen Print" },
@@ -64,6 +65,7 @@ export default function Manufacturing() {
   const { data: manufacturers = [], error: mfrsError } = useListManufacturers();
   const { data: orders = [], refetch: refetchOrders, error: ordersError } = useListOrders();
   const createOrderMutation = useCreateOrder();
+  const { toast } = useToast();
 
   const safeProjects = projectsError ? [] : projects;
   const safeManufacturers = mfrsError ? [] : manufacturers;
@@ -96,8 +98,10 @@ export default function Manufacturing() {
         data: { projectId: orderProjectId, manufacturerId: orderMfrId, quantity: orderQty },
       });
       await refetchOrders();
+      toast({ title: "Order placed", description: "Submitted to manufacturing queue." });
     } catch (err) {
       console.error(err);
+      toast({ title: "Order failed", description: "Could not place the order.", variant: "destructive" });
     }
   }
 
@@ -127,8 +131,10 @@ export default function Manufacturing() {
       a.href = url;
       a.download = "rfq.pdf";
       a.click();
+      toast({ title: "RFQ downloaded", description: "Request for Quotation PDF generated." });
     } catch (err) {
       console.error(err);
+      toast({ title: "RFQ failed", description: "Could not generate the PDF.", variant: "destructive" });
     } finally {
       setRfqGenerating(false);
     }

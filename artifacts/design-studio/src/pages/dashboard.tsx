@@ -1,4 +1,4 @@
-import { useGetDashboardSummary, useGetRecentActivity } from "@workspace/api-client-react";
+import { useGetDashboardSummary, useGetRecentActivity, getGetDashboardSummaryQueryKey, getGetRecentActivityQueryKey } from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Activity, Folder, Image as ImageIcon, Printer, CheckCircle, Sparkles } from "lucide-react";
@@ -10,8 +10,8 @@ export default function Dashboard() {
   // no backend, so skip these queries to avoid 404 console errors. Local dev
   // (DEV) or an explicit VITE_API_ENABLED opt-in keeps them active.
   const apiEnabled = import.meta.env.DEV || import.meta.env.VITE_API_ENABLED === 'true';
-  const { data: summary, isLoading: loadingSummary, error: summaryError } = useGetDashboardSummary({ query: { enabled: apiEnabled } });
-  const { data: activity, isLoading: loadingActivity, error: activityError } = useGetRecentActivity({ limit: 10 }, { query: { enabled: apiEnabled } });
+  const { data: summary, isLoading: loadingSummary, error: summaryError } = useGetDashboardSummary({ query: { enabled: apiEnabled, queryKey: getGetDashboardSummaryQueryKey() } });
+  const { data: activity, isLoading: loadingActivity, error: activityError } = useGetRecentActivity({ limit: 10 }, { query: { enabled: apiEnabled, queryKey: getGetRecentActivityQueryKey({ limit: 10 }) } });
 
   // Gracefully handle API errors (e.g. on Vercel SPA rewrite, /api/* returns HTML)
   const hasError = summaryError || activityError;

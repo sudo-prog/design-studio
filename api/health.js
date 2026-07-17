@@ -1,3 +1,2 @@
-export default function handler(req, res) {
-  res.status(200).json({ status: 'ok', app: 'design-studio' })
-}
+const c = require("../_core.js");
+export default function handler(req, res) { c.health(res); }

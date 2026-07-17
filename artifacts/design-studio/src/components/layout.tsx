@@ -9,6 +9,7 @@ import {
   FileText, 
   Factory, 
   Library,
+  Images,
   Plus,
   Settings,
   Menu,
@@ -28,6 +29,7 @@ const NAV_ITEMS = [
   { title: "Tech Packs", url: "/tech-packs", icon: FileText },
   { title: "Manufacturing", url: "/manufacturing", icon: Factory },
   { title: "Collections", url: "/collections", icon: Library },
+  { title: "Assets", url: "/assets", icon: Images },
 ];
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
