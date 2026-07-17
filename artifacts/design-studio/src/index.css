@@ -129,3 +129,19 @@ table {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
+
+/* Mobile UI hardening: prevent horizontal overflow + make tables wrap.
+   Tap-target enforcement (T-1: >=44x44px) is applied in the @layer base
+   block below for pointer:coarse / <=767px viewports. */
+@media (max-width: 767px) {
+  table { table-layout: fixed; width: 100% !important; }
+  table th, table td { word-break: break-word; overflow-wrap: anywhere; white-space: normal; }
+}
+html, body { max-width: 100%; overflow-x: clip; }
+
+/* T-1: enforce mobile tap targets >= 44x44px on touch / narrow viewports. */
+@layer base {
+  @media (pointer: coarse), (max-width: 767px) {
+    button, a[role="button"], [role="button"], input[type="button"], input[type="submit"], .btn, [class*="btn"], [class*="button"], [class*="nav-item"], [class*="toolbar"] [class*="button"] { min-height: 44px; min-width: 44px; }
+  }
+}

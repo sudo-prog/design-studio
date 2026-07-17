@@ -9,6 +9,13 @@ export function useImageGenerators() {
 
   const testConnection = useCallback(
     async (generator: ImageGeneratorConfig): Promise<boolean> => {
+      // Skip connectivity pings for obviously-local mock endpoints
+      // (e.g. http://localhost:9000). On a deployed build there is no local
+      // server, so pinging them only produces console errors (ERR_CONNECTION_REFUSED).
+      if (/^(https?:\/\/)?(localhost|127\.0\.0\.1)(:\d+)?(\/|$)/i.test(generator.baseUrl)) {
+        updateGeneratorStatus(generator.id, 'offline')
+        return false
+      }
       try {
         if (generator.type === 'drawthings') {
           const res = await fetch(`${generator.baseUrl}/sdapi/v1/options`, {

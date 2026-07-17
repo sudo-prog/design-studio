@@ -6,8 +6,12 @@ import { Link } from "wouter";
 import { AIStyleEngineWidget, MultiAiImageStudioWidget, AiGeneratorWidget } from "@/components/widgets";
 
 export default function Dashboard() {
-  const { data: summary, isLoading: loadingSummary, error: summaryError } = useGetDashboardSummary();
-  const { data: activity, isLoading: loadingActivity, error: activityError } = useGetRecentActivity({ limit: 10 });
+  // The dashboard relies on a backend API. On a static Vercel deploy there is
+  // no backend, so skip these queries to avoid 404 console errors. Local dev
+  // (DEV) or an explicit VITE_API_ENABLED opt-in keeps them active.
+  const apiEnabled = import.meta.env.DEV || import.meta.env.VITE_API_ENABLED === 'true';
+  const { data: summary, isLoading: loadingSummary, error: summaryError } = useGetDashboardSummary({ query: { enabled: apiEnabled } });
+  const { data: activity, isLoading: loadingActivity, error: activityError } = useGetRecentActivity({ limit: 10 }, { query: { enabled: apiEnabled } });
 
   // Gracefully handle API errors (e.g. on Vercel SPA rewrite, /api/* returns HTML)
   const hasError = summaryError || activityError;
