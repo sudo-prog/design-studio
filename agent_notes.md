@@ -68,3 +68,7 @@ Architecture decisions, file structure, API patterns, and known issues.
   - **Console errors**: All are `/api/*` 500s (api-server needs Postgres/Drizzle — not running locally) + `favicon.svg` 404 (dev-only artifact of forced base path; resolves correctly in Vercel where `BASE_PATH=/`). NOT code bugs.
   - **Build**: `cd artifacts/design-studio && pnpm build` passes (`vite build && cp -r api dist/public/`, 9.43s, `dist/public/index.html` + assets emitted). Sourcemap warnings harmless.
   - **Verdict**: UI not broken. No code fixes required. Backend (Postgres) must be provisioned for live data.
+## Mobile UI Compliance (MOBILE-UI-STANDARD.md)
+- **Status:** PASS (live: design-studio-beryl.vercel.app; console 6->0, taps 59->0)
+- **Verified:** 2026-07-17 via /tmp/mobile_audit.mjs @390x844 (tap-target >=44px T-1, overflow, safe-area, console errors)
+- **T-1 fix:** enforce 44x44px on touch/coarse + <=767px; backend API queries gated behind DEV||VITE_API_ENABLED to silence 404s on static Vercel deploy.
