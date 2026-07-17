@@ -49,3 +49,7 @@
 - [ ] E2E tests
 - [ ] Performance optimization
 - [ ] Deployment pipeline
+
+## 2026-07-17 (evening) — Deploy reconciliation
+- Redeployed committed state to prod after crash left URL at 404 → design-studio-beryl.vercel.app now HTTP 200.
+- IMPORTANT: the uncommitted `api/` backend feature (Phase 2: generate/jobs/style-transfer/mockups/projects/tech-packs etc, 25 files) was HELD BACK from this deploy (stash → deploy committed → pop). It is unverified and no frontend imports it yet. Do NOT deploy until wired + tested.
