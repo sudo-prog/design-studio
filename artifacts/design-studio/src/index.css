@@ -139,9 +139,47 @@ table {
 }
 html, body { max-width: 100%; overflow-x: clip; }
 
-/* T-1: enforce mobile tap targets >= 44x44px on touch / narrow viewports. */
+/* T-1: enforce mobile tap targets >= 44x44px on touch / narrow viewports.
+   Split into two floors:
+   - min-HEIGHT applies to every button/link/role=button. min-height is
+     ignored by inline prose <a> (CSS spec), so this never blows out
+     body-copy links — only block/flex control links grow.
+   - min-WIDTH is scoped to actual controls (buttons, role=button, .btn*,
+     nav-item, and flex/inline-flex anchor controls). We deliberately do
+     NOT blanket min-width:44px on every <a> (prose/footer links) to
+     avoid horizontal overflow. */
 @layer base {
   @media (pointer: coarse), (max-width: 767px) {
-    button, a[role="button"], [role="button"], input[type="button"], input[type="submit"], .btn, [class*="btn"], [class*="button"], [class*="nav-item"], [class*="toolbar"] [class*="button"] { min-height: 44px; min-width: 44px; }
+    button,
+    a,
+    [role="button"],
+    input[type="button"],
+    input[type="submit"],
+    .btn,
+    [class*="btn"],
+    [class*="button"],
+    [class*="icon"],
+    [class*="trigger"],
+    [class*="nav-item"],
+    [class*="toolbar"] [class*="button"] {
+      min-height: 44px !important;
+    }
+
+    button,
+    a[role="button"],
+    [role="button"],
+    input[type="button"],
+    input[type="submit"],
+    .btn,
+    [class*="btn"],
+    [class*="button"],
+    [class*="nav-item"],
+    a.flex,
+    a.inline-flex,
+    [class*="icon"],
+    [class*="trigger"],
+    [class*="toolbar"] [class*="button"] {
+      min-width: 44px !important;
+    }
   }
 }
