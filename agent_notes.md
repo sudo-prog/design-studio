@@ -71,4 +71,17 @@ Architecture decisions, file structure, API patterns, and known issues.
 ## Mobile UI Compliance (MOBILE-UI-STANDARD.md)
 - **Status:** PASS (live: design-studio-beryl.vercel.app; console 6->0, taps 59->0)
 - **Verified:** 2026-07-17 via /tmp/mobile_audit.mjs @390x844 (tap-target >=44px T-1, overflow, safe-area, console errors)
-- **T-1 fix:** enforce 44x44px on touch/coarse + <=767px; backend API queries gated behind DEV||VITE_API_ENABLED to silence 404s on static Vercel deploy.
+- **T-1 fix:** enforce 44x44px on touch/coarse + <=767px.
+- **CORRECTION (2026-07-17 night):** The "gated behind DEV||VITE_API_ENABLED to silence 404s" note is now OUTDATED. The Phase-2 mock `api/` backend IS deployed and `VITE_API_ENABLED=true` is set on Vercel prod, so the frontend now actually calls the live API (dashboard renders from `/api/dashboard/summary`).
+
+## Phase 2 Frontend↔Backend Integration — 2026-07-17 (night) — COMPLETE + LIVE
+- A prior subagent falsely reported "done": the frontend made ZERO `/api` calls and `VITE_API_ENABLED` was `false` in prod. Integration never happened until this session.
+- What shipped + is VERIFIED live at `design-studio-beryl.vercel.app`:
+  - `VITE_API_ENABLED=true` set on Vercel prod (dashboard gate now on).
+  - `api/` consolidated from 11 fragmented files into ONE `api/index.js` catch-all router (imports `_core.js` mock surface — in-memory, NO database).
+  - `vercel.json` rewrite `"\/api\/(.*)" -> "\/api"` added because Vercel does NOT auto-funnel `/api/foo/bar` to `api/foo.js` (it looks for a file at the exact path) — without this, all sub-paths 404.
+  - Fixed `health.js` `require("../_core.js")` bug (crashed -> `FUNCTION_INVOCATION_FAILED`).
+- VERIFIED: 14/15 client-contract `/api/*` endpoints return 200 with real JSON (healthz, dashboard/summary+activity, projects, collections, tech-packs, mockups, mockup-templates, print-jobs, colors/extract, manufacturing/manufacturers+pricing, ai/jobs, assets). `/api/assets/1` returns the designed 404 (`"Asset not found"`) — legitimate empty mock state.
+- Live dashboard renders from `/api/dashboard/summary`. Backend is MOCK/IN-MEMORY (no DB). AI endpoints (generate/style-transfer/remove-bg) return 501 by design.
+- The separate `artifacts/api-server/` (Express 5 + Drizzle + Postgres) described above is a DIFFERENT, unrealized real-backend plan — NOT deployed. The shipped `api/` is the standalone mock serverless layer.
+- Deploys are REMOTE (Vercel builds in-cloud) -> zero local RAM impact.
