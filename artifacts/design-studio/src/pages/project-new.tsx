@@ -221,7 +221,7 @@ export default function NewProject() {
                           type="button"
                           onClick={() => field.onChange(v)}
                           className={cn(
-                            "text-xs px-3 py-2 rounded-md border transition-all text-left",
+                            "text-xs px-3 py-2 min-h-[44px] rounded-md border transition-all text-left",
                             field.value === v
                               ? "border-primary bg-primary/10 text-primary"
                               : "border-border hover:border-primary/50 text-muted-foreground"
@@ -244,7 +244,7 @@ export default function NewProject() {
                         type="button"
                         onClick={() => setSelectedPalette(p.colors)}
                         className={cn(
-                          "flex items-center gap-3 p-2 rounded-md border transition-all text-left",
+                          "flex items-center gap-3 p-2 min-h-[44px] rounded-md border transition-all text-left",
                           JSON.stringify(selectedPalette) === JSON.stringify(p.colors)
                             ? "border-primary bg-primary/10"
                             : "border-border hover:border-primary/50"
@@ -259,12 +259,12 @@ export default function NewProject() {
                       </button>
                     ))}
                   </div>
-                  <div className="flex items-center gap-2 mt-2">
+                  <div className="flex flex-wrap items-center gap-2 mt-2">
                     <input
                       type="color"
                       value={customColor}
                       onChange={(e) => setCustomColor(e.target.value)}
-                      className="w-8 h-8 rounded cursor-pointer border-0 bg-transparent p-0"
+                      className="w-8 h-8 min-h-[44px] min-w-[44px] rounded cursor-pointer border-0 bg-transparent p-0"
                     />
                     <Button type="button" variant="outline" size="sm" onClick={() => addColor(customColor)}>
                       Add custom color
@@ -274,7 +274,7 @@ export default function NewProject() {
                         {selectedPalette.map((c, i) => (
                           <div
                             key={i}
-                            className="w-6 h-6 rounded-full border border-border cursor-pointer hover:scale-110 transition-transform"
+                            className="w-6 h-6 min-h-[44px] min-w-[44px] rounded-full border border-border cursor-pointer hover:scale-110 transition-transform"
                             style={{ backgroundColor: c }}
                             title={`Remove ${c}`}
                             onClick={() => setSelectedPalette((p) => p.filter((x) => x !== c))}
@@ -311,7 +311,7 @@ export default function NewProject() {
                     <FormLabel>Print Method</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <SelectTrigger>
+                        <SelectTrigger className="min-h-[44px]">
                           <SelectValue placeholder="Select method" />
                         </SelectTrigger>
                       </FormControl>
@@ -361,7 +361,7 @@ export default function NewProject() {
             <CardDescription>Confirm your project details before creating.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {[
                 { label: "Name", value: wizardData.name },
                 { label: "Category", value: wizardData.category || "—" },

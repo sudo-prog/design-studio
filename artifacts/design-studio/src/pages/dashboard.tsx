@@ -25,7 +25,7 @@ export default function Dashboard() {
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="Active Projects"
           value={safeSummary?.activeProjects}
@@ -67,7 +67,7 @@ export default function Dashboard() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             <AIStyleEngineWidget />
             <MultiAiImageStudioWidget />
             <AiGeneratorWidget />
@@ -96,7 +96,7 @@ export default function Dashboard() {
                       <p className="text-sm font-medium leading-none">
                         {entry.description}
                       </p>
-                      <div className="flex items-center text-xs text-muted-foreground gap-2">
+                      <div className="flex flex-wrap items-center text-xs text-muted-foreground gap-2">
                         {entry.projectName && (
                           <Link href={`/projects/${entry.projectId}`} className="hover:text-primary transition-colors">
                             {entry.projectName}

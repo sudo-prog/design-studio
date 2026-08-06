@@ -199,7 +199,7 @@ export default function ProjectDetail() {
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex items-center gap-3">
-        <Button asChild variant="ghost" size="icon" className="h-8 w-8" aria-label="Back to projects">
+        <Button asChild variant="ghost" size="icon" className="min-h-[44px] min-w-[44px]" aria-label="Back to projects">
           <Link href="/projects"><ArrowLeft className="w-4 h-4" /></Link>
         </Button>
         <div className="flex-1 min-w-0">
@@ -216,7 +216,7 @@ export default function ProjectDetail() {
             {project.category && `${project.category} · `}Updated {timeAgo(project.updatedAt)}
           </p>
         </div>
-        <Button asChild size="sm" className="gap-1.5">
+        <Button asChild size="sm" className="gap-1.5 min-h-[44px]">
           <Link href={`/projects/${id}/editor`}>
             <Layers className="w-3.5 h-3.5" /> Open Editor
           </Link>
@@ -227,11 +227,11 @@ export default function ProjectDetail() {
       </div>
 
       <Tabs defaultValue="overview">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="moodboard">Mood Board</TabsTrigger>
-          <TabsTrigger value="assets">Assets</TabsTrigger>
-          <TabsTrigger value="history">History</TabsTrigger>
+        <TabsList className="min-h-[44px]">
+          <TabsTrigger className="min-h-[44px]" value="overview">Overview</TabsTrigger>
+          <TabsTrigger className="min-h-[44px]" value="moodboard">Mood Board</TabsTrigger>
+          <TabsTrigger className="min-h-[44px]" value="assets">Assets</TabsTrigger>
+          <TabsTrigger className="min-h-[44px]" value="history">History</TabsTrigger>
         </TabsList>
 
         {/* ── OVERVIEW ── */}
@@ -249,7 +249,7 @@ export default function ProjectDetail() {
             <CardContent>
               {isEditingOverview ? (
                 <div className="space-y-4">
-                  <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
                     <div className="space-y-1.5">
                       <Label>Name</Label>
                       <Input value={editName} onChange={(e) => setEditName(e.target.value)} />
@@ -262,7 +262,7 @@ export default function ProjectDetail() {
                   <div className="space-y-1.5">
                     <Label>Status</Label>
                     <Select value={editStatus} onValueChange={setEditStatus}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectTrigger className="min-h-[44px]"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         {STATUS_OPTIONS.map((s) => (
                           <SelectItem key={s} value={s}>{s.replace("_", " ")}</SelectItem>
@@ -283,7 +283,7 @@ export default function ProjectDetail() {
                   </div>
                 </div>
               ) : (
-                <div className="grid gap-3 sm:grid-cols-2">
+                <div className="grid gap-3 grid-cols-1 sm:grid-cols-2">
                   {[
                     { icon: Hash, label: "Category", value: project.category ?? "—" },
                     { icon: Printer, label: "Print Method", value: (project.printMethod ?? "—").replace(/_/g, " ") },
@@ -336,7 +336,7 @@ export default function ProjectDetail() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-3 grid-cols-1 sm:grid-cols-2">
                 <div className="space-y-1.5">
                   <Label>Repository (owner/repo)</Label>
                   <Input placeholder="e.g. myuser/my-designs" value={githubRepo} onChange={(e) => setGithubRepo(e.target.value)} />

@@ -111,7 +111,7 @@ export default function Projects() {
             {showSkeletons ? "Loading…" : `${filtered.length} of ${safeProjects.length} project${safeProjects.length !== 1 ? "s" : ""}`}
           </p>
         </div>
-        <Button asChild>
+        <Button asChild className="min-h-[44px]">
           <Link href="/projects/new">
             <Plus className="w-4 h-4 mr-2" />
             New Project
@@ -129,13 +129,13 @@ export default function Projects() {
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search projects…"
-            className="pl-8"
+            className="pl-8 min-h-[44px]"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-36">
+          <SelectTrigger className="w-36 min-h-[44px]">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -148,7 +148,7 @@ export default function Projects() {
         </Select>
         {categories.length > 0 && (
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-36">
+            <SelectTrigger className="w-36 min-h-[44px]">
               <SelectValue placeholder="Category" />
             </SelectTrigger>
             <SelectContent>
@@ -160,7 +160,7 @@ export default function Projects() {
           </Select>
         )}
         <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
-          <SelectTrigger className="w-36">
+          <SelectTrigger className="w-36 min-h-[44px]">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
           <SelectContent>
@@ -173,14 +173,14 @@ export default function Projects() {
           <Button
             variant={view === "grid" ? "secondary" : "ghost"}
             size="icon"
-            className="rounded-none h-9 w-9"
+            className="rounded-none min-h-[44px] min-w-[44px]"
             onClick={() => setView("grid")}
             aria-label="Grid view"
           ><Grid3X3 className="w-4 h-4" /></Button>
           <Button
             variant={view === "list" ? "secondary" : "ghost"}
             size="icon"
-            className="rounded-none h-9 w-9"
+            className="rounded-none min-h-[44px] min-w-[44px]"
             onClick={() => setView("list")}
             aria-label="List view"
           ><List className="w-4 h-4" /></Button>
@@ -203,11 +203,11 @@ export default function Projects() {
             {search ? "Try a different search term." : "Create your first project to start designing."}
           </p>
           {!search && statusFilter === "all" && categoryFilter === "all" && (
-            <Button asChild><Link href="/projects/new">Create Project</Link></Button>
+            <Button asChild className="min-h-[44px]"><Link href="/projects/new">Create Project</Link></Button>
           )}
         </div>
       ) : view === "grid" ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {filtered.map((project) => (
             <Link key={project.id} href={`/projects/${project.id}`}>
               <Card className="hover-elevate cursor-pointer transition-all border-border hover:border-primary/50 group h-full overflow-hidden">

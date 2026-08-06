@@ -124,7 +124,7 @@ export default function Colors() {
               value={projectId ? String(projectId) : ""}
               onValueChange={(v) => setProjectId(Number(v))}
             >
-              <SelectTrigger>
+              <SelectTrigger className="min-h-[44px]">
                 <SelectValue placeholder="Select a project…" />
               </SelectTrigger>
               <SelectContent>
@@ -180,6 +180,7 @@ export default function Colors() {
                 placeholder="https://…/design.png"
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
+                className="min-h-[44px]"
               />
             </div>
             <input
@@ -195,12 +196,12 @@ export default function Colors() {
                 reader.readAsDataURL(file);
               }}
             />
-            <div className="flex gap-2">
-              <Button onClick={handleExtract} disabled={extracting || !imageUrl.trim()} className="gap-1.5">
+            <div className="flex flex-wrap gap-2">
+              <Button onClick={handleExtract} disabled={extracting || !imageUrl.trim()} className="gap-1.5 min-h-[44px]">
                 {extracting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
                 {extracting ? "Extracting…" : "Extract Colors"}
               </Button>
-              <Button variant="outline" onClick={() => fileInputRef.current?.click()}>
+              <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="min-h-[44px]">
                 Use local file
               </Button>
             </div>
@@ -229,17 +230,18 @@ export default function Colors() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="pal-name">Save as palette</Label>
-                      <div className="flex gap-2">
+                      <div className="flex flex-wrap gap-2">
                         <Input
                           id="pal-name"
                           placeholder="Palette name"
                           value={paletteName}
                           onChange={(e) => setPaletteName(e.target.value)}
+                          className="min-h-[44px]"
                         />
                         <Button
                           onClick={handleSavePalette}
                           disabled={!projectId || createPalette.isPending}
-                          className="gap-1.5"
+                          className="gap-1.5 min-h-[44px]"
                         >
                           {createPalette.isPending ? (
                             <Loader2 className="w-4 h-4 animate-spin" />

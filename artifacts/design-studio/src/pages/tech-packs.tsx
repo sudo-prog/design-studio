@@ -191,7 +191,7 @@ export default function TechPacks() {
               <div className="space-y-2">
                 <Label>Project *</Label>
                 <Select value={selectedProject?.toString() ?? ""} onValueChange={(v) => setSelectedProject(Number(v))}>
-                  <SelectTrigger><SelectValue placeholder="Select project…" /></SelectTrigger>
+                  <SelectTrigger className="min-h-[44px]"><SelectValue placeholder="Select project…" /></SelectTrigger>
                   <SelectContent>
                     {safeProjects.map((p) => (
                       <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>
@@ -201,16 +201,16 @@ export default function TechPacks() {
               </div>
               <div className="space-y-2">
                 <Label>Tech Pack Title</Label>
-                <Input placeholder="e.g. SS25 Drop 1 Tech Pack" value={title} onChange={(e) => setTitle(e.target.value)} />
+                <Input placeholder="e.g. SS25 Drop 1 Tech Pack" className="min-h-[44px]" value={title} onChange={(e) => setTitle(e.target.value)} />
               </div>
               <div className="space-y-2">
                 <Label>Designer / Studio</Label>
-                <Input placeholder="Your name or studio" value={designer} onChange={(e) => setDesigner(e.target.value)} />
+                <Input placeholder="Your name or studio" className="min-h-[44px]" value={designer} onChange={(e) => setDesigner(e.target.value)} />
               </div>
               <div className="space-y-2">
                 <Label>Garment Type</Label>
                 <Select value={garmentType} onValueChange={setGarmentType}>
-                  <SelectTrigger><SelectValue placeholder="Select garment…" /></SelectTrigger>
+                  <SelectTrigger className="min-h-[44px]"><SelectValue placeholder="Select garment…" /></SelectTrigger>
                   <SelectContent>
                     {GARMENT_TYPES.map((g) => <SelectItem key={g} value={g}>{g}</SelectItem>)}
                   </SelectContent>
@@ -219,7 +219,7 @@ export default function TechPacks() {
               <div className="space-y-2">
                 <Label>Print Method</Label>
                 <Select value={printMethod} onValueChange={setPrintMethod}>
-                  <SelectTrigger><SelectValue placeholder="Select method…" /></SelectTrigger>
+                  <SelectTrigger className="min-h-[44px]"><SelectValue placeholder="Select method…" /></SelectTrigger>
                   <SelectContent>
                     {PRINT_METHODS.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}
                   </SelectContent>
@@ -228,7 +228,7 @@ export default function TechPacks() {
               <div className="space-y-2">
                 <Label>Print Placement</Label>
                 <Select value={placement} onValueChange={setPlacement}>
-                  <SelectTrigger><SelectValue placeholder="Select placement…" /></SelectTrigger>
+                  <SelectTrigger className="min-h-[44px]"><SelectValue placeholder="Select placement…" /></SelectTrigger>
                   <SelectContent>
                     {PLACEMENTS.map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}
                   </SelectContent>
@@ -236,7 +236,7 @@ export default function TechPacks() {
               </div>
               <div className="space-y-2">
                 <Label>Print Dimensions (W × H)</Label>
-                <Input placeholder='e.g. 10" × 12"' value={dimensions} onChange={(e) => setDimensions(e.target.value)} />
+                <Input placeholder='e.g. 10" × 12"' className="min-h-[44px]" value={dimensions} onChange={(e) => setDimensions(e.target.value)} />
               </div>
             </div>
 
@@ -246,7 +246,7 @@ export default function TechPacks() {
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <Label className="text-base font-semibold">Color Specifications</Label>
-                <Button variant="outline" size="sm" onClick={addColor}>
+                <Button variant="outline" size="sm" className="min-h-[44px]" onClick={addColor}>
                   <Plus className="w-3 h-3 mr-1" />Add Color
                 </Button>
               </div>
@@ -258,28 +258,28 @@ export default function TechPacks() {
                       type="color"
                       value={/^#[0-9a-fA-F]{6}$/.test(color.hex) ? color.hex : "#000000"}
                       onChange={(e) => updateColor(i, "hex", e.target.value)}
-                      className="w-7 h-7 cursor-pointer rounded border-0 bg-transparent p-0"
+                      className="min-h-[44px] min-w-[44px] cursor-pointer rounded border-0 bg-transparent p-0"
                     />
                     <Input
                       placeholder="Color name"
                       value={color.name}
                       onChange={(e) => updateColor(i, "name", e.target.value)}
-                      className="flex-1 h-8"
+                      className="flex-1 min-h-[44px]"
                     />
                     <Input
                       placeholder="Pantone"
                       value={color.pantone}
                       onChange={(e) => updateColor(i, "pantone", e.target.value)}
-                      className="w-24 h-8 text-xs"
+                      className="w-24 min-h-[44px] text-xs"
                     />
                     <Input
                       placeholder="CMYK"
                       value={color.cmyk}
                       onChange={(e) => updateColor(i, "cmyk", e.target.value)}
-                      className="w-32 h-8 text-xs"
+                      className="w-32 min-h-[44px] text-xs"
                     />
                     {colors.length > 1 && (
-                      <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => removeColor(i)} aria-label={`Remove color ${i + 1}`}>
+                      <Button variant="ghost" size="icon" className="min-h-[44px] min-w-[44px]" onClick={() => removeColor(i)} aria-label={`Remove color ${i + 1}`}>
                         <Trash2 className="w-3 h-3 text-muted-foreground" />
                       </Button>
                     )}
@@ -308,7 +308,7 @@ export default function TechPacks() {
                 <Label className="text-base font-semibold">PDF Page Order</Label>
                 <button
                   type="button"
-                  className="text-xs text-primary hover:underline"
+                  className="text-xs text-primary hover:underline min-h-[44px]"
                   onClick={() => setPageOrder([...DEFAULT_PAGE_ORDER])}
                 >
                   Reset default
@@ -321,7 +321,7 @@ export default function TechPacks() {
             {/* Generate + PDF preview */}
             <div className="space-y-3">
               <Button
-                className="w-full"
+                className="w-full min-h-[44px]"
                 disabled={!selectedProject || generatingPdf}
                 onClick={generatePdf}
               >
@@ -336,7 +336,7 @@ export default function TechPacks() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <Badge variant="secondary" className="bg-green-500/10 text-green-500">PDF Ready</Badge>
-                    <Button size="sm" onClick={downloadPdf}>
+                    <Button size="sm" className="min-h-[44px]" onClick={downloadPdf}>
                       <Download className="w-3 h-3 mr-1" />Download PDF
                     </Button>
                   </div>
@@ -357,7 +357,7 @@ export default function TechPacks() {
         <div className="flex items-center gap-3">
           <h2 className="text-lg font-semibold">Saved Tech Packs</h2>
           <Select value={selectedProject?.toString() ?? "all"} onValueChange={(v) => setSelectedProject(v === "all" ? null : Number(v))}>
-            <SelectTrigger className="w-44 h-8">
+            <SelectTrigger className="w-44 min-h-[44px]">
               <SelectValue placeholder="All projects" />
             </SelectTrigger>
             <SelectContent>

@@ -68,10 +68,10 @@ function JobCard({ job, onApprove, onReject }: { job: AiJob; onApprove: () => vo
       )}
       {job.status === "completed" && (
         <div className="flex gap-1.5">
-          <Button size="sm" className="h-6 text-[10px] gap-1" onClick={onApprove}>
+          <Button size="sm" className="min-h-[44px] h-6 text-[10px] gap-1" onClick={onApprove}>
             <CheckCircle className="w-3 h-3" />Approve
           </Button>
-          <Button size="sm" variant="outline" className="h-6 text-[10px] gap-1" onClick={onReject}>
+          <Button size="sm" variant="outline" className="min-h-[44px] h-6 text-[10px] gap-1" onClick={onReject}>
             <XCircle className="w-3 h-3" />Reject
           </Button>
         </div>
@@ -178,7 +178,7 @@ function StyleTransferPanel({ projectId, onApprove, onJobCreated }: StyleTransfe
       <input ref={designRef} type="file" accept="image/*" className="hidden" onChange={(e) => readFile(e, setDesignPreview)} />
       <input ref={styleRef} type="file" accept="image/*" className="hidden" onChange={(e) => readFile(e, setStylePreview)} />
 
-      <Button className="w-full h-8 text-xs gap-1.5" onClick={handleTransfer} disabled={isRunning}>
+      <Button className="w-full min-h-[44px] h-8 text-xs gap-1.5" onClick={handleTransfer} disabled={isRunning}>
         {isRunning
           ? <><Loader2 className="w-3.5 h-3.5 animate-spin" />Transferring…</>
           : <><Sparkles className="w-3.5 h-3.5" />Transfer Style</>
@@ -189,13 +189,13 @@ function StyleTransferPanel({ projectId, onApprove, onJobCreated }: StyleTransfe
         <div className="space-y-2">
           <img src={result} alt="Style transfer result" className="w-full rounded border border-border" />
           <div className="flex gap-2">
-            <Button size="sm" className="flex-1 gap-1 h-7 text-xs" onClick={() => onApprove(result)}>
+            <Button size="sm" className="flex-1 gap-1 min-h-[44px] h-7 text-xs" onClick={() => onApprove(result)}>
               <CheckCircle className="w-3 h-3" />Approve & Save
             </Button>
-            <Button size="sm" variant="outline" className="flex-1 gap-1 h-7 text-xs" onClick={() => { setResult(null); handleTransfer(); }}>
+            <Button size="sm" variant="outline" className="flex-1 gap-1 min-h-[44px] h-7 text-xs" onClick={() => { setResult(null); handleTransfer(); }}>
               <Sparkles className="w-3 h-3" />Re-run
             </Button>
-            <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setResult(null)}>
+            <Button size="sm" variant="ghost" className="min-h-[44px] h-7 text-xs" onClick={() => setResult(null)}>
               <XCircle className="w-3 h-3" />Discard
             </Button>
           </div>
@@ -292,7 +292,7 @@ export default function AiHub() {
                 value={providerChoice}
                 onChange={(e) => setProviderChoice(e.target.value)}
                 placeholder="Provider"
-                className="h-7 text-xs rounded border border-border bg-background px-2"
+                className="min-h-[44px] text-xs rounded border border-border bg-background px-2"
               />
               {!["local","nous","gemini-web2api"].includes(providerChoice) && (
                 <>
@@ -301,23 +301,23 @@ export default function AiHub() {
                     value={providerKey}
                     onChange={(e) => setProviderKey(e.target.value)}
                     placeholder="API key"
-                    className="h-7 text-xs rounded border border-border bg-background px-2 w-40"
+                    className="min-h-[44px] text-xs rounded border border-border bg-background px-2 w-40"
                   />
                   <input
                     type="text"
                     value={providerModel}
                     onChange={(e) => setProviderModel(e.target.value)}
                     placeholder="Model"
-                    className="h-7 text-xs rounded border border-border bg-background px-2 w-40"
+                    className="min-h-[44px] text-xs rounded border border-border bg-background px-2 w-40"
                   />
                 </>
               )}
-              <Button size="sm" className="h-7 text-[10px] gap-1" onClick={saveProviderForm}>Save</Button>
-              <Button size="sm" variant="ghost" className="h-7 text-[10px]" onClick={() => setShowProviderForm(false)}>Cancel</Button>
+              <Button size="sm" className="min-h-[44px] h-7 text-[10px] gap-1" onClick={saveProviderForm}>Save</Button>
+              <Button size="sm" variant="ghost" className="min-h-[44px] h-7 text-[10px]" onClick={() => setShowProviderForm(false)}>Cancel</Button>
             </div>
           )}
           <Select value={String(projectId)} onValueChange={(v) => setProjectId(Number(v))}>
-            <SelectTrigger className="h-8 text-xs w-44">
+            <SelectTrigger className="min-h-[44px] text-xs w-44">
               <SelectValue placeholder="Filter by project…" />
             </SelectTrigger>
             <SelectContent>
@@ -371,7 +371,7 @@ export default function AiHub() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold">Generation History</h2>
-            <Button size="sm" variant="ghost" onClick={() => refetch()} className="h-7 text-xs">
+            <Button size="sm" variant="ghost" onClick={() => refetch()} className="min-h-[44px] h-7 text-xs">
               Refresh
             </Button>
           </div>

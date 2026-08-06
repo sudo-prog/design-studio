@@ -148,17 +148,17 @@ export default function Manufacturing() {
       </div>
 
       <Tabs defaultValue="cost">
-        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
-          <TabsTrigger value="cost" className="flex items-center gap-1.5">
+        <TabsList className="flex flex-wrap w-full gap-1 md:grid md:grid-cols-2 md:grid-cols-4">
+          <TabsTrigger value="cost" className="flex items-center gap-1.5 min-h-[44px]">
             <Calculator className="w-3.5 h-3.5" />Cost
           </TabsTrigger>
-          <TabsTrigger value="profit" className="flex items-center gap-1.5">
+          <TabsTrigger value="profit" className="flex items-center gap-1.5 min-h-[44px]">
             <TrendingUp className="w-3.5 h-3.5" />Profit
           </TabsTrigger>
-          <TabsTrigger value="directory" className="flex items-center gap-1.5">
+          <TabsTrigger value="directory" className="flex items-center gap-1.5 min-h-[44px]">
             <Factory className="w-3.5 h-3.5" />Directory
           </TabsTrigger>
-          <TabsTrigger value="orders" className="flex items-center gap-1.5">
+          <TabsTrigger value="orders" className="flex items-center gap-1.5 min-h-[44px]">
             <ShoppingCart className="w-3.5 h-3.5" />Orders
           </TabsTrigger>
         </TabsList>
@@ -172,7 +172,7 @@ export default function Manufacturing() {
                 <div className="space-y-2">
                   <Label>Print Method</Label>
                   <Select value={printMethod} onValueChange={(v) => setPrintMethod(v as PrintMethod)}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="min-h-[44px]"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {PRINT_METHODS.map((m) => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}
                     </SelectContent>
@@ -262,7 +262,7 @@ export default function Manufacturing() {
                 <div className="space-y-2">
                   <Label>Print Method</Label>
                   <Select value={printMethod} onValueChange={(v) => setPrintMethod(v as PrintMethod)}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="min-h-[44px]"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {PRINT_METHODS.map((m) => <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>)}
                     </SelectContent>
@@ -359,7 +359,7 @@ export default function Manufacturing() {
               />
             </div>
             <Select value={mfrTypeFilter} onValueChange={setMfrTypeFilter}>
-              <SelectTrigger className="w-40">
+              <SelectTrigger className="w-40 min-h-[44px]">
                 <Filter className="w-4 h-4 mr-2" />
                 <SelectValue />
               </SelectTrigger>
@@ -501,7 +501,7 @@ export default function Manufacturing() {
                 <Label>Additional Notes</Label>
                 <Textarea placeholder="Special requirements, artwork notes, brand guidelines…" value={rfqForm.notes} onChange={(e) => setRfqForm((f) => ({ ...f, notes: e.target.value }))} rows={3} />
               </div>
-              <Button onClick={downloadRfq} disabled={rfqGenerating || !rfqForm.company}>
+              <Button onClick={downloadRfq} disabled={rfqGenerating || !rfqForm.company} className="min-h-[44px]">
                 {rfqGenerating ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Generating…</> : <><Download className="w-4 h-4 mr-2" />Download RFQ PDF</>}
               </Button>
             </CardContent>
@@ -521,7 +521,7 @@ export default function Manufacturing() {
                 <div className="space-y-2">
                   <Label>Project</Label>
                   <Select value={orderProjectId?.toString() ?? ""} onValueChange={(v) => setOrderProjectId(Number(v))}>
-                    <SelectTrigger><SelectValue placeholder="Select project…" /></SelectTrigger>
+                    <SelectTrigger className="min-h-[44px]"><SelectValue placeholder="Select project…" /></SelectTrigger>
                     <SelectContent>
                       {safeProjects.map((p) => <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>)}
                     </SelectContent>
@@ -530,7 +530,7 @@ export default function Manufacturing() {
                 <div className="space-y-2">
                   <Label>Manufacturer</Label>
                   <Select value={orderMfrId?.toString() ?? ""} onValueChange={(v) => setOrderMfrId(Number(v))}>
-                    <SelectTrigger><SelectValue placeholder="Select manufacturer…" /></SelectTrigger>
+                    <SelectTrigger className="min-h-[44px]"><SelectValue placeholder="Select manufacturer…" /></SelectTrigger>
                     <SelectContent>
                       {safeManufacturers.map((m) => <SelectItem key={m.id} value={String(m.id)}>{m.name}</SelectItem>)}
                     </SelectContent>
@@ -544,6 +544,7 @@ export default function Manufacturing() {
               <Button
                 disabled={!orderProjectId || !orderMfrId || createOrderMutation.isPending}
                 onClick={placeOrder}
+                className="min-h-[44px]"
               >
                 {createOrderMutation.isPending
                   ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Placing…</>

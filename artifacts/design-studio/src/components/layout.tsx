@@ -37,7 +37,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="flex min-h-dvh w-full bg-background">
+    <div className="flex min-h-[100dvh] w-full bg-background pb-safe">
       {/* Mobile overlay */}
       {mobileMenuOpen && (
         <div 
@@ -48,7 +48,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
       {/* Sidebar - desktop always visible, mobile drawer */}
       <aside className={cn(
-        "fixed lg:sticky top-0 left-0 z-50 flex flex-col h-dvh w-64 border-r border-border bg-background transition-transform duration-300 ease-in-out lg:translate-x-0 lg:w-auto lg:flex-shrink-0",
+        "fixed lg:sticky top-0 left-0 z-50 flex flex-col h-[100dvh] w-64 border-r border-border bg-background transition-transform duration-300 ease-in-out lg:translate-x-0 lg:w-auto lg:flex-shrink-0",
         mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         {/* Mobile header with close */}
@@ -59,7 +59,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </span>
             DESIGN.Studio
           </Link>
-          <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setMobileMenuOpen(false)} aria-label="Close menu">
+          <Button variant="ghost" size="icon" className="h-9 w-9 min-h-[44px] min-w-[44px]" onClick={() => setMobileMenuOpen(false)} aria-label="Close menu">
             <X className="w-5 h-5" />
           </Button>
         </div>
@@ -101,13 +101,13 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
 
         <div className="border-t border-border p-4 space-y-2">
-          <Button asChild className="w-full justify-start gap-2" variant="outline">
+          <Button asChild className="w-full justify-start gap-2 min-h-[44px]" variant="outline">
             <Link href="/projects/new" onClick={() => setMobileMenuOpen(false)}>
               <Plus className="w-4 h-4" />
               New Project
             </Link>
           </Button>
-          <Button asChild className="w-full justify-start gap-2" variant="ghost">
+          <Button asChild className="w-full justify-start gap-2 min-h-[44px]" variant="ghost">
             <Link href="/settings" onClick={() => setMobileMenuOpen(false)}>
               <Settings className="w-4 h-4" />
               Settings
@@ -117,18 +117,18 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       </aside>
 
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <header className="h-16 flex items-center px-3 md:px-6 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-10 sticky top-0">
+        <header className="h-16 flex flex-wrap items-center px-3 md:px-6 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-10 sticky top-0">
           <Button 
             variant="ghost" 
             size="icon" 
-            className="mr-3 w-10 h-10 lg:hidden"
+            className="mr-3 w-10 h-10 lg:hidden min-h-[44px] min-w-[44px]"
             onClick={() => setMobileMenuOpen(true)}
             aria-label="Open menu"
           >
             <Menu className="w-5 h-5" />
           </Button>
           {/* Hide the header nav items on desktop since sidebar is always visible */}
-          <div className="flex-1 flex items-center gap-2 overflow-x-auto md:overflow-visible lg:hidden">
+          <div className="flex-1 flex flex-wrap items-center gap-2 overflow-x-auto md:overflow-visible lg:hidden">
             {NAV_ITEMS.slice(0, 5).map((item) => (
               <Link
                 key={item.title}

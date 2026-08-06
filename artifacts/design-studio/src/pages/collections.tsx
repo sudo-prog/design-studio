@@ -202,7 +202,7 @@ export default function Collections() {
                     : setProjectIds(v ? [v] : [])
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger className="min-h-[44px]">
                   <SelectValue placeholder="Link a project (optional)" />
                 </SelectTrigger>
                 <SelectContent>
@@ -219,7 +219,7 @@ export default function Collections() {
                   value={editing.status ?? "planning"}
                   onValueChange={(v) => setEditing({ ...editing, status: v as CollectionUpdate["status"] })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="min-h-[44px]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -240,7 +240,7 @@ export default function Collections() {
                   <Button variant="ghost" onClick={() => setEditing(null)}>Cancel</Button>
                 </>
               ) : (
-                <Button onClick={handleCreate} disabled={createCollection.isPending} className="w-full gap-1.5">
+                <Button onClick={handleCreate} disabled={createCollection.isPending} className="w-full gap-1.5 min-h-[44px]">
                   {createCollection.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
                   Create Collection
                 </Button>
@@ -257,7 +257,7 @@ export default function Collections() {
               {selected.size > 0 ? `${selected.size} selected` : "Select collections for batch export"}
             </span>
             <Select value={batchAction} onValueChange={(v) => setBatchAction(v as BatchAction)}>
-              <SelectTrigger className="w-40 h-8">
+              <SelectTrigger className="w-40 h-8 min-h-[44px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -271,7 +271,7 @@ export default function Collections() {
               variant="outline"
               disabled={selected.size === 0 || startBatch.isPending}
               onClick={handleBatchExport}
-              className="gap-1.5"
+              className="gap-1.5 min-h-[44px]"
             >
               {startBatch.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
               Batch Export
@@ -298,7 +298,7 @@ export default function Collections() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => toggleSelect(col.id)}
-                          className={`mt-0.5 w-4 h-4 rounded border flex items-center justify-center ${
+                          className={`mt-0.5 w-4 h-4 min-h-[44px] min-w-[44px] rounded border flex items-center justify-center ${
                             selected.has(col.id) ? "bg-primary border-primary text-primary-foreground" : "border-border"
                           }`}
                           aria-label={`Select ${col.name}`}
@@ -328,13 +328,13 @@ export default function Collections() {
                       )}
                     </div>
                     <div className="flex gap-2">
-                      <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setEditing(col)}>
+                      <Button size="sm" variant="outline" className="gap-1.5 min-h-[44px]" onClick={() => setEditing(col)}>
                         <Pencil className="w-3.5 h-3.5" /> Edit
                       </Button>
                       <Button
                         size="sm"
                         variant="destructive"
-                        className="gap-1.5"
+                        className="gap-1.5 min-h-[44px]"
                         onClick={() => handleDelete(col.id, col.name)}
                         disabled={deleteCollection.isPending}
                       >

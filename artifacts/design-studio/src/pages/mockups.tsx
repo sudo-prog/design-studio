@@ -112,7 +112,7 @@ export default function MockupsPage() {
         </div>
         <div className="flex gap-2 flex-wrap">
           <Select value={projectId ? String(projectId) : ""} onValueChange={(v) => setProjectId(Number(v))}>
-            <SelectTrigger className="h-8 text-xs w-44">
+            <SelectTrigger className="min-h-[44px] text-xs w-44">
               <SelectValue placeholder="Link to project…" />
             </SelectTrigger>
             <SelectContent>
@@ -121,7 +121,7 @@ export default function MockupsPage() {
               ))}
             </SelectContent>
           </Select>
-          <Button size="sm" onClick={handleSaveMockup} disabled={createMockup.isPending} className="gap-1.5">
+          <Button size="sm" onClick={handleSaveMockup} disabled={createMockup.isPending} className="gap-1.5 min-h-[44px]">
             <CheckCircle className="w-3.5 h-3.5" />
             Save Mockup
           </Button>
@@ -181,7 +181,7 @@ export default function MockupsPage() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="w-full h-7 text-xs text-destructive"
+                  className="w-full min-h-[44px] text-xs text-destructive"
                   onClick={() => setDesignUrl(null)}
                 >
                   Remove design
@@ -220,7 +220,7 @@ export default function MockupsPage() {
               <div className="space-y-1.5">
                 <Label className="text-xs">Blend mode</Label>
                 <Select value={blendMode} onValueChange={(v) => setBlendMode(v as BlendMode)}>
-                  <SelectTrigger className="h-7 text-xs">
+                  <SelectTrigger className="min-h-[44px] text-xs">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -273,14 +273,14 @@ export default function MockupsPage() {
               </div>
 
               <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList>
-                  <TabsTrigger value="2d" className="gap-1.5">
+                <TabsList className="min-h-[44px]">
+                  <TabsTrigger value="2d" className="gap-1.5 min-h-[44px]">
                     <Layers className="w-3.5 h-3.5" />2D Warp
                   </TabsTrigger>
-                  <TabsTrigger value="3d" className="gap-1.5">
+                  <TabsTrigger value="3d" className="gap-1.5 min-h-[44px]">
                     <Box className="w-3.5 h-3.5" />3D Viewer
                   </TabsTrigger>
-                  <TabsTrigger value="lifestyle" className="gap-1.5">
+                  <TabsTrigger value="lifestyle" className="gap-1.5 min-h-[44px]">
                     <Camera className="w-3.5 h-3.5" />Lifestyle
                   </TabsTrigger>
                 </TabsList>
@@ -302,7 +302,7 @@ export default function MockupsPage() {
                       <Button
                         size="sm"
                         variant="outline"
-                        className="gap-1.5"
+                        className="gap-1.5 min-h-[44px]"
                         disabled={isExporting}
                         onClick={async () => {
                           if (!selectedTemplate) return;

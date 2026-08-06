@@ -181,7 +181,7 @@ export default function Settings() {
           <div className="space-y-2">
             <Label>Provider</Label>
             <Select value={config.provider} onValueChange={(v) => handleProviderChange(v as AIProvider)}>
-              <SelectTrigger>
+              <SelectTrigger className="min-h-[44px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -205,6 +205,7 @@ export default function Settings() {
             <Input
               id="api-key"
               type="password"
+              className="min-h-[44px]"
               placeholder={config.provider === "ollama" ? "Leave blank for local" : config.provider === "gemini-web2api" ? "No key needed" : "Paste your API key"}
               value={config.apiKey}
               onChange={(e) => setConfig((prev) => ({ ...prev, apiKey: e.target.value }))}
@@ -219,6 +220,7 @@ export default function Settings() {
             <Input
               id="base-url"
               type="url"
+              className="min-h-[44px]"
               value={config.baseUrl}
               onChange={(e) => setConfig((prev) => ({ ...prev, baseUrl: e.target.value }))}
             />
@@ -230,7 +232,7 @@ export default function Settings() {
           <div className="space-y-2">
             <Label>Default Model</Label>
             <Select value={config.model} onValueChange={(v) => setConfig((prev) => ({ ...prev, model: v }))}>
-              <SelectTrigger>
+              <SelectTrigger className="min-h-[44px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -248,7 +250,7 @@ export default function Settings() {
             </Select>
           </div>
 
-          <div className="flex items-center gap-3 pt-2">
+          <div className="flex flex-wrap items-center gap-3 pt-2">
             <Button onClick={handleSave} className="flex-1">
               Save Settings
             </Button>

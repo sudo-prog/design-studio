@@ -277,7 +277,7 @@ export default function PrintSetup() {
                   <div className="space-y-2">
                     <Label>Output DPI</Label>
                     <Select value={String(dpi)} onValueChange={(v) => setDpi(Number(v))}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectTrigger className="min-h-[44px]"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="150">150 DPI (draft)</SelectItem>
                         <SelectItem value="300">300 DPI (standard)</SelectItem>
@@ -290,7 +290,7 @@ export default function PrintSetup() {
             )}
             <div className="flex gap-3">
               <Button variant="outline" onClick={() => setStep(0)}><ChevronLeft className="w-4 h-4 mr-1" />Back</Button>
-              <Button className="flex-1" disabled={separating} onClick={separateChannels}>
+              <Button className="flex-1 min-h-[44px]" disabled={separating} onClick={separateChannels}>
                 {separating ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Separating…</> : <>Separate Channels <ChevronRight className="w-4 h-4 ml-1" /></>}
               </Button>
             </div>
@@ -323,7 +323,7 @@ export default function PrintSetup() {
                     <button
                       key={d.value}
                       onClick={() => setDotShape(d.value)}
-                      className={cn("px-3 py-1.5 rounded border text-sm transition-colors", dotShape === d.value ? "bg-primary text-primary-foreground border-primary" : "border-border hover:border-primary/50")}
+                      className={cn("px-3 min-h-[44px] rounded border text-sm transition-colors", dotShape === d.value ? "bg-primary text-primary-foreground border-primary" : "border-border hover:border-primary/50")}
                     >
                       {d.label}
                     </button>
@@ -334,7 +334,7 @@ export default function PrintSetup() {
           </Card>
 
           {/* Channel preview grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
             {channels.map((ch) => (
               <Card key={ch.index} className="overflow-hidden">
                 <div className="aspect-square bg-muted relative">
@@ -353,7 +353,7 @@ export default function PrintSetup() {
 
           <div className="flex gap-3">
             <Button variant="outline" onClick={() => setStep(1)}><ChevronLeft className="w-4 h-4 mr-1" />Back</Button>
-            <Button className="flex-1" disabled={generating} onClick={generateFilms}>
+            <Button className="flex-1 min-h-[44px]" disabled={generating} onClick={generateFilms}>
               {generating ? (
                 <div className="flex items-center gap-2 w-full justify-center">
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -371,7 +371,7 @@ export default function PrintSetup() {
         <div className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center justify-between">
+              <CardTitle className="flex flex-wrap items-center justify-between gap-2">
                 <span className="flex items-center gap-2"><Film className="w-5 h-5" />Film Preview</span>
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" onClick={() => { setFilms([]); setStep(2); }}>
@@ -390,7 +390,7 @@ export default function PrintSetup() {
                   <TabsTrigger value="separations">Separations ({channels.length})</TabsTrigger>
                 </TabsList>
                 <TabsContent value="films" className="mt-4">
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                     {films.map((film, i) => (
                       <div key={i} className="space-y-2">
                         <div className="aspect-square bg-white rounded border overflow-hidden">
@@ -400,7 +400,7 @@ export default function PrintSetup() {
                           <p className="text-xs font-medium">{film.channelName}</p>
                           <p className="text-xs text-muted-foreground">{film.lpi} LPI · {film.angle}° · {film.dotShape}</p>
                           <Button
-                            variant="outline" size="sm" className="w-full h-6 text-xs"
+                            variant="outline" size="sm" className="w-full min-h-[44px] text-xs"
                             onClick={() => {
                               const a = document.createElement("a");
                               a.href = film.imageBase64;
@@ -416,7 +416,7 @@ export default function PrintSetup() {
                   </div>
                 </TabsContent>
                 <TabsContent value="separations" className="mt-4">
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                     {channels.map((ch) => (
                       <div key={ch.index} className="space-y-2">
                         <div className="aspect-square bg-white rounded border overflow-hidden">
@@ -438,7 +438,7 @@ export default function PrintSetup() {
           <Card>
             <CardHeader><CardTitle className="text-base">Quick Cost Estimate</CardTitle></CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-center">
                 {[
                   { label: "Channels", value: channels.length },
                   { label: "LPI", value: lpi },
@@ -457,7 +457,7 @@ export default function PrintSetup() {
 
           <div className="flex gap-3">
             <Button variant="outline" onClick={() => setStep(2)}><ChevronLeft className="w-4 h-4 mr-1" />Back</Button>
-            <Button className="flex-1" onClick={downloadZip} disabled={zipping}>
+            <Button className="flex-1 min-h-[44px]" onClick={downloadZip} disabled={zipping}>
               {zipping
                 ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Packaging ZIP…</>
                 : <><Archive className="w-4 h-4 mr-2" />Download ZIP (All Films + Manifest)</>}

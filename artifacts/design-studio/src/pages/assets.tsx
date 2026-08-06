@@ -32,7 +32,7 @@ export default function Assets() {
                 value={projectId ? String(projectId) : ""}
                 onValueChange={(v) => setProjectId(Number(v))}
               >
-                <SelectTrigger className="w-64">
+                <SelectTrigger className="w-64 min-h-[44px]">
                   <SelectValue placeholder="Select a project…" />
                 </SelectTrigger>
                 <SelectContent>
