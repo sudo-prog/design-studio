@@ -20,6 +20,34 @@ const AUDIT_FN = () => {
     }
     return false;
   };
+  // MOBILE-UI-STANDARD exemptions for the swallow (hit-test) check:
+  // 1) Elements inside a rotated-away backface (flip cards) are not visible/tappable in the
+  //    current state — hiding them is correct, not a bug.
+  // 2) Elements whose probe point is clipped by an overflow:auto/scroll/hidden ancestor are
+  //    scrolled-out list content — scrollable lists are correct, not a bug.
+  const inHiddenFlipFace = (el) => {
+    let p = el.parentElement;
+    while (p && p !== document.documentElement) {
+      const pc = getComputedStyle(p);
+      if (pc.backfaceVisibility === 'hidden' && pc.transform && pc.transform.includes('-1')) return true;
+      p = p.parentElement;
+    }
+    return false;
+  };
+  const clippedByScrollAncestor = (el, cx, cy) => {
+    let p = el.parentElement;
+    while (p && p !== document.documentElement) {
+      const pc = getComputedStyle(p);
+      const cl = pc.overflowX === 'auto' || pc.overflowX === 'scroll' || pc.overflowX === 'hidden' ||
+                 pc.overflowY === 'auto' || pc.overflowY === 'scroll' || pc.overflowY === 'hidden';
+      if (cl) {
+        const pr = p.getBoundingClientRect();
+        if (cx < pr.left - 1 || cx > pr.right + 1 || cy < pr.top - 1 || cy > pr.bottom + 1) return true;
+      }
+      p = p.parentElement;
+    }
+    return false;
+  };
   for (const el of document.querySelectorAll('body *')) {
     const cs = getComputedStyle(el);
     if (cs.display === 'none' || cs.visibility === 'hidden' || cs.opacity === '0') continue;
@@ -40,7 +68,9 @@ const AUDIT_FN = () => {
         p = p.parentElement;
       }
       if (inert) continue;
-      const top = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+      const cx = r.x + r.width / 2, cy = r.y + r.height / 2;
+      if (inHiddenFlipFace(el) || clippedByScrollAncestor(el, cx, cy)) continue;
+      const top = document.elementFromPoint(cx, cy);
       if (top && !el.contains(top) && top !== el)
         out.swallowed.push({ tag: el.tagName.toLowerCase(),
           label: (el.getAttribute('aria-label') || el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 26),

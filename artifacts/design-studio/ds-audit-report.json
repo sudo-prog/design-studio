@@ -2,7 +2,13 @@
   "/": {
     "overflow": [],
     "tapTargets": [],
-    "swallowed": [],
+    "swallowed": [
+      {
+        "tag": "button",
+        "label": "← Back",
+        "coveredBy": "font-semibold tracking-tight text-sm"
+      }
+    ],
     "docOverflow": 0,
     "errors": []
   },
@@ -25,7 +31,9 @@
     "tapTargets": [],
     "swallowed": [],
     "docOverflow": 0,
-    "errors": []
+    "errors": [
+      "Failed to load resource: the server responded with a status of 404 ()"
+    ]
   },
   "/ai": {
     "overflow": [],
@@ -44,7 +52,38 @@
   "/mockups": {
     "overflow": [],
     "tapTargets": [],
-    "swallowed": [],
+    "swallowed": [
+      {
+        "tag": "button",
+        "label": "Tank Top",
+        "coveredBy": "space-y-4"
+      },
+      {
+        "tag": "button",
+        "label": "Polo Shirt",
+        "coveredBy": "space-y-4"
+      },
+      {
+        "tag": "button",
+        "label": "Raglan / Baseball Tee",
+        "coveredBy": "space-y-4"
+      },
+      {
+        "tag": "button",
+        "label": "Zip Hoodie Front",
+        "coveredBy": "w-full h-24 border-2 border-dashed border-border rounded-lg "
+      },
+      {
+        "tag": "button",
+        "label": "Cap Front",
+        "coveredBy": "w-full h-24 border-2 border-dashed border-border rounded-lg "
+      },
+      {
+        "tag": "button",
+        "label": "Tote Bag",
+        "coveredBy": "w-full h-24 border-2 border-dashed border-border rounded-lg "
+      }
+    ],
     "docOverflow": 0,
     "errors": []
   },
@@ -65,7 +104,13 @@
   "/manufacturing": {
     "overflow": [],
     "tapTargets": [],
-    "swallowed": [],
+    "swallowed": [
+      {
+        "tag": "button",
+        "label": "Orders",
+        "coveredBy": "font-semibold tracking-tight text-base"
+      }
+    ],
     "docOverflow": 0,
     "errors": []
   },
