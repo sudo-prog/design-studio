@@ -90,7 +90,7 @@ export default function AIStyleEngineWidget() {
         </div>
         <div className="flex items-center gap-2">
           <Badge variant="secondary" className="text-[10px]">{store.generators.filter(g => g.status === 'online').length} online</Badge>
-          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setIsFlipped(true)} aria-label="Open AI Style Engine settings">
+          <Button variant="ghost" size="icon" className="h-7 w-7 min-h-[44px] min-w-[44px]" onClick={() => setIsFlipped(true)} aria-label="Open AI Style Engine settings">
             <Settings className="h-3.5 w-3.5" />
           </Button>
         </div>
@@ -98,7 +98,7 @@ export default function AIStyleEngineWidget() {
       <CardContent className="space-y-3">
         <div className="flex flex-wrap gap-1">
           {TEMPLATES.map((t) => (
-            <button key={t} onClick={() => applyTemplate(t)} className="px-2 py-0.5 bg-secondary hover:bg-primary/20 border border-border rounded-full text-[10px] text-muted-foreground hover:text-foreground transition-all">
+            <button key={t} onClick={() => applyTemplate(t)} className="min-h-[44px] min-w-[44px] px-2 py-0.5 bg-secondary hover:bg-primary/20 border border-border rounded-full text-[10px] text-muted-foreground hover:text-foreground transition-all">
               {t}
             </button>
           ))}
@@ -116,7 +116,7 @@ export default function AIStyleEngineWidget() {
         </div>
 
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
-          <TabsList className="grid grid-cols-4 h-7">
+          <TabsList className="grid grid-cols-4 min-h-[44px]">
             {(['prompt', 'style', 'palette', 'metadata'] as const).map((t) => (
               <TabsTrigger key={t} value={t} className="text-[10px]">{t.charAt(0).toUpperCase() + t.slice(1)}</TabsTrigger>
             ))}
@@ -127,7 +127,7 @@ export default function AIStyleEngineWidget() {
                 <Textarea value={generatedPrompt} onChange={(e) => setGeneratedPrompt(e.target.value)} placeholder="Enhanced prompt..." rows={2} className="resize-none text-xs font-mono" />
                 <div className="flex justify-between mt-1">
                   <span className="text-[9px] text-muted-foreground">{generatedPrompt.length} chars</span>
-                  <button onClick={() => navigator.clipboard.writeText(generatedPrompt)} className="text-[9px] text-primary">Copy</button>
+                  <button onClick={() => navigator.clipboard.writeText(generatedPrompt)} className="min-h-[44px] min-w-[44px] text-[9px] text-primary">Copy</button>
                 </div>
               </TabsContent>
               <TabsContent value="style" className="mt-2">
@@ -149,7 +149,7 @@ export default function AIStyleEngineWidget() {
 
         <div className="flex items-center justify-between pt-1 border-t border-border">
           <span className="text-[9px] text-muted-foreground">{store.generators.length} generators</span>
-          <Button size="sm" className="h-6 text-[10px]" disabled={!store.currentPrompt} onClick={() => store.broadcastGeneration()}>
+          <Button size="sm" className="min-h-[44px] text-[10px]" disabled={!store.currentPrompt} onClick={() => store.broadcastGeneration()}>
             Broadcast <ArrowRight className="w-3 h-3 ml-1" />
           </Button>
         </div>
@@ -164,7 +164,7 @@ export default function AIStyleEngineWidget() {
           <Settings className="w-4 h-4 text-muted-foreground" />
           <CardTitle className="text-sm">Settings</CardTitle>
         </div>
-        <Button variant="outline" size="sm" className="h-6 text-[10px]" onClick={() => setIsFlipped(false)}>← Back</Button>
+        <Button variant="outline" size="sm" className="min-h-[44px] text-[10px]" onClick={() => setIsFlipped(false)}>← Back</Button>
       </CardHeader>
       <CardContent className="space-y-3">
         <div>
@@ -180,12 +180,12 @@ export default function AIStyleEngineWidget() {
           </div>
         </div>
         <div className="flex gap-2">
-          <Button size="sm" className="flex-1 h-6 text-[10px]" variant="outline"
+          <Button size="sm" className="min-h-[44px] text-[10px] flex-1" variant="outline"
             onClick={() => {
               const blob = new Blob([JSON.stringify({ styleMd: store.styleMd, designMd: store.designMd, palette }, null, 2)], { type: 'application/json' })
               const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'style-preset.json'; a.click()
             }}>Export</Button>
-          <Button size="sm" className="flex-1 h-6 text-[10px]" variant="outline">Import</Button>
+          <Button size="sm" className="min-h-[44px] text-[10px] flex-1" variant="outline">Import</Button>
         </div>
       </CardContent>
     </Card>
@@ -208,7 +208,7 @@ function ActionButton({ icon, label, onClick, loading, disabled, accent }: {
     <Button
       size="sm"
       variant={accent ? 'default' : 'outline'}
-      className={`h-7 text-[10px] gap-1 ${accent ? 'bg-gradient-to-r from-primary to-pink-600 hover:from-primary/90 hover:to-pink-600' : ''}`}
+      className={`min-h-[44px] text-[10px] gap-1 ${accent ? 'bg-gradient-to-r from-primary to-pink-600 hover:from-primary/90 hover:to-pink-600' : ''}`}
       onClick={onClick}
       disabled={disabled || !!loading}
     >

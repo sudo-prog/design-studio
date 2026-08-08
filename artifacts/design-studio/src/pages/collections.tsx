@@ -176,7 +176,7 @@ export default function Collections() {
               <Label htmlFor="col-name">Name</Label>
               <Input
                 id="col-name"
-                placeholder="Spring Drop 2026"
+                placeholder="Spring Drop 2026" className="min-h-[44px]"
                 value={editing ? editing.name : name}
                 onChange={(e) => (editing ? setEditing({ ...editing, name: e.target.value }) : setName(e.target.value))}
               />
@@ -185,7 +185,7 @@ export default function Collections() {
               <Label htmlFor="col-season">Season</Label>
               <Input
                 id="col-season"
-                placeholder="SS26"
+                placeholder="SS26" className="min-h-[44px]"
                 value={editing ? (editing.season ?? "") : season}
                 onChange={(e) =>
                   editing ? setEditing({ ...editing, season: e.target.value }) : setSeason(e.target.value)

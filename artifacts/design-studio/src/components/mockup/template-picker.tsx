@@ -46,7 +46,7 @@ export function TemplatePicker({ selected, onSelect }: Props) {
           placeholder="Search templates…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="h-8 pl-8 text-xs"
+          className="min-h-[44px] pl-8 text-xs"
         />
       </div>
 
@@ -56,7 +56,7 @@ export function TemplatePicker({ selected, onSelect }: Props) {
             key={cat}
             onClick={() => setCategory(cat)}
             className={cn(
-              "text-[10px] px-2 py-0.5 rounded-full border transition-colors capitalize",
+              "min-h-[44px] min-w-[44px] text-[10px] px-2 py-0.5 rounded-full border transition-colors capitalize",
               category === cat
                 ? "bg-primary text-primary-foreground border-primary"
                 : "border-border hover:border-foreground/50",

@@ -51,7 +51,7 @@ export default function MultiAiImageStudioWidget() {
         <div className="flex items-center gap-2"><Zap className="w-4 h-4 text-blue-400" /><CardTitle className="text-sm">Multi Studio</CardTitle></div>
         <div className="flex items-center gap-2">
           <Badge variant="secondary" className="text-[10px]">{store.generators.filter(g => g.status === 'online').length}/{store.generators.length} active</Badge>
-          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setIsFlipped(true)} aria-label="Open Multi Studio generator settings"><Settings className="h-3.5 w-3.5" /></Button>
+          <Button variant="ghost" size="icon" className="h-7 w-7 min-h-[44px] min-w-[44px]" onClick={() => setIsFlipped(true)} aria-label="Open Multi Studio generator settings"><Settings className="h-3.5 w-3.5" /></Button>
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -63,9 +63,9 @@ export default function MultiAiImageStudioWidget() {
           </div>
         </div>
         <div className="flex gap-1.5">
-          <Button size="sm" variant="outline" className="h-6 text-[10px] gap-1"><RefreshCw className="w-3 h-3" />Refine</Button>
-          <Button size="sm" variant="outline" className="h-6 text-[10px] gap-1"><Zap className="w-3 h-3" />Extract</Button>
-          <Button size="sm" variant="outline" className="h-6 text-[10px] gap-1"><Download className="w-3 h-3" />Save</Button>
+          <Button size="sm" variant="outline" className="min-h-[44px] text-[10px] gap-1"><RefreshCw className="w-3 h-3" />Refine</Button>
+          <Button size="sm" variant="outline" className="min-h-[44px] text-[10px] gap-1"><Zap className="w-3 h-3" />Extract</Button>
+          <Button size="sm" variant="outline" className="min-h-[44px] text-[10px] gap-1"><Download className="w-3 h-3" />Save</Button>
         </div>
         <div>
           <label className="text-[9px] font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider">Generators</label>
@@ -73,7 +73,7 @@ export default function MultiAiImageStudioWidget() {
             {store.generators.map((g) => (
               <div key={g.id} className="flex items-center justify-between px-2 py-1.5 bg-secondary/50 rounded border border-border/50">
                 <div className="flex items-center gap-2"><div className={`w-2 h-2 rounded-full ${statusDot(g.status)}`} /><span className="text-xs">{g.name}</span><span className="text-[9px] text-muted-foreground">{g.type}</span></div>
-                <Button variant="ghost" size="sm" className="h-5 text-[9px] px-1.5" onClick={() => testConnection(g)}>Test</Button>
+                <Button variant="ghost" size="sm" className="h-5 text-[9px] px-1.5 min-h-[44px] min-w-[44px]" onClick={() => testConnection(g)}>Test</Button>
               </div>
             ))}
             {!store.generators.length && <p className="text-[10px] text-muted-foreground text-center py-2">No generators</p>}
@@ -91,8 +91,8 @@ export default function MultiAiImageStudioWidget() {
           </div>
         </div>
         <div className="flex items-center justify-between pt-1 border-t border-border">
-          <Button variant="ghost" size="sm" className="h-6 text-[9px]" onClick={() => store.clearResults()}>Clear</Button>
-          <Button size="sm" className="h-6 text-[10px] gap-1 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500" disabled={generating || !store.currentPrompt || !store.generators.some(g => g.status === 'online')} onClick={handleGenerateAll}>
+          <Button variant="ghost" size="sm" className="min-h-[44px] text-[9px]" onClick={() => store.clearResults()}>Clear</Button>
+          <Button size="sm" className="min-h-[44px] text-[10px] gap-1 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500" disabled={generating || !store.currentPrompt || !store.generators.some(g => g.status === 'online')} onClick={handleGenerateAll}>
             {generating ? <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }} className="w-3 h-3 border-2 border-white border-t-transparent rounded-full" /> : <Zap className="w-3 h-3" />}
             Send to All
           </Button>
@@ -105,7 +105,7 @@ export default function MultiAiImageStudioWidget() {
     <Card className="h-full border-blue-500/20 bg-gradient-to-br from-card via-card to-card">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <div className="flex items-center gap-2"><Settings className="w-4 h-4 text-muted-foreground" /><CardTitle className="text-sm">Generator Settings</CardTitle></div>
-        <Button variant="outline" size="sm" className="h-6 text-[10px]" onClick={() => setIsFlipped(false)}>← Back</Button>
+        <Button variant="outline" size="sm" className="min-h-[44px] text-[10px]" onClick={() => setIsFlipped(false)}>← Back</Button>
       </CardHeader>
       <CardContent className="space-y-2">
         {store.generators.map((g) => (
@@ -113,38 +113,38 @@ export default function MultiAiImageStudioWidget() {
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium">{g.name}</span>
               <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => testConnection(g)} aria-label={`Test connection for ${g.name}`}>
+                <Button variant="ghost" size="icon" className="h-5 w-5 min-h-[44px] min-w-[44px]" onClick={() => testConnection(g)} aria-label={`Test connection for ${g.name}`}>
                   {g.status === 'online' ? <Power className="w-3 h-3 text-green-400" /> : <PowerOff className="w-3 h-3 text-muted-foreground" />}
                 </Button>
-                <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => store.removeGenerator(g.id)} aria-label={`Remove generator ${g.name}`}><Trash2 className="w-3 h-3 text-muted-foreground hover:text-destructive" /></Button>
+                <Button variant="ghost" size="icon" className="h-5 w-5 min-h-[44px] min-w-[44px]" onClick={() => store.removeGenerator(g.id)} aria-label={`Remove generator ${g.name}`}><Trash2 className="w-3 h-3 text-muted-foreground hover:text-destructive" /></Button>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-1.5">
-              <Input value={g.name} onChange={(e) => store.updateGenerator(g.id, { name: e.target.value })} className="h-6 text-[10px]" placeholder="Name" />
+              <Input value={g.name} onChange={(e) => store.updateGenerator(g.id, { name: e.target.value })} className="min-h-[44px] text-[10px]" placeholder="Name" />
               <Select value={g.type} onValueChange={(v) => store.updateGenerator(g.id, { type: v as ImageGeneratorConfig['type'] })}>
-                <SelectTrigger className="h-6 text-[10px]"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="min-h-[44px] text-[10px]"><SelectValue /></SelectTrigger>
                 <SelectContent><SelectItem value="drawthings">DrawThings</SelectItem><SelectItem value="openrouter">OpenRouter</SelectItem><SelectItem value="custom">Custom</SelectItem></SelectContent>
               </Select>
             </div>
-            <Input value={g.baseUrl} onChange={(e) => store.updateGenerator(g.id, { baseUrl: e.target.value })} className="h-6 text-[10px] w-full" placeholder="http://localhost:7860" />
+            <Input value={g.baseUrl} onChange={(e) => store.updateGenerator(g.id, { baseUrl: e.target.value })} className="min-h-[44px] text-[10px] w-full" placeholder="http://localhost:7860" />
           </div>
         ))}
         <AnimatePresence>
           {showAdd ? (
             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="p-2 bg-secondary/50 rounded-lg border border-dashed border-border space-y-1.5">
-              <Input value={newGen.name} onChange={(e) => setNewGen({ ...newGen, name: e.target.value })} className="h-6 text-[10px]" placeholder="Name" />
+              <Input value={newGen.name} onChange={(e) => setNewGen({ ...newGen, name: e.target.value })} className="min-h-[44px] text-[10px]" placeholder="Name" />
               <Select value={newGen.type} onValueChange={(v) => setNewGen({ ...newGen, type: v as 'custom' })}>
-                <SelectTrigger className="h-6 text-[10px]"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="min-h-[44px] text-[10px]"><SelectValue /></SelectTrigger>
                 <SelectContent><SelectItem value="drawthings">DrawThings</SelectItem><SelectItem value="openrouter">OpenRouter</SelectItem><SelectItem value="custom">Custom</SelectItem></SelectContent>
               </Select>
-              <Input value={newGen.baseUrl} onChange={(e) => setNewGen({ ...newGen, baseUrl: e.target.value })} className="h-6 text-[10px]" placeholder="URL" />
+              <Input value={newGen.baseUrl} onChange={(e) => setNewGen({ ...newGen, baseUrl: e.target.value })} className="min-h-[44px] text-[10px]" placeholder="URL" />
               <div className="flex gap-1.5">
-                <Button size="sm" className="flex-1 h-6 text-[10px]" onClick={handleAdd}>Add</Button>
-                <Button size="sm" variant="outline" className="h-6 text-[10px]" onClick={() => setShowAdd(false)}>Cancel</Button>
+                <Button size="sm" className="min-h-[44px] text-[10px] flex-1" onClick={handleAdd}>Add</Button>
+                <Button size="sm" variant="outline" className="min-h-[44px] text-[10px]" onClick={() => setShowAdd(false)}>Cancel</Button>
               </div>
             </motion.div>
           ) : (
-            <Button variant="outline" className="w-full h-7 text-[10px] border-dashed" onClick={() => setShowAdd(true)}><Plus className="w-3 h-3 mr-1" />Add Generator</Button>
+            <Button variant="outline" className="w-full min-h-[44px] text-[10px] border-dashed" onClick={() => setShowAdd(true)}><Plus className="w-3 h-3 mr-1" />Add Generator</Button>
           )}
         </AnimatePresence>
       </CardContent>

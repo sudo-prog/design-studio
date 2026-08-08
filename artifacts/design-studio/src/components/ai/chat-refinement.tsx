@@ -150,7 +150,7 @@ export function ChatRefinement({ projectId: _projectId, canvasJson }: Props) {
         <p className="text-xs text-muted-foreground">
           AI returns structured change suggestions — accept or reject each one
         </p>
-        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setShowSettings(true)} aria-label="Open chat refinement settings">
+        <Button size="icon" variant="ghost" className="h-7 w-7 min-h-[44px] min-w-[44px]" onClick={() => setShowSettings(true)} aria-label="Open chat refinement settings">
           <Settings2 className="w-3.5 h-3.5" />
         </Button>
       </div>
@@ -254,9 +254,9 @@ export function ChatRefinement({ projectId: _projectId, canvasJson }: Props) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
-          className="text-xs h-8"
+          className="min-h-[44px] text-xs"
         />
-        <Button size="icon" className="h-8 w-8 shrink-0" onClick={handleSend} disabled={isSending} aria-label="Send message">
+        <Button size="icon" className="h-8 w-8 shrink-0 min-h-[44px] min-w-[44px]" onClick={handleSend} disabled={isSending} aria-label="Send message">
           <Send className="w-3.5 h-3.5" />
         </Button>
       </div>
@@ -277,7 +277,7 @@ export function ChatRefinement({ projectId: _projectId, canvasJson }: Props) {
             <div className="space-y-1.5">
               <Label className="text-xs">Provider</Label>
               <Select value={tempProvider} onValueChange={(v) => setTempProvider(v as typeof tempProvider)}>
-                <SelectTrigger className="h-8 text-xs">
+                <SelectTrigger className="h-8 min-h-[44px] text-xs">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>

@@ -145,7 +145,7 @@ export function AiModuleRunner({ projectId, onApprove }: Props) {
               placeholder="low quality, blurry, watermark..."
               value={negativePrompt}
               onChange={(e) => setNegativePrompt(e.target.value)}
-              className="text-sm h-8"
+              className="min-h-[44px] text-sm"
             />
           </div>
 
@@ -153,7 +153,7 @@ export function AiModuleRunner({ projectId, onApprove }: Props) {
             <div className="space-y-1.5">
               <Label className="text-xs">Style</Label>
               <Select value={style} onValueChange={setStyle}>
-                <SelectTrigger className="h-8 text-xs">
+                <SelectTrigger className="min-h-[44px] text-xs">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -167,7 +167,7 @@ export function AiModuleRunner({ projectId, onApprove }: Props) {
             <div className="space-y-1.5">
               <Label className="text-xs">Ratio</Label>
               <Select value={aspectRatio} onValueChange={(v) => setAspectRatio(v as AspectRatio)}>
-                <SelectTrigger className="h-8 text-xs">
+                <SelectTrigger className="min-h-[44px] text-xs">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -182,7 +182,7 @@ export function AiModuleRunner({ projectId, onApprove }: Props) {
             <div className="space-y-1.5">
               <Label className="text-xs">Count</Label>
               <Select value={String(quantity)} onValueChange={(v) => setQuantity(Number(v))}>
-                <SelectTrigger className="h-8 text-xs">
+                <SelectTrigger className="min-h-[44px] text-xs">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>

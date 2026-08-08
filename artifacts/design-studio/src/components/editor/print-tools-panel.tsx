@@ -171,7 +171,7 @@ function HalftoneTool() {
       <div className="space-y-1.5">
         <Label className="text-xs">Dot Shape</Label>
         <Select value={dotShape} onValueChange={setDotShape}>
-          <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="h-7 min-h-[44px] text-xs"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="round">Round</SelectItem>
             <SelectItem value="ellipse">Ellipse</SelectItem>
@@ -376,7 +376,7 @@ function ChannelSplitTool() {
       <div className="space-y-1.5">
         <Label className="text-xs">Color Mode</Label>
         <Select value={mode} onValueChange={(v) => setMode(v as "rgb" | "cmyk")}>
-          <SelectTrigger className="h-7 text-xs"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="h-7 min-h-[44px] text-xs"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="rgb">RGB (3 layers)</SelectItem>
             <SelectItem value="cmyk">CMYK (4 layers)</SelectItem>

@@ -35,7 +35,7 @@ export default function AiGeneratorWidget() {
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
           <Badge variant="secondary" className="text-[10px]">Ready</Badge>
-          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setIsFlipped(true)} aria-label="Open AI Generator settings"><Settings className="h-3.5 w-3.5" /></Button>
+          <Button variant="ghost" size="icon" className="h-7 w-7 min-h-[44px] min-w-[44px]" onClick={() => setIsFlipped(true)} aria-label="Open AI Generator settings"><Settings className="h-3.5 w-3.5" /></Button>
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
@@ -46,7 +46,7 @@ export default function AiGeneratorWidget() {
         <div className="flex items-center justify-between text-[9px] text-muted-foreground"><span>{model} • {steps} steps</span><span>{resolution.width}×{resolution.height}</span></div>
         <div className="flex items-center justify-between pt-1 border-t border-border">
           <span className="text-[9px] text-muted-foreground">⌘+Enter to generate</span>
-          <Button size="sm" className="h-6 text-[10px] gap-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500" disabled={generating || (!localPrompt && !store.currentPrompt)} onClick={handleGenerate}>
+          <Button size="sm" className="min-h-[44px] text-[10px] gap-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500" disabled={generating || (!localPrompt && !store.currentPrompt)} onClick={handleGenerate}>
             {generating ? <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }} className="w-3 h-3 border-2 border-white border-t-transparent rounded-full" /> : <Play className="w-3 h-3" />}
             Generate
           </Button>
@@ -59,7 +59,7 @@ export default function AiGeneratorWidget() {
     <Card className="h-full border-emerald-500/20 bg-gradient-to-br from-card via-card to-card">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <div className="flex items-center gap-2"><Settings className="w-4 h-4 text-muted-foreground" /><CardTitle className="text-sm">Generator Settings</CardTitle></div>
-        <Button variant="outline" size="sm" className="h-6 text-[10px]" onClick={() => setIsFlipped(false)}>← Back</Button>
+        <Button variant="outline" size="sm" className="min-h-[44px] text-[10px]" onClick={() => setIsFlipped(false)}>← Back</Button>
       </CardHeader>
       <CardContent className="space-y-3">
         <div>
@@ -67,18 +67,18 @@ export default function AiGeneratorWidget() {
           <div className="flex items-center justify-between px-2 py-1.5 bg-secondary/50 rounded border border-border/50">
             <span className="text-xs">Local Draw Things</span><Switch />
           </div>
-          <Input className="h-7 text-[10px] mt-1.5" placeholder="http://192.168.x.x:7860" />
+          <Input className="min-h-[44px] text-[10px] mt-1.5" placeholder="http://192.168.x.x:7860" />
         </div>
         <div>
           <label className="text-[10px] font-medium text-muted-foreground mb-1.5 block">Resolution</label>
           <div className="flex gap-1.5 items-center">
-            <Input type="number" value={resolution.width} onChange={(e) => setResolution({ ...resolution, width: +e.target.value })} className="h-7 text-[10px] flex-1" />
+            <Input type="number" value={resolution.width} onChange={(e) => setResolution({ ...resolution, width: +e.target.value })} className="min-h-[44px] text-[10px] flex-1" />
             <span className="text-muted-foreground text-xs">×</span>
-            <Input type="number" value={resolution.height} onChange={(e) => setResolution({ ...resolution, height: +e.target.value })} className="h-7 text-[10px] flex-1" />
+            <Input type="number" value={resolution.height} onChange={(e) => setResolution({ ...resolution, height: +e.target.value })} className="min-h-[44px] text-[10px] flex-1" />
           </div>
           <div className="flex gap-1 mt-1.5">
             {[{ w: 512, h: 512 }, { w: 768, h: 768 }, { w: 1024, h: 1024 }, { w: 1024, h: 1344 }].map((r) => (
-              <button key={`${r.w}x${r.h}`} onClick={() => setResolution({ width: r.w, height: r.h })} className={`flex-1 px-1 py-0.5 rounded text-[9px] transition ${resolution.width === r.w && resolution.height === r.h ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground hover:bg-secondary/80'}`}>{r.w}×{r.h}</button>
+              <button key={`${r.w}x${r.h}`} onClick={() => setResolution({ width: r.w, height: r.h })} className={`flex-1 min-h-[44px] flex items-center justify-center px-1 rounded text-[9px] transition ${resolution.width === r.w && resolution.height === r.h ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground hover:bg-secondary/80'}`}>{r.w}×{r.h}</button>
             ))}
           </div>
         </div>
@@ -86,13 +86,13 @@ export default function AiGeneratorWidget() {
           <div>
             <label className="text-[10px] font-medium text-muted-foreground mb-1 block">Model</label>
             <Select value={model} onValueChange={setModel}>
-              <SelectTrigger className="h-7 text-[10px]"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="min-h-[44px] text-[10px]"><SelectValue /></SelectTrigger>
               <SelectContent><SelectItem value="flux">FLUX.2</SelectItem><SelectItem value="sdxl">SDXL</SelectItem><SelectItem value="sd15">SD 1.5</SelectItem></SelectContent>
             </Select>
           </div>
           <div>
             <label className="text-[10px] font-medium text-muted-foreground mb-1 block">Steps</label>
-            <Input type="number" value={steps} onChange={(e) => setSteps(+e.target.value)} min={1} max={50} className="h-7 text-[10px]" />
+            <Input type="number" value={steps} onChange={(e) => setSteps(+e.target.value)} min={1} max={50} className="min-h-[44px] text-[10px]" />
           </div>
         </div>
       </CardContent>

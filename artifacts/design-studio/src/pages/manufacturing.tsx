@@ -445,7 +445,7 @@ export default function Manufacturing() {
                     )}
                     <div className="flex gap-2 pt-1">
                       {mfr.website && (
-                        <Button variant="outline" size="sm" className="flex-1 h-7 text-xs" asChild>
+                        <Button variant="outline" size="sm" className="flex-1 h-7 min-h-[44px] text-xs" asChild>
                           <a href={mfr.website} target="_blank" rel="noreferrer">
                             <Globe className="w-3 h-3 mr-1" />Website
                           </a>

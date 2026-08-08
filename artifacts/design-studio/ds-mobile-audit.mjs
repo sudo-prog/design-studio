@@ -1,0 +1,95 @@
+// design-studio-mobile-audit.mjs — mobile-UI gate for DESIGN-STUDIO (390x844, touch)
+// Run from the app-dir so 'playwright' resolves; BASE is the local prod-build preview.
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const { chromium } = require('/home/thinkpad/Data/20_Projects/SUPERWHEEL/node_modules/playwright');
+import fs from 'fs';
+
+const BASE = (process.env.DS_URL || 'http://127.0.0.1:4199').replace(/\/$/, '');
+const ROUTES = ['/', '/projects', '/projects/new', '/projects/1', '/ai', '/colors', '/mockups', '/print', '/tech-packs', '/manufacturing', '/collections', '/assets', '/settings', '/editor'];
+
+const AUDIT_FN = () => {
+  const VW = window.innerWidth;
+  const out = { overflow: [], tapTargets: [], swallowed: [], docOverflow: 0 };
+  const inScrollable = (el) => {
+    let p = el.parentElement;
+    while (p && p !== document.documentElement) {
+      const ox = getComputedStyle(p).overflowX;
+      if (ox === 'auto' || ox === 'scroll' || ox === 'hidden') return true;
+      p = p.parentElement;
+    }
+    return false;
+  };
+  for (const el of document.querySelectorAll('body *')) {
+    const cs = getComputedStyle(el);
+    if (cs.display === 'none' || cs.visibility === 'hidden' || cs.opacity === '0') continue;
+    const r = el.getBoundingClientRect();
+    if (r.width === 0 && r.height === 0) continue;
+    if (r.right > VW + 1 && !inScrollable(el))
+      out.overflow.push({ tag: el.tagName.toLowerCase(), right: Math.round(r.right),
+        cls: (el.className?.toString?.() || '').slice(0, 80) });
+    const inter = el.matches('button,a[href],[role="button"],input:not([type=hidden]),select,textarea');
+    if (inter && r.width > 0 && r.height > 0 && (r.width < 44 || r.height < 44))
+      out.tapTargets.push({ tag: el.tagName.toLowerCase(), w: Math.round(r.width), h: Math.round(r.height),
+        label: (el.getAttribute('aria-label') || el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 30) });
+    if (inter && r.width > 8 && r.height > 8 && r.x >= 0 && r.y >= 0 && r.right <= VW && r.bottom <= innerHeight) {
+      let p = el; let inert = false;
+      while (p && p !== document.documentElement) {
+        const pc = getComputedStyle(p);
+        if (pc.width === '0px' || pc.pointerEvents === 'none') { inert = true; break; }
+        p = p.parentElement;
+      }
+      if (inert) continue;
+      const top = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+      if (top && !el.contains(top) && top !== el)
+        out.swallowed.push({ tag: el.tagName.toLowerCase(),
+          label: (el.getAttribute('aria-label') || el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 26),
+          coveredBy: (top.className?.toString?.() || top.tagName).slice(0, 60) });
+    }
+  }
+  const dd = (a, k) => { const s = new Set(); const o = []; for (const x of a) { const j = k(x); if (!s.has(j)) { s.add(j); o.push(x); } } return o; };
+  out.overflow = dd(out.overflow, o => o.tag + o.cls).slice(0, 8);
+  out.tapTargets = dd(out.tapTargets, o => o.tag + o.w + o.h + o.label).slice(0, 8);
+  out.swallowed = dd(out.swallowed, o => o.tag + o.label + o.coveredBy).slice(0, 8);
+  out.docOverflow = document.documentElement.scrollWidth - VW;
+  return out;
+};
+
+const browser = await chromium.launch({ args: ['--disable-dev-shm-usage'] });
+const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true, deviceScaleFactor: 2 });
+const p = await ctx.newPage();
+const errors = [];
+p.on('pageerror', e => errors.push(String(e).slice(0, 110)));
+p.on('console', m => { if (m.type() === 'error') errors.push(m.text().slice(0, 110)); });
+
+await p.goto(BASE + '/', { waitUntil: 'domcontentloaded', timeout: 60000 });
+await p.waitForTimeout(2500);
+
+const report = {};
+for (const route of ROUTES) {
+  const before = errors.length;
+  await p.evaluate((r) => { window.history.pushState({}, '', r); window.dispatchEvent(new PopStateEvent('popstate')); }, route);
+  await p.waitForTimeout(2400);
+  const res = await p.evaluate(AUDIT_FN);
+  res.errors = [...new Set(errors.slice(before))].slice(0, 3);
+  report[route] = res;
+  const bad = res.overflow.length + res.tapTargets.length + res.swallowed.length;
+  const pass = bad === 0 && res.errors.length === 0 && res.docOverflow <= 2;
+  console.log(`${pass ? 'PASS' : 'FAIL'} ${route.padEnd(20)} docOv=${res.docOverflow} ovf=${res.overflow.length} tap=${res.tapTargets.length} swallow=${res.swallowed.length} err=${res.errors.length}`);
+  if (!pass) {
+    if (res.overflow.length) console.log('   overflow:', JSON.stringify(res.overflow));
+    if (res.tapTargets.length) console.log('   taps:', JSON.stringify(res.tapTargets));
+    if (res.swallowed.length) console.log('   swallowed:', JSON.stringify(res.swallowed));
+    if (res.errors.length) console.log('   errors:', JSON.stringify(res.errors));
+  }
+}
+fs.writeFileSync('ds-audit-report.json', JSON.stringify(report, null, 2));
+await browser.close();
+
+// Final gate: realOff===0, smallTaps===0, consoleErrs===0, docOverflow<=2 per route
+let fails = 0;
+for (const [route, res] of Object.entries(report)) {
+  if (res.overflow.length || res.tapTargets.length || res.swallowed.length || res.errors.length || res.docOverflow > 2) fails++;
+}
+console.log(`\nGATE: routes=${ROUTES.length} failing=${fails} -> ${fails === 0 ? 'PASS' : 'FAIL'}`);
+process.exit(fails === 0 ? 0 : 1);

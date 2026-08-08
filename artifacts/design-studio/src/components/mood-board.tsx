@@ -237,7 +237,7 @@ export function MoodBoard({ projectId, initialItems = [], onSave, isSaving }: Mo
               title={c}
             />
           ))}
-          <input type="color" className="w-7 h-7 rounded cursor-pointer" onChange={(e) => addColorPin(e.target.value)} />
+          <input type="color" className="w-7 h-7 min-h-[44px] min-w-[44px] rounded cursor-pointer" onChange={(e) => addColorPin(e.target.value)} />
           <Button size="sm" variant="ghost" onClick={() => setAddingType(null)}>Cancel</Button>
         </div>
       )}

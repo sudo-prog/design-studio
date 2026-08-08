@@ -28,7 +28,7 @@ export function RefinePanel({ originalPrompt, previousImages, onSubmit, onCancel
     <div className="border rounded-lg p-3 space-y-3 bg-muted/30">
       <div className="flex items-center justify-between">
         <p className="text-xs font-semibold">Refine Generation</p>
-        <Button size="icon" variant="ghost" className="h-6 w-6" onClick={onCancel} aria-label="Close refine panel">
+        <Button size="icon" variant="ghost" className="h-6 w-6 min-h-[44px] min-w-[44px]" onClick={onCancel} aria-label="Close refine panel">
           <X className="w-3 h-3" />
         </Button>
       </div>
@@ -71,7 +71,7 @@ export function RefinePanel({ originalPrompt, previousImages, onSubmit, onCancel
         </div>
       </div>
 
-      <Button className="w-full gap-2 h-8 text-xs" onClick={() => onSubmit(refinedPrompt)}>
+      <Button className="w-full gap-2 h-8 min-h-[44px] text-xs" onClick={() => onSubmit(refinedPrompt)}>
         <Sparkles className="w-3.5 h-3.5" />
         Re-generate with refined prompt
       </Button>

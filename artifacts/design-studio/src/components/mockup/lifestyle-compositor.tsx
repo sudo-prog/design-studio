@@ -152,7 +152,7 @@ export function LifestyleCompositor({ designUrl, className }: Props) {
         <div className="space-y-1">
           <Label className="text-xs">Scene</Label>
           <Select value={sceneId} onValueChange={setSceneId}>
-            <SelectTrigger className="h-7 text-xs">
+            <SelectTrigger className="h-7 min-h-[44px] text-xs">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -165,7 +165,7 @@ export function LifestyleCompositor({ designUrl, className }: Props) {
         <div className="space-y-1">
           <Label className="text-xs">Export ratio</Label>
           <Select value={ratio} onValueChange={(v) => setRatio(v as ExportRatio)}>
-            <SelectTrigger className="h-7 text-xs">
+            <SelectTrigger className="h-7 min-h-[44px] text-xs">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -197,7 +197,7 @@ export function LifestyleCompositor({ designUrl, className }: Props) {
         <Slider value={[shadowStrength]} onValueChange={([v]) => setShadowStrength(v!)} min={0} max={100} />
       </div>
 
-      <Button className="w-full gap-2 h-8" onClick={handleExport}>
+      <Button className="w-full gap-2 h-8 min-h-[44px]" onClick={handleExport}>
         <Download className="w-3.5 h-3.5" />
         Export {ratio} JPEG
       </Button>

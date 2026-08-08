@@ -252,11 +252,11 @@ export default function ProjectDetail() {
                   <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
                     <div className="space-y-1.5">
                       <Label>Name</Label>
-                      <Input value={editName} onChange={(e) => setEditName(e.target.value)} />
+                      <Input value={editName} onChange={(e) => setEditName(e.target.value)} className="min-h-[44px]" />
                     </div>
                     <div className="space-y-1.5">
                       <Label>Category</Label>
-                      <Input value={editCategory} onChange={(e) => setEditCategory(e.target.value)} placeholder="e.g. T-Shirts, Hoodies" />
+                      <Input value={editCategory} onChange={(e) => setEditCategory(e.target.value)} placeholder="e.g. T-Shirts, Hoodies" className="min-h-[44px]" />
                     </div>
                   </div>
                   <div className="space-y-1.5">

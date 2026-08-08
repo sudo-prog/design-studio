@@ -172,7 +172,7 @@ export function ExportModal({ open, onOpenChange, projectId, onSaved }: ExportMo
           <div className="space-y-2">
             <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Color Space</Label>
             <Select value={colorSpace} onValueChange={(v) => setColorSpace(v as "srgb" | "cmyk")}>
-              <SelectTrigger className="h-8 text-sm"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-8 min-h-[44px] text-sm"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="srgb">sRGB (standard)</SelectItem>
                 <SelectItem value="cmyk">CMYK preview (visual)</SelectItem>

@@ -169,14 +169,14 @@ export default function NewProject() {
                 <FormField control={form1.control} name="name" render={({ field }) => (
                   <FormItem>
                     <FormLabel>Project Name *</FormLabel>
-                    <FormControl><Input placeholder="e.g. Summer Drop — Heavyweight Tee" {...field} autoFocus /></FormControl>
+                    <FormControl><Input placeholder="e.g. Summer Drop — Heavyweight Tee" className="min-h-[44px]" {...field} autoFocus /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />
                 <FormField control={form1.control} name="category" render={({ field }) => (
                   <FormItem>
                     <FormLabel>Category</FormLabel>
-                    <FormControl><Input placeholder="e.g. T-Shirts, Hoodies, Accessories" {...field} /></FormControl>
+                    <FormControl><Input placeholder="e.g. T-Shirts, Hoodies, Accessories" className="min-h-[44px]" {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )} />

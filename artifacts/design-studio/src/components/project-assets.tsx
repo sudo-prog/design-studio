@@ -149,7 +149,7 @@ export function ProjectAssets({ projectId }: ProjectAssetsProps) {
           />
         </div>
         <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="w-32 h-8 text-sm">
+          <SelectTrigger className="w-32 h-8 min-h-[44px] text-sm">
             <SelectValue placeholder="Type" />
           </SelectTrigger>
           <SelectContent>
