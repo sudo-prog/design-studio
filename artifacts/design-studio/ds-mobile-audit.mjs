@@ -6,7 +6,23 @@ const { chromium } = require('/home/thinkpad/Data/20_Projects/SUPERWHEEL/node_mo
 import fs from 'fs';
 
 const BASE = (process.env.DS_URL || 'http://127.0.0.1:4199').replace(/\/$/, '');
-const ROUTES = ['/', '/projects', '/projects/new', '/projects/1', '/ai', '/colors', '/mockups', '/print', '/tech-packs', '/manufacturing', '/collections', '/assets', '/settings', '/editor'];
+// Resolve a REAL project id for the detail route: /projects/:id against an empty
+// production DB 404s (browser logs the failed resource load) — an environmental
+// false-positive, not a UI defect. Test the detail surface only against real data;
+// record explicitly when it is skipped so the report stays honest.
+const skippedRoutes = [];
+let detailRoute = null;
+try {
+  const listRes = await fetch(`${BASE}/api/projects`, { headers: { accept: 'application/json' } });
+  const projects = listRes.ok ? await listRes.json() : [];
+  if (Array.isArray(projects) && projects.length > 0 && projects[0]?.id != null) {
+    detailRoute = `/projects/${projects[0].id}`;
+  }
+  if (!detailRoute) skippedRoutes.push('/projects/:id (no projects in API — DB empty)');
+} catch {
+  skippedRoutes.push('/projects/:id (API unreachable)');
+}
+const ROUTES = ['/', '/projects', '/projects/new', detailRoute, '/ai', '/colors', '/mockups', '/print', '/tech-packs', '/manufacturing', '/collections', '/assets', '/settings', '/editor'].filter(Boolean);
 
 const AUDIT_FN = () => {
   const VW = window.innerWidth;
@@ -113,13 +129,16 @@ for (const route of ROUTES) {
     if (res.errors.length) console.log('   errors:', JSON.stringify(res.errors));
   }
 }
+report._skipped = skippedRoutes;
 fs.writeFileSync('ds-audit-report.json', JSON.stringify(report, null, 2));
 await browser.close();
 
 // Final gate: realOff===0, smallTaps===0, consoleErrs===0, docOverflow<=2 per route
 let fails = 0;
 for (const [route, res] of Object.entries(report)) {
+  if (route.startsWith('_') || !res || typeof res !== 'object') continue;
   if (res.overflow.length || res.tapTargets.length || res.swallowed.length || res.errors.length || res.docOverflow > 2) fails++;
 }
-console.log(`\nGATE: routes=${ROUTES.length} failing=${fails} -> ${fails === 0 ? 'PASS' : 'FAIL'}`);
+if (skippedRoutes.length) console.log(`SKIPPED: ${skippedRoutes.join('; ')}`);
+console.log(`\nGATE: routes=${ROUTES.length} failing=${fails} skipped=${skippedRoutes.length} -> ${fails === 0 ? 'PASS' : 'FAIL'}`);
 process.exit(fails === 0 ? 0 : 1);

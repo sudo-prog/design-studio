@@ -2,13 +2,7 @@
   "/": {
     "overflow": [],
     "tapTargets": [],
-    "swallowed": [
-      {
-        "tag": "button",
-        "label": "← Back",
-        "coveredBy": "font-semibold tracking-tight text-sm"
-      }
-    ],
+    "swallowed": [],
     "docOverflow": 0,
     "errors": []
   },
@@ -25,15 +19,6 @@
     "swallowed": [],
     "docOverflow": 0,
     "errors": []
-  },
-  "/projects/1": {
-    "overflow": [],
-    "tapTargets": [],
-    "swallowed": [],
-    "docOverflow": 0,
-    "errors": [
-      "Failed to load resource: the server responded with a status of 404 ()"
-    ]
   },
   "/ai": {
     "overflow": [],
@@ -52,38 +37,7 @@
   "/mockups": {
     "overflow": [],
     "tapTargets": [],
-    "swallowed": [
-      {
-        "tag": "button",
-        "label": "Tank Top",
-        "coveredBy": "space-y-4"
-      },
-      {
-        "tag": "button",
-        "label": "Polo Shirt",
-        "coveredBy": "space-y-4"
-      },
-      {
-        "tag": "button",
-        "label": "Raglan / Baseball Tee",
-        "coveredBy": "space-y-4"
-      },
-      {
-        "tag": "button",
-        "label": "Zip Hoodie Front",
-        "coveredBy": "w-full h-24 border-2 border-dashed border-border rounded-lg "
-      },
-      {
-        "tag": "button",
-        "label": "Cap Front",
-        "coveredBy": "w-full h-24 border-2 border-dashed border-border rounded-lg "
-      },
-      {
-        "tag": "button",
-        "label": "Tote Bag",
-        "coveredBy": "w-full h-24 border-2 border-dashed border-border rounded-lg "
-      }
-    ],
+    "swallowed": [],
     "docOverflow": 0,
     "errors": []
   },
@@ -104,13 +58,7 @@
   "/manufacturing": {
     "overflow": [],
     "tapTargets": [],
-    "swallowed": [
-      {
-        "tag": "button",
-        "label": "Orders",
-        "coveredBy": "font-semibold tracking-tight text-base"
-      }
-    ],
+    "swallowed": [],
     "docOverflow": 0,
     "errors": []
   },
@@ -141,5 +89,8 @@
     "swallowed": [],
     "docOverflow": 0,
     "errors": []
-  }
+  },
+  "_skipped": [
+    "/projects/:id (no projects in API — DB empty)"
+  ]
 }
