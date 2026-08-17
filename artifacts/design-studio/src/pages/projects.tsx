@@ -104,14 +104,14 @@ export default function Projects() {
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Projects</h1>
           <p className="text-muted-foreground">
             {showSkeletons ? "Loading…" : `${filtered.length} of ${safeProjects.length} project${safeProjects.length !== 1 ? "s" : ""}`}
           </p>
         </div>
-        <Button asChild className="min-h-[44px]">
+        <Button asChild className="min-h-[44px] min-w-[44px]">
           <Link href="/projects/new">
             <Plus className="w-4 h-4 mr-2" />
             New Project
@@ -129,13 +129,13 @@ export default function Projects() {
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search projects…"
-            className="pl-8 min-h-[44px]"
+            className="pl-8 min-h-[44px] min-w-[44px]"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-36 min-h-[44px]">
+          <SelectTrigger className="w-36 min-h-[44px] min-w-[44px]">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -148,7 +148,7 @@ export default function Projects() {
         </Select>
         {categories.length > 0 && (
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-36 min-h-[44px]">
+            <SelectTrigger className="w-36 min-h-[44px] min-w-[44px]">
               <SelectValue placeholder="Category" />
             </SelectTrigger>
             <SelectContent>
@@ -160,7 +160,7 @@ export default function Projects() {
           </Select>
         )}
         <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
-          <SelectTrigger className="w-36 min-h-[44px]">
+          <SelectTrigger className="w-36 min-h-[44px] min-w-[44px]">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
           <SelectContent>
@@ -188,7 +188,7 @@ export default function Projects() {
       </div>
 
       {showSkeletons ? (
-        <div className={view === "grid" ? "grid gap-4 md:grid-cols-2 lg:grid-cols-3" : "flex flex-col gap-3"}>
+        <div className={view === "grid" ? "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3" : "flex flex-col gap-3"}>
           {[1,2,3,4,5,6].map((i) => <Skeleton key={i} className={view === "grid" ? "h-52 w-full" : "h-20 w-full"} />)}
         </div>
       ) : filtered.length === 0 ? (
@@ -203,11 +203,11 @@ export default function Projects() {
             {search ? "Try a different search term." : "Create your first project to start designing."}
           </p>
           {!search && statusFilter === "all" && categoryFilter === "all" && (
-            <Button asChild className="min-h-[44px]"><Link href="/projects/new">Create Project</Link></Button>
+            <Button asChild className="min-h-[44px] min-w-[44px]"><Link href="/projects/new">Create Project</Link></Button>
           )}
         </div>
       ) : view === "grid" ? (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((project) => (
             <Link key={project.id} href={`/projects/${project.id}`}>
               <Card className="hover-elevate cursor-pointer transition-all border-border hover:border-primary/50 group h-full overflow-hidden">
@@ -221,7 +221,7 @@ export default function Projects() {
                   </div>
                 )}
                 <CardHeader className="p-4 pb-2">
-                  <div className="flex justify-between items-start gap-2">
+                  <div className="flex flex-wrap justify-between items-start gap-2">
                     <CardTitle className="text-base leading-tight line-clamp-1 group-hover:text-primary transition-colors">{project.name}</CardTitle>
                     <StatusBadge status={project.status} />
                   </div>
@@ -244,10 +244,11 @@ export default function Projects() {
           ))}
         </div>
       ) : (
-        <div className="flex flex-col divide-y divide-border rounded-lg border border-border overflow-hidden">
+        <div className="overflow-x-auto">
+          <div className="flex flex-col divide-y divide-border rounded-lg border border-border overflow-hidden">
           {filtered.map((project) => (
             <Link key={project.id} href={`/projects/${project.id}`}>
-              <div className="flex items-center gap-4 px-4 py-3 hover:bg-muted/50 transition-colors group cursor-pointer">
+              <div className="flex items-center gap-4 px-4 py-3 min-h-[44px] hover:bg-muted/50 transition-colors group cursor-pointer">
                 {project.coverAssetUrl ? (
                   <img src={project.coverAssetUrl} alt={project.name} className="w-12 h-12 rounded object-cover flex-shrink-0" />
                 ) : (
@@ -277,6 +278,7 @@ export default function Projects() {
               </div>
             </Link>
           ))}
+          </div>
         </div>
       )}
     </div>

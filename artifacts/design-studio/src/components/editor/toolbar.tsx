@@ -35,7 +35,7 @@ function ToolBtn({ icon: Icon, label, active, danger, onClick }: ToolBtnProps) {
         <Button
           size="icon"
           variant={active ? "default" : danger ? "destructive" : "ghost"}
-          className="w-9 h-9"
+          className="w-9 h-9 min-h-[44px] min-w-[44px]"
           onClick={onClick}
           aria-label={label}
         >

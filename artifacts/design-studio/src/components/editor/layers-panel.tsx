@@ -65,10 +65,10 @@ function LayerRow({ layer, index, total }: { layer: LayerInfo; index: number; to
       )}
       onClick={handleRowClick}
     >
-      <div className="flex items-center gap-1 px-2 py-1.5">
+      <div className="flex flex-wrap items-center gap-1 px-2 py-1.5">
         {/* Visibility */}
         <button
-          className="p-0.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+          className="p-0.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground min-h-[44px] min-w-[44px] flex items-center justify-center"
           onClick={(e) => { e.stopPropagation(); updateLayer(layer.id, { visible: !layer.visible }); }}
         >
           {layer.visible ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
@@ -80,7 +80,7 @@ function LayerRow({ layer, index, total }: { layer: LayerInfo; index: number; to
         {/* Name */}
         {editingName ? (
           <Input
-            className="h-5 text-xs py-0 px-1 flex-1 min-w-0"
+            className="h-8 text-xs py-0 px-1 flex-1 min-w-0 min-h-[44px]"
             value={draft}
             autoFocus
             onChange={(e) => setDraft(e.target.value)}
@@ -99,7 +99,7 @@ function LayerRow({ layer, index, total }: { layer: LayerInfo; index: number; to
 
         {/* Lock */}
         <button
-          className="p-0.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground"
+          className="p-0.5 rounded hover:bg-muted text-muted-foreground hover:text-foreground min-h-[44px] min-w-[44px] flex items-center justify-center"
           onClick={(e) => { e.stopPropagation(); updateLayer(layer.id, { locked: !layer.locked }); }}
         >
           {layer.locked ? <Lock className="w-3 h-3" /> : <Unlock className="w-3 h-3 opacity-0 group-hover:opacity-100" />}
@@ -108,7 +108,7 @@ function LayerRow({ layer, index, total }: { layer: LayerInfo; index: number; to
         {/* Context menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-            <button className="p-0.5 rounded hover:bg-muted text-muted-foreground opacity-0 group-hover:opacity-100">
+            <button className="p-0.5 rounded hover:bg-muted text-muted-foreground opacity-0 group-hover:opacity-100 min-h-[44px] min-w-[44px] flex items-center justify-center">
               <MoreVertical className="w-3 h-3" />
             </button>
           </DropdownMenuTrigger>
@@ -159,7 +159,7 @@ export function LayersPanel() {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between px-3 py-2 border-b border-border shrink-0">
+      <div className="flex flex-wrap items-center justify-between px-3 py-2 border-b border-border shrink-0">
         <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Layers</span>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

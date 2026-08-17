@@ -105,15 +105,15 @@ export function AiModuleRunner({ projectId, onApprove }: Props) {
   return (
     <div className="space-y-4">
       <Tabs defaultValue="generate">
-        <TabsList className="w-full">
-          <TabsTrigger value="generate" className="flex-1">
+        <TabsList className="w-full flex-wrap overflow-x-auto">
+          <TabsTrigger value="generate" className="flex-1 min-h-[44px]">
             <Sparkles className="w-3.5 h-3.5 mr-1.5" />
             Generate
           </TabsTrigger>
-          <TabsTrigger value="remove-bg" className="flex-1">
+          <TabsTrigger value="remove-bg" className="flex-1 min-h-[44px]">
             Remove BG
           </TabsTrigger>
-          <TabsTrigger value="chat" className="flex-1">
+          <TabsTrigger value="chat" className="flex-1 min-h-[44px]">
             Chat Refine
           </TabsTrigger>
         </TabsList>
@@ -149,7 +149,7 @@ export function AiModuleRunner({ projectId, onApprove }: Props) {
             />
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             <div className="space-y-1.5">
               <Label className="text-xs">Style</Label>
               <Select value={style} onValueChange={setStyle}>
@@ -239,7 +239,7 @@ export function AiModuleRunner({ projectId, onApprove }: Props) {
                   <button
                     key={i}
                     onClick={() => { setPrompt(h.prompt); setResults(h.images); }}
-                    className="w-full text-left text-xs px-2 py-1.5 rounded hover:bg-muted transition-colors truncate"
+                    className="w-full text-left text-xs px-2 py-1.5 rounded hover:bg-muted transition-colors truncate min-h-[44px]"
                   >
                     <ChevronRight className="w-3 h-3 inline mr-1 text-muted-foreground" />
                     {h.prompt}

@@ -128,7 +128,7 @@ export default function NewProject() {
       </div>
 
       <div className="relative">
-        <div className="flex justify-between items-center relative z-10">
+        <div className="flex flex-wrap justify-between items-center relative z-10 gap-2">
           {STEPS.map((s) => {
             const Icon = s.icon;
             const done = step > s.id;
@@ -137,7 +137,7 @@ export default function NewProject() {
               <div key={s.id} className="flex flex-col items-center gap-1">
                 <div
                   className={cn(
-                    "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all",
+                    "w-11 h-11 rounded-full flex items-center justify-center border-2 transition-all",
                     done ? "bg-primary border-primary text-primary-foreground" :
                     active ? "border-primary text-primary bg-primary/10" :
                     "border-border text-muted-foreground bg-card"
@@ -193,8 +193,8 @@ export default function NewProject() {
                     <FormMessage />
                   </FormItem>
                 )} />
-                <div className="flex justify-end pt-2">
-                  <Button type="submit">Next <ChevronRight className="w-4 h-4 ml-1" /></Button>
+                <div className="flex flex-wrap justify-end pt-2">
+                  <Button type="submit" className="min-h-[44px]">Next <ChevronRight className="w-4 h-4 ml-1" /></Button>
                 </div>
               </form>
             </Form>
@@ -214,7 +214,7 @@ export default function NewProject() {
                 <FormField control={form2.control} name="vibe" render={({ field }) => (
                   <FormItem>
                     <FormLabel>Aesthetic / Vibe</FormLabel>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-1">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mt-1">
                       {VIBE_OPTIONS.map((v) => (
                         <button
                           key={v}
@@ -266,11 +266,11 @@ export default function NewProject() {
                       onChange={(e) => setCustomColor(e.target.value)}
                       className="w-8 h-8 min-h-[44px] min-w-[44px] rounded cursor-pointer border-0 bg-transparent p-0"
                     />
-                    <Button type="button" variant="outline" size="sm" onClick={() => addColor(customColor)}>
+                    <Button type="button" variant="outline" size="sm" className="min-h-[44px]" onClick={() => addColor(customColor)}>
                       Add custom color
                     </Button>
                     {selectedPalette.length > 0 && (
-                      <div className="flex gap-1 ml-2">
+                      <div className="flex flex-wrap gap-1 ml-2">
                         {selectedPalette.map((c, i) => (
                           <div
                             key={i}
@@ -285,11 +285,11 @@ export default function NewProject() {
                   </div>
                 </div>
 
-                <div className="flex justify-between pt-2">
-                  <Button type="button" variant="outline" onClick={() => setStep(1)}>
+                <div className="flex flex-wrap justify-between pt-2 gap-2">
+                  <Button type="button" variant="outline" className="min-h-[44px]" onClick={() => setStep(1)}>
                     <ChevronLeft className="w-4 h-4 mr-1" /> Back
                   </Button>
-                  <Button type="submit">Next <ChevronRight className="w-4 h-4 ml-1" /></Button>
+                  <Button type="submit" className="min-h-[44px]">Next <ChevronRight className="w-4 h-4 ml-1" /></Button>
                 </div>
               </form>
             </Form>
@@ -335,6 +335,7 @@ export default function NewProject() {
                       <Input
                         type="number"
                         placeholder="e.g. 50, 100, 500"
+                        className="min-h-[44px]"
                         {...field}
                         value={field.value === undefined ? "" : String(field.value)}
                       />
@@ -342,11 +343,11 @@ export default function NewProject() {
                     <FormMessage />
                   </FormItem>
                 )} />
-                <div className="flex justify-between pt-2">
-                  <Button type="button" variant="outline" onClick={() => setStep(2)}>
+                <div className="flex flex-wrap justify-between pt-2 gap-2">
+                  <Button type="button" variant="outline" className="min-h-[44px]" onClick={() => setStep(2)}>
                     <ChevronLeft className="w-4 h-4 mr-1" /> Back
                   </Button>
-                  <Button type="submit">Next <ChevronRight className="w-4 h-4 ml-1" /></Button>
+                  <Button type="submit" className="min-h-[44px]">Next <ChevronRight className="w-4 h-4 ml-1" /></Button>
                 </div>
               </form>
             </Form>
@@ -384,18 +385,18 @@ export default function NewProject() {
             {selectedPalette.length > 0 && (
               <div className="bg-muted/50 rounded-md p-3">
                 <p className="text-xs text-muted-foreground mb-2">Color Palette</p>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   {selectedPalette.map((c, i) => (
                     <div key={i} className="w-8 h-8 rounded-full border border-border" style={{ backgroundColor: c }} title={c} />
                   ))}
                 </div>
               </div>
             )}
-            <div className="flex justify-between pt-2">
-              <Button type="button" variant="outline" onClick={() => setStep(3)}>
+            <div className="flex flex-wrap justify-between pt-2 gap-2">
+              <Button type="button" variant="outline" className="min-h-[44px]" onClick={() => setStep(3)}>
                 <ChevronLeft className="w-4 h-4 mr-1" /> Back
               </Button>
-              <Button onClick={handleCreate} disabled={createProject.isPending}>
+              <Button onClick={handleCreate} disabled={createProject.isPending} className="min-h-[44px]">
                 {createProject.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Check className="mr-2 h-4 w-4" />}
                 Create Project
               </Button>

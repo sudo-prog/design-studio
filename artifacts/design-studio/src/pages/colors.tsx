@@ -104,7 +104,7 @@ export default function Colors() {
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="min-h-[100dvh] pb-[env(safe-area-inset-bottom)] space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Color Tools</h1>
         <p className="text-muted-foreground">Extract, manage, and verify print colors.</p>
@@ -223,7 +223,7 @@ export default function Colors() {
                   <>
                     <div className="flex flex-wrap gap-3 justify-center py-2">
                       {extracted.map((c, i) => (
-                        <button key={i} onClick={() => copyHex(c.hex)} title="Copy hex">
+                        <button key={i} onClick={() => copyHex(c.hex)} title="Copy hex" className="min-h-[44px]">
                           <Swatch color={c} />
                         </button>
                       ))}

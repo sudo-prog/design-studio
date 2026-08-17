@@ -148,7 +148,7 @@ export function LifestyleCompositor({ designUrl, className }: Props) {
       </div>
 
       {/* Controls */}
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         <div className="space-y-1">
           <Label className="text-xs">Scene</Label>
           <Select value={sceneId} onValueChange={setSceneId}>
@@ -177,24 +177,30 @@ export function LifestyleCompositor({ designUrl, className }: Props) {
       </div>
 
       <div className="space-y-2">
-        <div className="flex justify-between text-xs text-muted-foreground">
+        <div className="flex flex-wrap justify-between text-xs text-muted-foreground">
           <span>Design opacity</span><span>{designOpacity}%</span>
         </div>
-        <Slider value={[designOpacity]} onValueChange={([v]) => setDesignOpacity(v!)} min={20} max={100} />
+        <div className="min-h-[44px]">
+          <Slider value={[designOpacity]} onValueChange={([v]) => setDesignOpacity(v!)} min={20} max={100} />
+        </div>
       </div>
 
       <div className="space-y-2">
-        <div className="flex justify-between text-xs text-muted-foreground">
+        <div className="flex flex-wrap justify-between text-xs text-muted-foreground">
           <span>Design scale</span><span>{designScale}%</span>
         </div>
-        <Slider value={[designScale]} onValueChange={([v]) => setDesignScale(v!)} min={40} max={160} />
+        <div className="min-h-[44px]">
+          <Slider value={[designScale]} onValueChange={([v]) => setDesignScale(v!)} min={40} max={160} />
+        </div>
       </div>
 
       <div className="space-y-2">
-        <div className="flex justify-between text-xs text-muted-foreground">
+        <div className="flex flex-wrap justify-between text-xs text-muted-foreground">
           <span>Shadow</span><span>{shadowStrength}%</span>
         </div>
-        <Slider value={[shadowStrength]} onValueChange={([v]) => setShadowStrength(v!)} min={0} max={100} />
+        <div className="min-h-[44px]">
+          <Slider value={[shadowStrength]} onValueChange={([v]) => setShadowStrength(v!)} min={0} max={100} />
+        </div>
       </div>
 
       <Button className="w-full gap-2 h-8 min-h-[44px]" onClick={handleExport}>

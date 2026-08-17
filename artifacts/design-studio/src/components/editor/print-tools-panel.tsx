@@ -161,7 +161,7 @@ function HalftoneTool() {
         <Button
           variant="ghost"
           size="sm"
-          className="h-6 text-[10px] w-full"
+          className="h-6 text-[10px] w-full min-h-[44px]"
           onClick={() => setAngles({ ...DEFAULT_ANGLES })}
         >
           Reset to standard (15/75/0/45°)
@@ -244,7 +244,7 @@ function ThresholdTool() {
       </div>
       <PreviewCanvas dataUrl={working ? null : preview} />
       {working && <div className="flex items-center gap-1.5 text-xs text-muted-foreground"><Loader2 className="w-3 h-3 animate-spin" /> Computing…</div>}
-      <Button size="sm" className="w-full text-xs" disabled={!preview || working}
+      <Button size="sm" className="w-full text-xs min-h-[44px]" disabled={!preview || working}
         onClick={() => { if (preview) addImageFromDataUrl(preview, "Threshold"); }}>
         Apply to Canvas
       </Button>
@@ -296,7 +296,7 @@ function PosterizeTool() {
       </div>
       <PreviewCanvas dataUrl={working ? null : preview} />
       {working && <div className="flex items-center gap-1.5 text-xs text-muted-foreground"><Loader2 className="w-3 h-3 animate-spin" /> Computing…</div>}
-      <Button size="sm" className="w-full text-xs" disabled={!preview || working}
+      <Button size="sm" className="w-full text-xs min-h-[44px]" disabled={!preview || working}
         onClick={() => { if (preview) addImageFromDataUrl(preview, "Posterize"); }}>
         Apply to Canvas
       </Button>
@@ -386,7 +386,7 @@ function ChannelSplitTool() {
       <p className="text-[11px] text-muted-foreground">
         Separates the selected image into {mode === "rgb" ? "R, G, B" : "C, M, Y, K"} grayscale channel layers. Each layer represents ink coverage for that separation.
       </p>
-      <Button size="sm" className="w-full text-xs" onClick={applyChannelSplit} disabled={working}>
+      <Button size="sm" className="w-full text-xs min-h-[44px]" onClick={applyChannelSplit} disabled={working}>
         {working ? <><Loader2 className="w-3 h-3 mr-1.5 animate-spin" /> Splitting…</> : `Split into ${mode.toUpperCase()} Channels`}
       </Button>
     </div>
@@ -523,7 +523,7 @@ export function PrintToolsPanel() {
                 <TabsTrigger
                   key={t}
                   value={t}
-                  className="flex-1 rounded-none text-[10px] h-8 data-[state=active]:bg-background data-[state=active]:border-b-2 data-[state=active]:border-primary capitalize"
+                  className="flex-1 rounded-none text-[10px] min-h-[44px] h-[44px] data-[state=active]:bg-background data-[state=active]:border-b-2 data-[state=active]:border-primary capitalize"
                 >
                   {t === "channels" ? "Split" : t === "threshold" ? "Thresh" : t.charAt(0).toUpperCase() + t.slice(1)}
                 </TabsTrigger>

@@ -145,20 +145,20 @@ export function MoodBoard({ projectId, initialItems = [], onSave, isSaving }: Mo
     <div className="space-y-3">
       <div className="flex flex-wrap gap-2 items-center">
         <span className="text-sm font-medium text-muted-foreground">Add:</span>
-        <Button size="sm" variant="outline" onClick={() => setAddingType("image")} className="gap-1.5">
+        <Button size="sm" variant="outline" onClick={() => setAddingType("image")} className="gap-1.5 min-h-[44px]">
           <ImageIcon className="w-3.5 h-3.5" /> Image URL
         </Button>
-        <Button size="sm" variant="outline" onClick={() => setAddingType("text")} className="gap-1.5">
+        <Button size="sm" variant="outline" onClick={() => setAddingType("text")} className="gap-1.5 min-h-[44px]">
           <Type className="w-3.5 h-3.5" /> Text Note
         </Button>
-        <Button size="sm" variant="outline" onClick={() => setAddingType("url")} className="gap-1.5">
+        <Button size="sm" variant="outline" onClick={() => setAddingType("url")} className="gap-1.5 min-h-[44px]">
           <Link2 className="w-3.5 h-3.5" /> Link
         </Button>
-        <Button size="sm" variant="outline" onClick={() => setAddingType("color")} className="gap-1.5">
+        <Button size="sm" variant="outline" onClick={() => setAddingType("color")} className="gap-1.5 min-h-[44px]">
           <Palette className="w-3.5 h-3.5" /> Color
         </Button>
         <label className="cursor-pointer">
-          <Button size="sm" variant="outline" className="gap-1.5 pointer-events-none">
+          <Button size="sm" variant="outline" className="gap-1.5 min-h-[44px] pointer-events-none">
             <Plus className="w-3.5 h-3.5" /> Upload Image
           </Button>
           <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
@@ -169,7 +169,7 @@ export function MoodBoard({ projectId, initialItems = [], onSave, isSaving }: Mo
             size="sm"
             onClick={() => onSave?.(items)}
             disabled={isSaving}
-            className="gap-1.5"
+            className="gap-1.5 min-h-[44px]"
           >
             <Save className="w-3.5 h-3.5" />
             {isSaving ? "Saving…" : "Save"}
@@ -178,52 +178,52 @@ export function MoodBoard({ projectId, initialItems = [], onSave, isSaving }: Mo
       </div>
 
       {addingType === "image" && (
-        <div className="flex gap-2 items-center p-2 bg-muted/50 rounded-md">
-          <ImageIcon className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-          <Input
-            placeholder="https://... (image URL)"
-            value={newImageUrl}
-            onChange={(e) => setNewImageUrl(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && addImagePin(newImageUrl)}
-            autoFocus
-            className="h-8 text-sm"
-          />
-          <Button size="sm" onClick={() => addImagePin(newImageUrl)}>Add</Button>
-          <Button size="sm" variant="ghost" onClick={() => setAddingType(null)}>Cancel</Button>
-        </div>
-      )}
+              <div className="flex gap-2 items-center p-2 bg-muted/50 rounded-md flex-wrap">
+                <ImageIcon className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                <Input
+                  placeholder="https://... (image URL)"
+                  value={newImageUrl}
+                  onChange={(e) => setNewImageUrl(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && addImagePin(newImageUrl)}
+                  autoFocus
+                  className="min-h-[44px] flex-1 min-w-[200px]"
+                />
+                <Button size="sm" onClick={() => addImagePin(newImageUrl)} className="min-h-[44px]">Add</Button>
+                <Button size="sm" variant="ghost" onClick={() => setAddingType(null)} className="min-h-[44px]">Cancel</Button>
+              </div>
+            )}
 
-      {addingType === "text" && (
-        <div className="flex gap-2 items-center p-2 bg-muted/50 rounded-md">
-          <Type className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-          <Input
-            placeholder="Write a note, keyword, or idea…"
-            value={newTextContent}
-            onChange={(e) => setNewTextContent(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && addTextPin(newTextContent)}
-            autoFocus
-            className="h-8 text-sm"
-          />
-          <Button size="sm" onClick={() => addTextPin(newTextContent)}>Add</Button>
-          <Button size="sm" variant="ghost" onClick={() => setAddingType(null)}>Cancel</Button>
-        </div>
-      )}
+            {addingType === "text" && (
+              <div className="flex gap-2 items-center p-2 bg-muted/50 rounded-md flex-wrap">
+                <Type className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                <Input
+                  placeholder="Type a note..."
+                  value={newTextContent}
+                  onChange={(e) => setNewTextContent(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && addTextPin(newTextContent)}
+                  autoFocus
+                  className="min-h-[44px] flex-1 min-w-[200px]"
+                />
+                <Button size="sm" onClick={() => addTextPin(newTextContent)} className="min-h-[44px]">Add</Button>
+                <Button size="sm" variant="ghost" onClick={() => setAddingType(null)} className="min-h-[44px]">Cancel</Button>
+              </div>
+            )}
 
-      {addingType === "url" && (
-        <div className="flex gap-2 items-center p-2 bg-muted/50 rounded-md">
-          <Link2 className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-          <Input
-            placeholder="https://..."
-            value={newLinkUrl}
-            onChange={(e) => setNewLinkUrl(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && addUrlPin(newLinkUrl)}
-            autoFocus
-            className="h-8 text-sm"
-          />
-          <Button size="sm" onClick={() => addUrlPin(newLinkUrl)}>Add</Button>
-          <Button size="sm" variant="ghost" onClick={() => setAddingType(null)}>Cancel</Button>
-        </div>
-      )}
+            {addingType === "url" && (
+              <div className="flex gap-2 items-center p-2 bg-muted/50 rounded-md flex-wrap">
+                <Link2 className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                <Input
+                  placeholder="https://... (link URL)"
+                  value={newLinkUrl}
+                  onChange={(e) => setNewLinkUrl(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && addUrlPin(newLinkUrl)}
+                  autoFocus
+                  className="min-h-[44px] flex-1 min-w-[200px]"
+                />
+                <Button size="sm" onClick={() => addUrlPin(newLinkUrl)} className="min-h-[44px]">Add</Button>
+                <Button size="sm" variant="ghost" onClick={() => setAddingType(null)} className="min-h-[44px]">Cancel</Button>
+              </div>
+            )}
 
       {addingType === "color" && (
         <div className="flex gap-2 items-center flex-wrap p-2 bg-muted/50 rounded-md">
@@ -231,14 +231,14 @@ export function MoodBoard({ projectId, initialItems = [], onSave, isSaving }: Mo
           {PIN_COLORS.map((c) => (
             <button
               key={c}
-              className="w-7 h-7 rounded-full border-2 border-border hover:scale-125 transition-transform"
+              className="w-7 h-7 min-h-[44px] min-w-[44px] rounded-full border-2 border-border hover:scale-125 transition-transform"
               style={{ backgroundColor: c }}
               onClick={() => addColorPin(c)}
               title={c}
             />
           ))}
           <input type="color" className="w-7 h-7 min-h-[44px] min-w-[44px] rounded cursor-pointer" onChange={(e) => addColorPin(e.target.value)} />
-          <Button size="sm" variant="ghost" onClick={() => setAddingType(null)}>Cancel</Button>
+          <Button size="sm" variant="ghost" onClick={() => setAddingType(null)} className="min-h-[44px]">Cancel</Button>
         </div>
       )}
 
@@ -305,7 +305,7 @@ export function MoodBoard({ projectId, initialItems = [], onSave, isSaving }: Mo
               </div>
             )}
             <button
-              className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-destructive text-destructive-foreground opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center shadow-sm z-10"
+              className="absolute -top-2 -right-2 w-5 h-5 min-h-[44px] min-w-[44px] rounded-full bg-destructive text-destructive-foreground opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center shadow-sm z-10"
               onMouseDown={(e) => e.stopPropagation()}
               onClick={() => removeItem(item.id)}
             >

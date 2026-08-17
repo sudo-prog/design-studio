@@ -30,7 +30,7 @@ export default function AiGeneratorWidget() {
 
   const front = (
     <Card className="h-full border-emerald-500/20 bg-gradient-to-br from-card via-card to-emerald-950/30">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
+      <CardHeader className="flex flex-row flex-wrap items-center justify-between pb-2">
         <div className="flex items-center gap-2"><Zap className="w-4 h-4 text-emerald-400" /><CardTitle className="text-sm">AI Generator</CardTitle></div>
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -42,7 +42,7 @@ export default function AiGeneratorWidget() {
         <div className="aspect-square rounded-lg bg-secondary/50 border border-border/50 flex items-center justify-center overflow-hidden">
           {recentImage ? <img src={recentImage} alt="" className="w-full h-full object-cover" /> : generating ? <div className="flex flex-col items-center gap-2"><motion.div animate={{ rotate: 360 }} transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }} className="w-6 h-6 border-2 border-emerald-400 border-t-transparent rounded-full" /><span className="text-[9px] text-muted-foreground">Generating...</span></div> : <div className="flex flex-col items-center gap-1 text-muted-foreground/50"><AlertCircle className="w-5 h-5" /><span className="text-[10px]">No image yet</span></div>}
         </div>
-        <Textarea value={localPrompt} onChange={(e) => setLocalPrompt(e.target.value)} placeholder="Enter prompt or pull from Style Engine..." rows={2} className="resize-none text-sm" onKeyDown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleGenerate() }} />
+        <Textarea value={localPrompt} onChange={(e) => setLocalPrompt(e.target.value)} placeholder="Enter prompt or pull from Style Engine..." rows={2} className="resize-none text-sm min-h-[44px]" onKeyDown={(e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleGenerate() }} />
         <div className="flex items-center justify-between text-[9px] text-muted-foreground"><span>{model} • {steps} steps</span><span>{resolution.width}×{resolution.height}</span></div>
         <div className="flex items-center justify-between pt-1 border-t border-border">
           <span className="text-[9px] text-muted-foreground">⌘+Enter to generate</span>
@@ -57,7 +57,7 @@ export default function AiGeneratorWidget() {
 
   const back = (
     <Card className="h-full border-emerald-500/20 bg-gradient-to-br from-card via-card to-card">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
+      <CardHeader className="flex flex-row flex-wrap items-center justify-between pb-2">
         <div className="flex items-center gap-2"><Settings className="w-4 h-4 text-muted-foreground" /><CardTitle className="text-sm">Generator Settings</CardTitle></div>
         <Button variant="outline" size="sm" className="min-h-[44px] text-[10px]" onClick={() => setIsFlipped(false)}>← Back</Button>
       </CardHeader>
@@ -65,24 +65,24 @@ export default function AiGeneratorWidget() {
         <div>
           <label className="text-[10px] font-medium text-muted-foreground mb-1.5 block">Connection</label>
           <div className="flex items-center justify-between px-2 py-1.5 bg-secondary/50 rounded border border-border/50">
-            <span className="text-xs">Local Draw Things</span><Switch />
+            <span className="text-xs">Local Draw Things</span><Switch className="min-h-[44px] min-w-[44px]" />
           </div>
           <Input className="min-h-[44px] text-[10px] mt-1.5" placeholder="http://192.168.x.x:7860" />
         </div>
         <div>
           <label className="text-[10px] font-medium text-muted-foreground mb-1.5 block">Resolution</label>
-          <div className="flex gap-1.5 items-center">
+          <div className="flex flex-wrap gap-1.5 items-center">
             <Input type="number" value={resolution.width} onChange={(e) => setResolution({ ...resolution, width: +e.target.value })} className="min-h-[44px] text-[10px] flex-1" />
             <span className="text-muted-foreground text-xs">×</span>
             <Input type="number" value={resolution.height} onChange={(e) => setResolution({ ...resolution, height: +e.target.value })} className="min-h-[44px] text-[10px] flex-1" />
           </div>
-          <div className="flex gap-1 mt-1.5">
+          <div className="flex flex-wrap gap-1 mt-1.5">
             {[{ w: 512, h: 512 }, { w: 768, h: 768 }, { w: 1024, h: 1024 }, { w: 1024, h: 1344 }].map((r) => (
               <button key={`${r.w}x${r.h}`} onClick={() => setResolution({ width: r.w, height: r.h })} className={`flex-1 min-h-[44px] flex items-center justify-center px-1 rounded text-[9px] transition ${resolution.width === r.w && resolution.height === r.h ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground hover:bg-secondary/80'}`}>{r.w}×{r.h}</button>
             ))}
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <div>
             <label className="text-[10px] font-medium text-muted-foreground mb-1 block">Model</label>
             <Select value={model} onValueChange={setModel}>

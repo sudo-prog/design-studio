@@ -133,13 +133,13 @@ export function ExportModal({ open, onOpenChange, projectId, onSaved }: ExportMo
           {/* Format */}
           <div className="space-y-2">
             <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Format</Label>
-            <RadioGroup value={format} onValueChange={(v) => setFormat(v as "png" | "svg")} className="flex gap-3">
-              <label className="flex items-center gap-2 cursor-pointer">
+            <RadioGroup value={format} onValueChange={(v) => setFormat(v as "png" | "svg")} className="flex flex-wrap gap-3">
+              <label className="flex items-center gap-2 cursor-pointer min-h-[44px]">
                 <RadioGroupItem value="png" />
                 <span className="text-sm">PNG</span>
                 <Badge variant="secondary" className="text-[10px]">Raster</Badge>
               </label>
-              <label className="flex items-center gap-2 cursor-pointer">
+              <label className="flex items-center gap-2 cursor-pointer min-h-[44px]">
                 <RadioGroupItem value="svg" />
                 <span className="text-sm">SVG</span>
                 <Badge variant="secondary" className="text-[10px]">Vector</Badge>
@@ -153,9 +153,9 @@ export function ExportModal({ open, onOpenChange, projectId, onSaved }: ExportMo
               <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 Resolution
               </Label>
-              <RadioGroup value={dpi} onValueChange={(v) => setDpi(v as typeof dpi)} className="grid grid-cols-4 gap-2">
+              <RadioGroup value={dpi} onValueChange={(v) => setDpi(v as typeof dpi)} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
                 {(["72", "150", "300", "600"] as const).map((d) => (
-                  <label key={d} className={`flex flex-col items-center p-2 rounded border cursor-pointer transition-colors ${dpi === d ? "border-primary bg-primary/5" : "border-border hover:border-muted-foreground"}`}>
+                  <label key={d} className={`flex flex-col items-center p-2 rounded border cursor-pointer transition-colors min-h-[44px] ${dpi === d ? "border-primary bg-primary/5" : "border-border hover:border-muted-foreground"}`}>
                     <RadioGroupItem value={d} className="sr-only" />
                     <span className="text-sm font-bold">{d}</span>
                     <span className="text-[10px] text-muted-foreground">DPI</span>
@@ -197,7 +197,7 @@ export function ExportModal({ open, onOpenChange, projectId, onSaved }: ExportMo
                 role="switch"
                 aria-checked={transparent}
                 onClick={() => setTransparent((v) => !v)}
-                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none ${transparent ? "bg-primary" : "bg-muted"}`}
+                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none min-h-[44px] min-w-[44px] ${transparent ? "bg-primary" : "bg-muted"}`}
               >
                 <span className={`inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform ${transparent ? "translate-x-4" : "translate-x-1"}`} />
               </button>
@@ -207,10 +207,10 @@ export function ExportModal({ open, onOpenChange, projectId, onSaved }: ExportMo
 
         <Separator />
 
-        <div className="flex gap-2 pt-1">
+        <div className="flex flex-wrap gap-2 pt-1">
           <Button
             variant="outline"
-            className="flex-1 gap-1.5 text-sm"
+            className="flex-1 gap-1.5 text-sm min-h-[44px]"
             onClick={handleDownload}
             disabled={isDownloading || isSaving}
           >
@@ -219,7 +219,7 @@ export function ExportModal({ open, onOpenChange, projectId, onSaved }: ExportMo
           </Button>
           {projectId && (
             <Button
-              className="flex-1 gap-1.5 text-sm"
+              className="flex-1 gap-1.5 text-sm min-h-[44px]"
               onClick={handleSaveToProject}
               disabled={isSaving || isDownloading}
             >

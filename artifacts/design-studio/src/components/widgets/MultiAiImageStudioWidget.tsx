@@ -47,7 +47,7 @@ export default function MultiAiImageStudioWidget() {
 
   const front = (
     <Card className="h-full border-blue-500/20 bg-gradient-to-br from-card via-card to-blue-950/30">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
+      <CardHeader className="flex flex-row items-center justify-between pb-2 flex-wrap">
         <div className="flex items-center gap-2"><Zap className="w-4 h-4 text-blue-400" /><CardTitle className="text-sm">Multi Studio</CardTitle></div>
         <div className="flex items-center gap-2">
           <Badge variant="secondary" className="text-[10px]">{store.generators.filter(g => g.status === 'online').length}/{store.generators.length} active</Badge>
@@ -58,14 +58,14 @@ export default function MultiAiImageStudioWidget() {
         <div>
           <label className="text-[9px] font-medium text-muted-foreground mb-1 block uppercase tracking-wider">Shared Prompt</label>
           <div className="flex gap-1.5">
-            <Textarea value={store.currentPrompt} onChange={(e) => store.setPrompt(e.target.value)} placeholder="Pull from Style Engine..." rows={2} className="resize-none text-sm flex-1" />
+            <Textarea value={store.currentPrompt} onChange={(e) => store.setPrompt(e.target.value)} placeholder="Pull from Style Engine..." rows={2} className="resize-none text-sm flex-1 min-h-[44px]" />
             <Button size="sm" className="h-auto px-2 text-[10px] self-start" variant="outline">Pull</Button>
           </div>
         </div>
-        <div className="flex gap-1.5">
-          <Button size="sm" variant="outline" className="min-h-[44px] text-[10px] gap-1"><RefreshCw className="w-3 h-3" />Refine</Button>
-          <Button size="sm" variant="outline" className="min-h-[44px] text-[10px] gap-1"><Zap className="w-3 h-3" />Extract</Button>
-          <Button size="sm" variant="outline" className="min-h-[44px] text-[10px] gap-1"><Download className="w-3 h-3" />Save</Button>
+        <div className="flex gap-1.5 flex-wrap">
+                    <Button size="sm" variant="outline" className="min-h-[44px] text-[10px] gap-1"><RefreshCw className="w-3 h-3" />Refine</Button>
+                    <Button size="sm" variant="outline" className="min-h-[44px] text-[10px] gap-1"><Zap className="w-3 h-3" />Extract</Button>
+                    <Button size="sm" variant="outline" className="min-h-[44px] text-[10px] gap-1"><Download className="w-3 h-3" />Save</Button>
         </div>
         <div>
           <label className="text-[9px] font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider">Generators</label>
@@ -81,7 +81,7 @@ export default function MultiAiImageStudioWidget() {
         </div>
         <div>
           <label className="text-[9px] font-medium text-muted-foreground mb-1.5 block uppercase tracking-wider">Results</label>
-          <div className="grid grid-cols-3 gap-1.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1.5">
             {store.generatorResults.slice(-6).map((r) => (
               <div key={r.id} className="aspect-square rounded bg-secondary/50 border border-border/50 flex items-center justify-center overflow-hidden">
                 {r.imageUrl ? <img src={r.imageUrl} alt="" className="w-full h-full object-cover" /> : r.status === 'generating' ? <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }} className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full" /> : r.status === 'error' ? <span className="text-[9px] text-destructive">Err</span> : <span className="text-[9px] text-muted-foreground/50">—</span>}
@@ -119,7 +119,7 @@ export default function MultiAiImageStudioWidget() {
                 <Button variant="ghost" size="icon" className="h-5 w-5 min-h-[44px] min-w-[44px]" onClick={() => store.removeGenerator(g.id)} aria-label={`Remove generator ${g.name}`}><Trash2 className="w-3 h-3 text-muted-foreground hover:text-destructive" /></Button>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-1.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
               <Input value={g.name} onChange={(e) => store.updateGenerator(g.id, { name: e.target.value })} className="min-h-[44px] text-[10px]" placeholder="Name" />
               <Select value={g.type} onValueChange={(v) => store.updateGenerator(g.id, { type: v as ImageGeneratorConfig['type'] })}>
                 <SelectTrigger className="min-h-[44px] text-[10px]"><SelectValue /></SelectTrigger>
@@ -138,7 +138,7 @@ export default function MultiAiImageStudioWidget() {
                 <SelectContent><SelectItem value="drawthings">DrawThings</SelectItem><SelectItem value="openrouter">OpenRouter</SelectItem><SelectItem value="custom">Custom</SelectItem></SelectContent>
               </Select>
               <Input value={newGen.baseUrl} onChange={(e) => setNewGen({ ...newGen, baseUrl: e.target.value })} className="min-h-[44px] text-[10px]" placeholder="URL" />
-              <div className="flex gap-1.5">
+              <div className="flex gap-1.5 flex-wrap">
                 <Button size="sm" className="min-h-[44px] text-[10px] flex-1" onClick={handleAdd}>Add</Button>
                 <Button size="sm" variant="outline" className="min-h-[44px] text-[10px]" onClick={() => setShowAdd(false)}>Cancel</Button>
               </div>

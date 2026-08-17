@@ -238,9 +238,9 @@ export default function PrintSetup() {
 
             <div className="space-y-2">
               <Label>Print Method</Label>
-              <div className="flex gap-3">
+              <div className="flex gap-3 flex-wrap">
                 {PRINT_METHODS.map((m) => (
-                  <button key={m.id} className="flex-1 border rounded-lg p-3 text-center hover:border-primary/50 transition-colors">
+                  <button key={m.id} className="flex-1 min-h-[44px] border rounded-lg p-3 text-center hover:border-primary/50 transition-colors">
                     <div className="text-2xl mb-1">{m.icon}</div>
                     <div className="text-sm font-medium">{m.label}</div>
                   </button>
@@ -248,7 +248,7 @@ export default function PrintSetup() {
               </div>
             </div>
 
-            <Button className="w-full" disabled={!sourceImage} onClick={() => setStep(1)}>
+            <Button className="w-full min-h-[44px]" disabled={!sourceImage} onClick={() => setStep(1)}>
               Continue <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
           </CardContent>
@@ -288,8 +288,8 @@ export default function PrintSetup() {
                 </div>
               </div>
             )}
-            <div className="flex gap-3">
-              <Button variant="outline" onClick={() => setStep(0)}><ChevronLeft className="w-4 h-4 mr-1" />Back</Button>
+            <div className="flex gap-3 flex-wrap">
+              <Button variant="outline" className="min-h-[44px]" onClick={() => setStep(0)}><ChevronLeft className="w-4 h-4 mr-1" />Back</Button>
               <Button className="flex-1 min-h-[44px]" disabled={separating} onClick={separateChannels}>
                 {separating ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Separating…</> : <>Separate Channels <ChevronRight className="w-4 h-4 ml-1" /></>}
               </Button>
@@ -351,8 +351,8 @@ export default function PrintSetup() {
             ))}
           </div>
 
-          <div className="flex gap-3">
-            <Button variant="outline" onClick={() => setStep(1)}><ChevronLeft className="w-4 h-4 mr-1" />Back</Button>
+          <div className="flex gap-3 flex-wrap">
+            <Button variant="outline" className="min-h-[44px]" onClick={() => setStep(1)}><ChevronLeft className="w-4 h-4 mr-1" />Back</Button>
             <Button className="flex-1 min-h-[44px]" disabled={generating} onClick={generateFilms}>
               {generating ? (
                 <div className="flex items-center gap-2 w-full justify-center">
@@ -374,10 +374,10 @@ export default function PrintSetup() {
               <CardTitle className="flex flex-wrap items-center justify-between gap-2">
                 <span className="flex items-center gap-2"><Film className="w-5 h-5" />Film Preview</span>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={() => { setFilms([]); setStep(2); }}>
+                  <Button variant="outline" size="sm" className="min-h-[44px]" onClick={() => { setFilms([]); setStep(2); }}>
                     <RefreshCw className="w-3 h-3 mr-1" />Re-generate
                   </Button>
-                  <Button size="sm" onClick={downloadZip} disabled={zipping}>
+                  <Button size="sm" className="min-h-[44px]" onClick={downloadZip} disabled={zipping}>
                     {zipping ? <><Loader2 className="w-3 h-3 mr-1 animate-spin" />Packaging…</> : <><Download className="w-3 h-3 mr-1" />Download All Films</>}
                   </Button>
                 </div>
@@ -386,8 +386,8 @@ export default function PrintSetup() {
             <CardContent>
               <Tabs defaultValue="films">
                 <TabsList>
-                  <TabsTrigger value="films">Halftone Films ({films.length})</TabsTrigger>
-                  <TabsTrigger value="separations">Separations ({channels.length})</TabsTrigger>
+                  <TabsTrigger value="films" className="min-h-[44px]">Halftone Films ({films.length})</TabsTrigger>
+                  <TabsTrigger value="separations" className="min-h-[44px]">Separations ({channels.length})</TabsTrigger>
                 </TabsList>
                 <TabsContent value="films" className="mt-4">
                   <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
@@ -455,8 +455,8 @@ export default function PrintSetup() {
             </CardContent>
           </Card>
 
-          <div className="flex gap-3">
-            <Button variant="outline" onClick={() => setStep(2)}><ChevronLeft className="w-4 h-4 mr-1" />Back</Button>
+          <div className="flex gap-3 flex-wrap">
+            <Button variant="outline" className="min-h-[44px]" onClick={() => setStep(2)}><ChevronLeft className="w-4 h-4 mr-1" />Back</Button>
             <Button className="flex-1 min-h-[44px]" onClick={downloadZip} disabled={zipping}>
               {zipping
                 ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Packaging ZIP…</>

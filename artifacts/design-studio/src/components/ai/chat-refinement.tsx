@@ -146,7 +146,7 @@ export function ChatRefinement({ projectId: _projectId, canvasJson }: Props) {
 
   return (
     <div className="flex flex-col h-[480px]">
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
         <p className="text-xs text-muted-foreground">
           AI returns structured change suggestions — accept or reject each one
         </p>
@@ -187,16 +187,16 @@ export function ChatRefinement({ projectId: _projectId, canvasJson }: Props) {
                         <div className="flex items-center justify-between gap-2">
                           <span className="font-medium text-foreground">{diff.property}</span>
                           {!accepted && !rejected && (
-                            <div className="flex gap-1">
+                            <div className="flex flex-wrap gap-1">
                               <button
                                 onClick={() => acceptDiff(key)}
-                                className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] bg-green-500/10 text-green-500 hover:bg-green-500/20 transition-colors"
+                                className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] bg-green-500/10 text-green-500 hover:bg-green-500/20 transition-colors min-h-[44px] min-w-[44px]"
                               >
                                 <CheckCircle className="w-2.5 h-2.5" />Apply
                               </button>
                               <button
                                 onClick={() => rejectDiff(key)}
-                                className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors"
+                                className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors min-h-[44px] min-w-[44px]"
                               >
                                 <XCircle className="w-2.5 h-2.5" />Skip
                               </button>
@@ -235,7 +235,7 @@ export function ChatRefinement({ projectId: _projectId, canvasJson }: Props) {
           </div>
         ))}
         {isSending && (
-          <div className="flex gap-2 items-center">
+          <div className="flex flex-wrap gap-2 items-center">
             <div className="w-6 h-6 rounded-full bg-muted border border-border flex items-center justify-center">
               <Bot className="w-3.5 h-3.5 text-muted-foreground" />
             </div>
@@ -248,7 +248,7 @@ export function ChatRefinement({ projectId: _projectId, canvasJson }: Props) {
       </div>
 
       {/* Input */}
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         <Input
           placeholder="e.g. make it more grungy, shift to earth tones…"
           value={input}
@@ -296,11 +296,11 @@ export function ChatRefinement({ projectId: _projectId, canvasJson }: Props) {
                   placeholder="sk-…"
                   value={tempApiKey}
                   onChange={(e) => setTempApiKey(e.target.value)}
-                  className="text-xs h-8 font-mono"
+                  className="text-xs h-8 font-mono min-h-[44px]"
                 />
               </div>
             )}
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button size="sm" className="flex-1" onClick={saveSettings}>Save</Button>
               <Button size="sm" variant="outline" className="flex-1" onClick={() => setShowSettings(false)}>Cancel</Button>
             </div>

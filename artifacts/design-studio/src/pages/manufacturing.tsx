@@ -148,7 +148,7 @@ export default function Manufacturing() {
       </div>
 
       <Tabs defaultValue="cost">
-        <TabsList className="flex flex-wrap w-full gap-1 h-auto min-h-[44px] md:grid md:grid-cols-2 md:grid-cols-4">
+        <TabsList className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-1 w-full h-auto min-h-[44px]\">
           <TabsTrigger value="cost" className="flex items-center gap-1.5 min-h-[44px]">
             <Calculator className="w-3.5 h-3.5" />Cost
           </TabsTrigger>
@@ -201,7 +201,7 @@ export default function Manufacturing() {
                         { label: "Shipping Estimate", value: pricing.shippingCost, note: `$${(pricing.shippingCost / quantity).toFixed(2)}/unit` },
                         { label: "Platform Fees (3%)", value: pricing.platformFees ?? 0, note: "" },
                       ].map(({ label, value, note }) => (
-                        <div key={label} className="flex items-center justify-between py-2 border-b border-border/50">
+                        <div key={label} className="flex flex-wrap items-center justify-between py-2 border-b border-border/50">
                           <div>
                             <p className="text-sm font-medium">{label}</p>
                             {note && <p className="text-xs text-muted-foreground">{note}</p>}
@@ -210,7 +210,7 @@ export default function Manufacturing() {
                         </div>
                       ))}
                     </div>
-                    <div className="flex items-center justify-between p-3 rounded-lg bg-primary/5 border border-primary/20">
+                    <div className="flex flex-wrap items-center justify-between p-3 rounded-lg bg-primary/5 border border-primary/20">
                       <div>
                         <p className="font-bold">Total COGS</p>
                         <p className="text-xs text-muted-foreground">${(pricing.totalCogs / quantity).toFixed(2)}/unit × {quantity} units</p>
@@ -288,7 +288,7 @@ export default function Manufacturing() {
             </Card>
 
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {[
                   { label: "Cost Per Unit", value: `$${perUnit.toFixed(2)}`, sub: "COGS" },
                   { label: "Profit Per Unit", value: `$${Math.max(0, profit).toFixed(2)}`, sub: "net margin" },
@@ -348,12 +348,12 @@ export default function Manufacturing() {
 
         {/* ── Manufacturer Directory ── */}
         <TabsContent value="directory" className="space-y-4 mt-4">
-          <div className="flex gap-3 flex-wrap">
+          <div className="flex flex-wrap gap-3">
             <div className="relative flex-1 min-w-48">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 placeholder="Search manufacturers…"
-                className="pl-9"
+                className="pl-9 min-h-[44px]"
                 value={mfrSearch}
                 onChange={(e) => setMfrSearch(e.target.value)}
               />
@@ -372,7 +372,7 @@ export default function Manufacturing() {
               </SelectContent>
             </Select>
             <Select value={String(moqMax)} onValueChange={(v) => setMoqMax(Number(v))}>
-              <SelectTrigger className="w-40">
+              <SelectTrigger className="w-40 min-h-[44px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -384,7 +384,7 @@ export default function Manufacturing() {
               </SelectContent>
             </Select>
             <Select value={String(turnaroundMax)} onValueChange={(v) => setTurnaroundMax(Number(v))}>
-              <SelectTrigger className="w-44">
+              <SelectTrigger className="w-44 min-h-[44px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -397,12 +397,12 @@ export default function Manufacturing() {
             </Select>
           </div>
           {(moqMax < 500 || turnaroundMax < 30) && (
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
               <Filter className="w-3 h-3" />
               Showing {filteredMfrs.length} of {safeManufacturers.length} manufacturers
               {moqMax < 500 && <Badge variant="secondary" className="text-xs">MOQ ≤ {moqMax}</Badge>}
               {turnaroundMax < 30 && <Badge variant="secondary" className="text-xs">≤ {turnaroundMax} days</Badge>}
-              <button onClick={() => { setMoqMax(500); setTurnaroundMax(30); setMfrTypeFilter("all"); setMfrSearch(""); }} className="text-primary hover:underline ml-1">Clear all</button>
+              <button onClick={() => { setMoqMax(500); setTurnaroundMax(30); setMfrTypeFilter("all"); setMfrSearch(""); }} className="text-primary hover:underline ml-1 min-h-[44px]">Clear all</button>
             </div>
           )}
 
@@ -416,7 +416,7 @@ export default function Manufacturing() {
               {filteredMfrs.map((mfr) => (
                 <Card key={mfr.id} className="hover:border-primary/50 transition-colors group">
                   <CardContent className="p-4 space-y-3">
-                    <div className="flex items-start justify-between gap-2">
+                    <div className="flex flex-wrap items-start justify-between gap-2">
                       <div>
                         <div className="flex items-center gap-2">
                           <p className="font-semibold">{mfr.name}</p>
@@ -432,7 +432,7 @@ export default function Manufacturing() {
                         <span className="text-sm font-medium">{mfr.rating.toFixed(1)}</span>
                       </div>
                     )}
-                    <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                       <div><p className="text-muted-foreground">MOQ</p><p className="font-medium">{mfr.moq ? `${mfr.moq} units` : "None"}</p></div>
                       <div><p className="text-muted-foreground">Turnaround</p><p className="font-medium">{mfr.turnaround}</p></div>
                     </div>
@@ -443,7 +443,7 @@ export default function Manufacturing() {
                         ))}
                       </div>
                     )}
-                    <div className="flex gap-2 pt-1">
+                    <div className="flex flex-wrap gap-2 pt-1">
                       {mfr.website && (
                         <Button variant="outline" size="sm" className="flex-1 h-7 min-h-[44px] text-xs" asChild>
                           <a href={mfr.website} target="_blank" rel="noreferrer">
@@ -466,40 +466,40 @@ export default function Manufacturing() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Company Name</Label>
-                  <Input placeholder="Your company" value={rfqForm.company} onChange={(e) => setRfqForm((f) => ({ ...f, company: e.target.value }))} />
+                  <Input className="min-h-[44px]" placeholder="Your company" value={rfqForm.company} onChange={(e) => setRfqForm((f) => ({ ...f, company: e.target.value }))} />
                 </div>
                 <div className="space-y-2">
                   <Label>Contact Email</Label>
-                  <Input placeholder="you@company.com" value={rfqForm.email} onChange={(e) => setRfqForm((f) => ({ ...f, email: e.target.value }))} />
+                  <Input className="min-h-[44px]" placeholder="you@company.com" value={rfqForm.email} onChange={(e) => setRfqForm((f) => ({ ...f, email: e.target.value }))} />
                 </div>
                 <div className="space-y-2">
                   <Label>Garment Type</Label>
-                  <Input placeholder="e.g. T-shirt, Hoodie" value={rfqForm.garment} onChange={(e) => setRfqForm((f) => ({ ...f, garment: e.target.value }))} />
+                  <Input className="min-h-[44px]" placeholder="e.g. T-shirt, Hoodie" value={rfqForm.garment} onChange={(e) => setRfqForm((f) => ({ ...f, garment: e.target.value }))} />
                 </div>
                 <div className="space-y-2">
                   <Label>Quantity</Label>
-                  <Input type="number" min={1} value={rfqForm.qty} onChange={(e) => setRfqForm((f) => ({ ...f, qty: Number(e.target.value) }))} />
+                  <Input className="min-h-[44px]" type="number" min={1} value={rfqForm.qty} onChange={(e) => setRfqForm((f) => ({ ...f, qty: Number(e.target.value) }))} />
                 </div>
                 <div className="space-y-2">
                   <Label>Print Method</Label>
-                  <Input placeholder="Screen Print, DTG…" value={rfqForm.method} onChange={(e) => setRfqForm((f) => ({ ...f, method: e.target.value }))} />
+                  <Input className="min-h-[44px]" placeholder="Screen Print, DTG…" value={rfqForm.method} onChange={(e) => setRfqForm((f) => ({ ...f, method: e.target.value }))} />
                 </div>
                 <div className="space-y-2">
                   <Label>Number of Colors</Label>
-                  <Input type="number" min={1} max={12} value={rfqForm.colors} onChange={(e) => setRfqForm((f) => ({ ...f, colors: Number(e.target.value) }))} />
+                  <Input className="min-h-[44px]" type="number" min={1} max={12} value={rfqForm.colors} onChange={(e) => setRfqForm((f) => ({ ...f, colors: Number(e.target.value) }))} />
                 </div>
                 <div className="space-y-2">
                   <Label>Print Dimensions</Label>
-                  <Input placeholder='e.g. 10" × 12"' value={rfqForm.dimensions} onChange={(e) => setRfqForm((f) => ({ ...f, dimensions: e.target.value }))} />
+                  <Input className="min-h-[44px]" placeholder='e.g. 10" × 12"' value={rfqForm.dimensions} onChange={(e) => setRfqForm((f) => ({ ...f, dimensions: e.target.value }))} />
                 </div>
                 <div className="space-y-2">
                   <Label>Required Delivery Date</Label>
-                  <Input type="date" value={rfqForm.delivery} onChange={(e) => setRfqForm((f) => ({ ...f, delivery: e.target.value }))} />
+                  <Input className="min-h-[44px]" type="date" value={rfqForm.delivery} onChange={(e) => setRfqForm((f) => ({ ...f, delivery: e.target.value }))} />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label>Additional Notes</Label>
-                <Textarea placeholder="Special requirements, artwork notes, brand guidelines…" value={rfqForm.notes} onChange={(e) => setRfqForm((f) => ({ ...f, notes: e.target.value }))} rows={3} />
+                <Textarea className="min-h-[44px]" placeholder="Special requirements, artwork notes, brand guidelines…" value={rfqForm.notes} onChange={(e) => setRfqForm((f) => ({ ...f, notes: e.target.value }))} rows={3} />
               </div>
               <Button onClick={downloadRfq} disabled={rfqGenerating || !rfqForm.company} className="min-h-[44px]">
                 {rfqGenerating ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Generating…</> : <><Download className="w-4 h-4 mr-2" />Download RFQ PDF</>}
@@ -538,7 +538,7 @@ export default function Manufacturing() {
                 </div>
                 <div className="space-y-2">
                   <Label>Quantity</Label>
-                  <Input type="number" min={1} value={orderQty} onChange={(e) => setOrderQty(Number(e.target.value))} />
+                  <Input type="number" min={1} value={orderQty} onChange={(e) => setOrderQty(Number(e.target.value))} className="min-h-[44px]" />
                 </div>
               </div>
               <Button

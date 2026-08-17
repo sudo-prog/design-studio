@@ -49,7 +49,7 @@ function PageOrderEditor({ order, onChange }: { order: PageId[]; onChange: (o: P
           onDragStart={() => onDragStart(i)}
           onDragOver={(e) => onDragOver(e, i)}
           onDragEnd={onDragEnd}
-          className="flex items-center gap-2 px-3 py-2 rounded-md border bg-card cursor-grab active:cursor-grabbing hover:border-primary/50 transition-colors select-none"
+          className="flex items-center gap-2 px-3 py-2 min-h-[44px] rounded-md border bg-card cursor-grab active:cursor-grabbing hover:border-primary/50 transition-colors select-none"
         >
           <GripVertical className="w-4 h-4 text-muted-foreground flex-shrink-0" />
           <span className="text-xs font-medium">{i + 1}.</span>
@@ -167,12 +167,12 @@ export default function TechPacks() {
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Tech Packs</h1>
           <p className="text-muted-foreground">Generate production-ready specification sheets.</p>
         </div>
-        <Button onClick={() => setShowForm(!showForm)}>
+        <Button onClick={() => setShowForm(!showForm)} className="min-h-[44px]">
           {showForm ? <X className="w-4 h-4 mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
           {showForm ? "Cancel" : "New Tech Pack"}
         </Button>
@@ -252,7 +252,7 @@ export default function TechPacks() {
               </div>
               <div className="space-y-3">
                 {colors.map((color, i) => (
-                  <div key={i} className="flex gap-3 items-center p-3 rounded-lg border bg-card">
+                  <div key={i} className="flex flex-wrap gap-3 items-center p-3 rounded-lg border bg-card">
                     <HexSwatch hex={color.hex} />
                     <input
                       type="color"
@@ -304,7 +304,7 @@ export default function TechPacks() {
 
             {/* Page reorder */}
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between flex-wrap gap-2">
                 <Label className="text-base font-semibold">PDF Page Order</Label>
                 <button
                   type="button"
@@ -334,7 +334,7 @@ export default function TechPacks() {
 
               {pdfUrl && (
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
                     <Badge variant="secondary" className="bg-green-500/10 text-green-500">PDF Ready</Badge>
                     <Button size="sm" className="min-h-[44px]" onClick={downloadPdf}>
                       <Download className="w-3 h-3 mr-1" />Download PDF
@@ -354,7 +354,7 @@ export default function TechPacks() {
 
       {/* Saved tech packs */}
       <div className="space-y-3">
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <h2 className="text-lg font-semibold">Saved Tech Packs</h2>
           <Select value={selectedProject?.toString() ?? "all"} onValueChange={(v) => setSelectedProject(v === "all" ? null : Number(v))}>
             <SelectTrigger className="w-44 min-h-[44px]">

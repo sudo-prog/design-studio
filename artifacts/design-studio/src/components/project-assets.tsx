@@ -138,12 +138,12 @@ export function ProjectAssets({ projectId }: ProjectAssetsProps) {
         </div>
       )}
 
-      <div className="flex gap-2 items-center">
-        <div className="relative flex-1">
+      <div className="flex gap-2 items-center flex-wrap">
+        <div className="relative flex-1 min-w-0">
           <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-muted-foreground" />
           <Input
             placeholder="Search assets..."
-            className="pl-8 h-8 text-sm"
+            className="pl-8 h-8 min-h-[44px] text-sm"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -163,8 +163,10 @@ export function ProjectAssets({ projectId }: ProjectAssetsProps) {
       </div>
 
       {isLoading ? (
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
-          {[...Array(6)].map((_, i) => <Skeleton key={i} className="aspect-square rounded-md" />)}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 overflow-x-auto">
+          {Array.from({ length: 12 }).map((_, i) => (
+            <Skeleton key={i} className="aspect-square rounded-md" />
+          ))}
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-10 text-muted-foreground">
@@ -172,7 +174,7 @@ export function ProjectAssets({ projectId }: ProjectAssetsProps) {
           <p className="text-sm">{search ? "No assets match your search." : "No assets yet. Upload some files above."}</p>
         </div>
       ) : (
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 overflow-x-auto">
           {filtered.map((asset) => {
             const Icon = TYPE_ICONS[asset.type] ?? Image;
             const isImage = asset.mimeType?.startsWith("image/");
@@ -203,7 +205,7 @@ export function ProjectAssets({ projectId }: ProjectAssetsProps) {
                   <Button
                     size="icon"
                     variant="destructive"
-                    className="h-6 w-6"
+                    className="h-6 w-6 min-h-[44px] min-w-[44px]"
                     onClick={(e) => { e.stopPropagation(); handleDelete(asset.id); }}
                     aria-label={`Delete ${asset.filename ?? "asset"}`}
                   >
@@ -259,8 +261,8 @@ export function ProjectAssets({ projectId }: ProjectAssetsProps) {
                   ))}
                 </div>
               )}
-              <div className="flex gap-2">
-                <Button asChild variant="outline" size="sm" className="flex-1">
+              <div className="flex gap-2 flex-wrap">
+                <Button asChild variant="outline" size="sm" className="flex-1 min-h-[44px]">
                   <a href={selectedAssetData.url} target="_blank" rel="noopener noreferrer">
                     <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
                     Open
@@ -269,6 +271,7 @@ export function ProjectAssets({ projectId }: ProjectAssetsProps) {
                 <Button
                   variant="destructive"
                   size="sm"
+                  className="min-h-[44px]"
                   onClick={() => handleDelete(selectedAssetData.id)}
                 >
                   <Trash2 className="w-3.5 h-3.5 mr-1.5" />

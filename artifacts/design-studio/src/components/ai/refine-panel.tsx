@@ -52,7 +52,7 @@ export function RefinePanel({ originalPrompt, previousImages, onSubmit, onCancel
         <Textarea
           value={refinedPrompt}
           onChange={(e) => setRefinedPrompt(e.target.value)}
-          className="text-sm resize-none h-16"
+          className="text-sm resize-none h-16 min-h-[44px]"
         />
       </div>
 
@@ -63,7 +63,7 @@ export function RefinePanel({ originalPrompt, previousImages, onSubmit, onCancel
             <button
               key={s}
               onClick={() => setRefinedPrompt((p) => `${p}, ${s}`)}
-              className="text-[10px] px-2 py-0.5 rounded-full border border-border hover:border-primary hover:text-primary transition-colors"
+              className="min-h-[44px] min-w-[44px] text-[10px] px-2 py-0.5 rounded-full border border-border hover:border-primary hover:text-primary transition-colors"
             >
               {s}
             </button>

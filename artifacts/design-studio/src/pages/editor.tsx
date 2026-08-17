@@ -124,7 +124,7 @@ function TextOptionsBar() {
   }
 
   return (
-    <div className="flex items-center gap-1.5 px-3 min-h-[44px] border-b border-border bg-card/90 shrink-0 overflow-x-auto">
+    <div className="flex flex-wrap items-center gap-1.5 px-3 min-h-[44px] border-b border-border bg-card/90 shrink-0 overflow-x-auto">
       {/* Font family */}
       <Select value={fontFamily} onValueChange={(f) => {
         setFontFamily(f);
@@ -197,17 +197,19 @@ function TextOptionsBar() {
 
       {/* Letter spacing */}
       <span className="text-[10px] text-muted-foreground shrink-0">Spacing</span>
-      <Slider
-        className="w-16 shrink-0"
-        min={-100} max={800} step={10}
-        value={[charSpacing]}
-        onValueChange={([v]) => { setCharSpacing(v); applyProp({ charSpacing: v }); }}
-      />
+      <div className="min-h-[44px] flex items-center">
+        <Slider
+          className="w-16 shrink-0"
+          min={-100} max={800} step={10}
+          value={[charSpacing]}
+          onValueChange={([v]) => { setCharSpacing(v); applyProp({ charSpacing: v }); }}
+        />
+      </div>
       <span className="text-[10px] font-mono text-muted-foreground w-7 shrink-0">{charSpacing}</span>
 
       <Separator orientation="vertical" className="h-4" />
 
-      <Button variant="outline" className="min-h-[44px] text-[10px] px-2 shrink-0" onClick={handleOutlineText}>
+      <Button variant="outline" className="min-h-[44px] min-w-[44px] text-[10px] px-2 shrink-0" onClick={handleOutlineText}>
         Outline (print-safe)
       </Button>
     </div>
@@ -432,7 +434,7 @@ function EditorShell({ projectId, canvasRef }: ShellProps) {
   const isText = selectedType === "i-text" || selectedType === "text";
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-background z-50">
+    <div className="fixed inset-0 flex flex-col bg-background z-50 min-h-[100dvh] pb-[env(safe-area-inset-bottom)]">
       <EditorHeader
         projectId={projectId}
         isSaving={isSaving}
@@ -443,7 +445,7 @@ function EditorShell({ projectId, canvasRef }: ShellProps) {
 
       {isText && <TextOptionsBar />}
 
-      <div className="flex flex-1 min-h-0">
+      <div className="flex flex-1 min-h-0 flex-wrap md:flex-nowrap">
         {/* Left toolbar */}
         <Toolbar
           zoom={zoom}
@@ -452,7 +454,7 @@ function EditorShell({ projectId, canvasRef }: ShellProps) {
         />
 
         {/* Canvas scroll area */}
-        <div className="flex-1 overflow-auto" style={{ minHeight: 0, backgroundColor: "hsl(var(--muted) / 0.4)" }}>
+        <div className="flex-1 min-w-0 overflow-auto" style={{ minHeight: 0, backgroundColor: "hsl(var(--muted) / 0.4)" }}>
           <div
             style={{
               minHeight: "100%",
@@ -475,9 +477,9 @@ function EditorShell({ projectId, canvasRef }: ShellProps) {
         </div>
 
         {/* Right panel */}
-        <div className="w-60 border-l border-border flex flex-col min-h-0 shrink-0">
+        <div className="w-full md:w-60 border-l md:border-l border-border flex flex-col min-h-0 shrink-0">
           <Tabs value={rightTab} onValueChange={setRightTab} className="flex flex-col flex-1 min-h-0">
-            <TabsList className="rounded-none border-b min-h-[44px] w-full bg-transparent p-0 gap-0 shrink-0">
+            <TabsList className="rounded-none border-b min-h-[44px] w-full bg-transparent p-0 gap-0 shrink-0 flex-wrap">
               {(["layers", "print"] as const).map((t) => (
                 <TabsTrigger
                   key={t}

@@ -83,12 +83,12 @@ export default function AIStyleEngineWidget() {
 
   const front = (
     <Card className="h-full border-primary/20 bg-gradient-to-br from-card via-card to-primary/5">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <div className="flex items-center gap-2">
+      <CardHeader className="flex flex-row items-center justify-between pb-2 flex-wrap gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Sparkles className="w-4 h-4 text-primary" />
           <CardTitle className="text-sm">AI Style Engine</CardTitle>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Badge variant="secondary" className="text-[10px]">{store.generators.filter(g => g.status === 'online').length} online</Badge>
           <Button variant="ghost" size="icon" className="h-7 w-7 min-h-[44px] min-w-[44px]" onClick={() => setIsFlipped(true)} aria-label="Open AI Style Engine settings">
             <Settings className="h-3.5 w-3.5" />
@@ -104,11 +104,11 @@ export default function AIStyleEngineWidget() {
           ))}
         </div>
 
-        <Textarea value={store.currentPrompt} onChange={(e) => store.setPrompt(e.target.value)} placeholder="Describe your vision..." rows={2} className="resize-none text-sm" />
+        <Textarea value={store.currentPrompt} onChange={(e) => store.setPrompt(e.target.value)} placeholder="Describe your vision..." rows={2} className="resize-none text-sm min-h-[44px]" />
 
         <ImageDropzone images={store.referenceImages} onAdd={store.addReferenceImage} onRemove={store.removeReferenceImage} />
 
-        <div className="grid grid-cols-2 gap-1.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
           <ActionButton icon={<Wand2 className="w-3 h-3" />} label="Enhance" onClick={handleRefine} loading={loading === 'refine'} disabled={!store.currentPrompt} />
           <ActionButton icon={<Sparkles className="w-3 h-3" />} label="Reverse" onClick={handleReverse} loading={loading === 'reverse'} disabled={!store.referenceImages.length} />
           <ActionButton icon={<FileText className="w-3 h-3" />} label="Style.md" onClick={handleExtract} loading={loading === 'style'} disabled={!store.currentPrompt} />
@@ -116,15 +116,15 @@ export default function AIStyleEngineWidget() {
         </div>
 
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
-          <TabsList className="grid grid-cols-4 min-h-[44px]">
+          <TabsList className="grid grid-cols-4 min-h-[44px] overflow-x-auto">
             {(['prompt', 'style', 'palette', 'metadata'] as const).map((t) => (
-              <TabsTrigger key={t} value={t} className="text-[10px]">{t.charAt(0).toUpperCase() + t.slice(1)}</TabsTrigger>
+              <TabsTrigger key={t} value={t} className="text-[10px] min-h-[44px]">{t.charAt(0).toUpperCase() + t.slice(1)}</TabsTrigger>
             ))}
           </TabsList>
           <AnimatePresence mode="wait">
             <motion.div key={activeTab} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.15 }}>
               <TabsContent value="prompt" className="mt-2">
-                <Textarea value={generatedPrompt} onChange={(e) => setGeneratedPrompt(e.target.value)} placeholder="Enhanced prompt..." rows={2} className="resize-none text-xs font-mono" />
+                <Textarea value={generatedPrompt} onChange={(e) => setGeneratedPrompt(e.target.value)} placeholder="Enhanced prompt..." rows={2} className="resize-none text-xs font-mono min-h-[44px]" />
                 <div className="flex justify-between mt-1">
                   <span className="text-[9px] text-muted-foreground">{generatedPrompt.length} chars</span>
                   <button onClick={() => navigator.clipboard.writeText(generatedPrompt)} className="min-h-[44px] min-w-[44px] text-[9px] text-primary">Copy</button>
@@ -159,8 +159,8 @@ export default function AIStyleEngineWidget() {
 
   const back = (
     <Card className="h-full border-primary/20 bg-gradient-to-br from-card via-card to-card">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <div className="flex items-center gap-2">
+      <CardHeader className="flex flex-row items-center justify-between pb-2 flex-wrap gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Settings className="w-4 h-4 text-muted-foreground" />
           <CardTitle className="text-sm">Settings</CardTitle>
         </div>
@@ -169,7 +169,7 @@ export default function AIStyleEngineWidget() {
       <CardContent className="space-y-3">
         <div>
           <label className="text-[10px] font-medium text-muted-foreground mb-1 block">Custom System Prompt</label>
-          <Textarea value={customSystemPrompt} onChange={(e) => setCustomSystemPrompt(e.target.value)} placeholder="Always output in DESIGN.md format..." rows={2} className="resize-none text-xs" />
+          <Textarea value={customSystemPrompt} onChange={(e) => setCustomSystemPrompt(e.target.value)} placeholder="Always output in DESIGN.md format..." rows={2} className="resize-none text-xs min-h-[44px]" />
         </div>
         <div>
           <label className="text-[10px] font-medium text-muted-foreground mb-1 block">Output Templates</label>

@@ -50,7 +50,7 @@ const TYPE_LABELS: Record<string, string> = {
 
 function JobCard({ job, onApprove, onReject }: { job: AiJob; onApprove: () => void; onReject: () => void }) {
   return (
-    <div className="border border-border rounded-lg p-3 space-y-2">
+    <div className="border border-border rounded-lg p-4 space-y-2">
       <div className="flex items-center gap-2">
         {STATUS_ICON[job.status] ?? <Clock className="w-3 h-3" />}
         <Badge variant="outline" className="text-[10px]">{TYPE_LABELS[job.type] ?? job.type}</Badge>
@@ -67,11 +67,11 @@ function JobCard({ job, onApprove, onReject }: { job: AiJob; onApprove: () => vo
         </div>
       )}
       {job.status === "completed" && (
-        <div className="flex gap-1.5">
-          <Button size="sm" className="min-h-[44px] h-6 text-[10px] gap-1" onClick={onApprove}>
+        <div className="flex gap-1.5 flex-wrap">
+          <Button size="sm" className="min-h-[44px] text-[10px] gap-1" onClick={onApprove}>
             <CheckCircle className="w-3 h-3" />Approve
           </Button>
-          <Button size="sm" variant="outline" className="min-h-[44px] h-6 text-[10px] gap-1" onClick={onReject}>
+          <Button size="sm" variant="outline" className="min-h-[44px] text-[10px] gap-1" onClick={onReject}>
             <XCircle className="w-3 h-3" />Reject
           </Button>
         </div>
@@ -153,11 +153,11 @@ function StyleTransferPanel({ projectId, onApprove, onJobCreated }: StyleTransfe
       <p className="text-xs text-muted-foreground">
         Apply the style of a reference image to your design.
       </p>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         {/* Design slot */}
         <button
           onClick={() => designRef.current?.click()}
-          className="h-24 border-2 border-dashed border-border rounded overflow-hidden flex items-center justify-center text-xs text-muted-foreground hover:border-primary/50 transition-colors relative"
+          className="min-h-[44px] h-24 border-2 border-dashed border-border rounded overflow-hidden flex items-center justify-center text-xs text-muted-foreground hover:border-primary/50 transition-colors relative"
         >
           {designPreview
             ? <img src={designPreview} className="w-full h-full object-cover" alt="design" />
@@ -167,7 +167,7 @@ function StyleTransferPanel({ projectId, onApprove, onJobCreated }: StyleTransfe
         {/* Style reference slot */}
         <button
           onClick={() => styleRef.current?.click()}
-          className="h-24 border-2 border-dashed border-border rounded overflow-hidden flex items-center justify-center text-xs text-muted-foreground hover:border-primary/50 transition-colors relative"
+          className="min-h-[44px] h-24 border-2 border-dashed border-border rounded overflow-hidden flex items-center justify-center text-xs text-muted-foreground hover:border-primary/50 transition-colors relative"
         >
           {stylePreview
             ? <img src={stylePreview} className="w-full h-full object-cover" alt="style" />
@@ -178,7 +178,7 @@ function StyleTransferPanel({ projectId, onApprove, onJobCreated }: StyleTransfe
       <input ref={designRef} type="file" accept="image/*" className="hidden" onChange={(e) => readFile(e, setDesignPreview)} />
       <input ref={styleRef} type="file" accept="image/*" className="hidden" onChange={(e) => readFile(e, setStylePreview)} />
 
-      <Button className="w-full min-h-[44px] h-8 text-xs gap-1.5" onClick={handleTransfer} disabled={isRunning}>
+      <Button className="w-full min-h-[44px] text-xs gap-1.5" onClick={handleTransfer} disabled={isRunning}>
         {isRunning
           ? <><Loader2 className="w-3.5 h-3.5 animate-spin" />Transferring…</>
           : <><Sparkles className="w-3.5 h-3.5" />Transfer Style</>
@@ -188,14 +188,14 @@ function StyleTransferPanel({ projectId, onApprove, onJobCreated }: StyleTransfe
       {result && (
         <div className="space-y-2">
           <img src={result} alt="Style transfer result" className="w-full rounded border border-border" />
-          <div className="flex gap-2">
-            <Button size="sm" className="flex-1 gap-1 min-h-[44px] h-7 text-xs" onClick={() => onApprove(result)}>
+          <div className="flex gap-2 flex-wrap">
+            <Button size="sm" className="flex-1 gap-1 min-h-[44px] text-xs" onClick={() => onApprove(result)}>
               <CheckCircle className="w-3 h-3" />Approve & Save
             </Button>
-            <Button size="sm" variant="outline" className="flex-1 gap-1 min-h-[44px] h-7 text-xs" onClick={() => { setResult(null); handleTransfer(); }}>
+            <Button size="sm" variant="outline" className="flex-1 gap-1 min-h-[44px] text-xs" onClick={() => { setResult(null); handleTransfer(); }}>
               <Sparkles className="w-3 h-3" />Re-run
             </Button>
-            <Button size="sm" variant="ghost" className="min-h-[44px] h-7 text-xs" onClick={() => setResult(null)}>
+            <Button size="sm" variant="ghost" className="min-h-[44px] text-xs" onClick={() => setResult(null)}>
               <XCircle className="w-3 h-3" />Discard
             </Button>
           </div>
@@ -270,7 +270,7 @@ export default function AiHub() {
   const activeJobs = safeJobs.filter((j) => j.status === "pending" || j.status === "processing");
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 min-h-[100dvh] pb-safe pb-[env(safe-area-inset-bottom)]">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight">AI Concept Generation</h1>
@@ -279,45 +279,45 @@ export default function AiHub() {
         <div className="flex items-center gap-2 flex-wrap">
           <Badge
             variant="outline"
-            className="text-[10px] gap-1 cursor-pointer"
+            className="text-[10px] gap-1 cursor-pointer min-h-[44px] min-w-[44px] px-3"
             onClick={() => setShowProviderForm((v) => !v)}
           >
             <Zap className="w-3 h-3" />
             {cfg.provider === "local" ? "Built-in AI" : cfg.provider}
           </Badge>
           {showProviderForm && (
-            <div className="flex items-center gap-2 flex-wrap bg-background border border-border rounded-md p-2">
-              <input
-                type="text"
-                value={providerChoice}
-                onChange={(e) => setProviderChoice(e.target.value)}
-                placeholder="Provider"
-                className="min-h-[44px] text-xs rounded border border-border bg-background px-2"
-              />
-              {!["local","nous","gemini-web2api"].includes(providerChoice) && (
-                <>
-                  <input
-                    type="text"
-                    value={providerKey}
-                    onChange={(e) => setProviderKey(e.target.value)}
-                    placeholder="API key"
-                    className="min-h-[44px] text-xs rounded border border-border bg-background px-2 w-40"
-                  />
-                  <input
-                    type="text"
-                    value={providerModel}
-                    onChange={(e) => setProviderModel(e.target.value)}
-                    placeholder="Model"
-                    className="min-h-[44px] text-xs rounded border border-border bg-background px-2 w-40"
-                  />
-                </>
-              )}
-              <Button size="sm" className="min-h-[44px] h-7 text-[10px] gap-1" onClick={saveProviderForm}>Save</Button>
-              <Button size="sm" variant="ghost" className="min-h-[44px] h-7 text-[10px]" onClick={() => setShowProviderForm(false)}>Cancel</Button>
-            </div>
-          )}
+                      <div className="flex items-center gap-2 flex-wrap bg-background border border-border rounded-md p-2">
+                        <input
+                          type="text"
+                          value={providerChoice}
+                          onChange={(e) => setProviderChoice(e.target.value)}
+                          placeholder="Provider"
+                          className="min-h-[44px] text-xs rounded border border-border bg-background px-2 w-full"
+                        />
+                        {![ "local", "nous", "gemini-web2api" ].includes(providerChoice) && (
+                          <>
+                            <input
+                              type="text"
+                              value={providerKey}
+                              onChange={(e) => setProviderKey(e.target.value)}
+                              placeholder="API key"
+                              className="min-h-[44px] text-xs rounded border border-border bg-background px-2 w-full sm:w-40"
+                            />
+                            <input
+                              type="text"
+                              value={providerModel}
+                              onChange={(e) => setProviderModel(e.target.value)}
+                              placeholder="Model"
+                              className="min-h-[44px] text-xs rounded border border-border bg-background px-2 w-full sm:w-40"
+                            />
+                          </>
+                        )}
+                        <Button size="sm" className="min-h-[44px] text-[10px] gap-1" onClick={saveProviderForm}>Save</Button>
+                        <Button size="sm" variant="ghost" className="min-h-[44px] text-[10px]" onClick={() => setShowProviderForm(false)}>Cancel</Button>
+                      </div>
+                    )}
           <Select value={String(projectId)} onValueChange={(v) => setProjectId(Number(v))}>
-            <SelectTrigger className="min-h-[44px] text-xs w-44">
+            <SelectTrigger className="min-h-[44px] min-w-[44px] text-xs w-44">
               <SelectValue placeholder="Filter by project…" />
             </SelectTrigger>
             <SelectContent>
@@ -331,7 +331,7 @@ export default function AiHub() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {[
         { label: "Total Jobs", value: safeJobs.length, icon: <Sparkles className="w-4 h-4" /> },
         { label: "Completed", value: completedJobs.length, icon: <CheckCircle className="w-4 h-4 text-green-500" /> },
@@ -339,7 +339,7 @@ export default function AiHub() {
         { label: "Active", value: activeJobs.length, icon: <Clock className="w-4 h-4 text-yellow-500" /> },
         ].map((stat) => (
           <Card key={stat.label}>
-            <CardContent className="pt-4 pb-3">
+            <CardContent className="pt-4 pb-3 min-h-[44px]">
               <div className="flex items-center justify-between">
                 <p className="text-xs text-muted-foreground">{stat.label}</p>
                 {stat.icon}
@@ -350,7 +350,8 @@ export default function AiHub() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-[340px_1fr] gap-6">
+      <div className="overflow-x-auto">
+        <div className="grid grid-cols-1 md:grid-cols-[340px_1fr] gap-6">
         {/* ── AI Module runner ─────────────────────────────────────────────── */}
         <Card>
           <CardHeader className="pb-2 pt-4">
@@ -371,7 +372,7 @@ export default function AiHub() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold">Generation History</h2>
-            <Button size="sm" variant="ghost" onClick={() => refetch()} className="min-h-[44px] h-7 text-xs">
+            <Button size="sm" variant="ghost" onClick={() => refetch()} className="min-h-[44px] text-xs">
               Refresh
             </Button>
           </div>
@@ -404,6 +405,7 @@ export default function AiHub() {
             onApprove={handleApprove}
             onJobCreated={refetch}
           />
+        </div>
         </div>
       </div>
     </div>

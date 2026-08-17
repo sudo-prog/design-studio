@@ -230,14 +230,14 @@ export default function Collections() {
                 </Select>
               </div>
             )}
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {editing ? (
                 <>
-                  <Button onClick={handleSaveEdit} disabled={updateCollection.isPending} className="flex-1 gap-1.5">
+                  <Button onClick={handleSaveEdit} disabled={updateCollection.isPending} className="flex-1 gap-1.5 min-h-[44px]">
                     {updateCollection.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckSquare className="w-4 h-4" />}
                     Save
                   </Button>
-                  <Button variant="ghost" onClick={() => setEditing(null)}>Cancel</Button>
+                  <Button variant="ghost" onClick={() => setEditing(null)} className="min-h-[44px]">Cancel</Button>
                 </>
               ) : (
                 <Button onClick={handleCreate} disabled={createCollection.isPending} className="w-full gap-1.5 min-h-[44px]">
@@ -257,7 +257,7 @@ export default function Collections() {
               {selected.size > 0 ? `${selected.size} selected` : "Select collections for batch export"}
             </span>
             <Select value={batchAction} onValueChange={(v) => setBatchAction(v as BatchAction)}>
-              <SelectTrigger className="w-40 h-8 min-h-[44px]">
+              <SelectTrigger className="w-40 min-h-[44px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -294,18 +294,18 @@ export default function Collections() {
               {safeCollections.map((col) => (
                 <Card key={col.id} className={selected.has(col.id) ? "border-primary/60" : ""}>
                   <CardHeader className="pb-2">
-                    <div className="flex items-start justify-between gap-2">
+                    <div className="flex flex-wrap items-start justify-between gap-2">
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => toggleSelect(col.id)}
-                          className={`mt-0.5 w-4 h-4 min-h-[44px] min-w-[44px] rounded border flex items-center justify-center ${
+                          className={`mt-0.5 min-h-[44px] min-w-[44px] rounded border flex items-center justify-center ${
                             selected.has(col.id) ? "bg-primary border-primary text-primary-foreground" : "border-border"
                           }`}
                           aria-label={`Select ${col.name}`}
                         >
                           {selected.has(col.id) && <CheckSquare className="w-3 h-3" />}
                         </button>
-                        <CardTitle className="text-base">{col.name}</CardTitle>
+                        <CardTitle className="text-base min-w-0 break-words">{col.name}</CardTitle>
                       </div>
                       <Badge variant={col.status === "active" ? "default" : "secondary"}>
                         {STATUS_LABEL[col.status ?? "planning"] ?? col.status}
@@ -327,7 +327,7 @@ export default function Collections() {
                         <span className="text-xs text-muted-foreground">No linked projects</span>
                       )}
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                       <Button size="sm" variant="outline" className="gap-1.5 min-h-[44px]" onClick={() => setEditing(col)}>
                         <Pencil className="w-3.5 h-3.5" /> Edit
                       </Button>

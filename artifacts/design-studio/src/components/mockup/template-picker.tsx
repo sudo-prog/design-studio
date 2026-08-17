@@ -68,36 +68,38 @@ export function TemplatePicker({ selected, onSelect }: Props) {
       </div>
 
       {isLoading ? (
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="aspect-square rounded-lg bg-muted animate-pulse" />
           ))}
         </div>
       ) : (
-        <div className="grid grid-cols-3 gap-2 max-h-64 overflow-y-auto pr-1">
-          {filtered.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => onSelect(t)}
-              className={cn(
-                "relative aspect-square rounded-lg overflow-hidden border-2 transition-all group",
-                selected?.id === t.id
-                  ? "border-primary ring-2 ring-primary/30"
-                  : "border-transparent hover:border-border",
-              )}
-            >
-              <img src={t.thumbnailUrl} alt={t.name} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-1">
-                <p className="text-[9px] text-white leading-tight line-clamp-2">{t.name}</p>
-              </div>
-              {selected?.id === t.id && (
-                <div className="absolute top-1 right-1">
-                  <CheckCircle className="w-4 h-4 text-white drop-shadow" />
+        <div className="overflow-x-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 max-h-64 overflow-y-auto pr-1">
+            {filtered.map((t) => (
+              <button
+                key={t.id}
+                onClick={() => onSelect(t)}
+                className={cn(
+                  "relative aspect-square rounded-lg overflow-hidden border-2 transition-all group",
+                  selected?.id === t.id
+                    ? "border-primary ring-2 ring-primary/30"
+                    : "border-transparent hover:border-border",
+                )}
+              >
+                <img src={t.thumbnailUrl} alt={t.name} className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-1">
+                  <p className="text-[9px] text-white leading-tight line-clamp-2">{t.name}</p>
                 </div>
-              )}
-            </button>
-          ))}
+                {selected?.id === t.id && (
+                  <div className="absolute top-1 right-1">
+                    <CheckCircle className="w-4 h-4 text-white drop-shadow" />
+                  </div>
+                )}
+              </button>
+            ))}
+          </div>
         </div>
       )}
 

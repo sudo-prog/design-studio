@@ -207,7 +207,7 @@ export default function MockupsPage() {
                       key={c.value}
                       title={c.label}
                       onClick={() => setGarmentColor(c.value)}
-                      className={`w-6 h-6 rounded-full border-2 transition-all ${
+                      className={`w-6 h-6 min-w-[44px] min-h-[44px] rounded-full border-2 transition-all ${
                         garmentColor === c.value ? "border-primary scale-110" : "border-border"
                       }`}
                       style={{ backgroundColor: c.value }}
@@ -255,7 +255,7 @@ export default function MockupsPage() {
         {/* ── Right panel: mockup viewer ─────────────────────────────────────── */}
         <div className="space-y-4">
           {!selectedTemplate ? (
-            <div className="h-[600px] border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center gap-4 text-center">
+            <div className="min-h-[60vh] border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center gap-4 text-center">
               <Wand2 className="w-12 h-12 text-muted-foreground/40" />
               <div>
                 <p className="text-lg font-semibold">Select a template</p>
@@ -264,7 +264,7 @@ export default function MockupsPage() {
             </div>
           ) : (
             <>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 flex-wrap">
                 <div>
                   <p className="font-semibold">{selectedTemplate.name}</p>
                   <p className="text-xs text-muted-foreground capitalize">{selectedTemplate.category}</p>

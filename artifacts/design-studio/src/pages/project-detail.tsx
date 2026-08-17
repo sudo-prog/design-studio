@@ -182,7 +182,7 @@ export default function ProjectDetail() {
         <p className="text-muted-foreground mb-4">
           {projectError ? "Could not load project. The API may be unavailable." : "Project not found."}
         </p>
-        <Button asChild variant="outline">
+        <Button asChild variant="outline" className="min-h-[44px]">
           <Link href="/projects">
             <ArrowLeft className="w-4 h-4 mr-2" />Back to Projects
           </Link>
@@ -198,7 +198,7 @@ export default function ProjectDetail() {
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 flex-wrap">
         <Button asChild variant="ghost" size="icon" className="min-h-[44px] min-w-[44px]" aria-label="Back to projects">
           <Link href="/projects"><ArrowLeft className="w-4 h-4" /></Link>
         </Button>
@@ -228,22 +228,22 @@ export default function ProjectDetail() {
 
       <Tabs defaultValue="overview">
         <TabsList className="min-h-[44px]">
-          <TabsTrigger className="min-h-[44px]" value="overview">Overview</TabsTrigger>
-          <TabsTrigger className="min-h-[44px]" value="moodboard">Mood Board</TabsTrigger>
-          <TabsTrigger className="min-h-[44px]" value="assets">Assets</TabsTrigger>
-          <TabsTrigger className="min-h-[44px]" value="history">History</TabsTrigger>
+          <TabsTrigger value="overview" className="min-h-[44px]">Overview</TabsTrigger>
+                            <TabsTrigger value="moodboard" className="min-h-[44px]">Mood Board</TabsTrigger>
+                            <TabsTrigger value="assets" className="min-h-[44px]">Assets</TabsTrigger>
+                            <TabsTrigger value="history" className="min-h-[44px]">History</TabsTrigger>
         </TabsList>
 
         {/* ── OVERVIEW ── */}
         <TabsContent value="overview" className="mt-6 space-y-6">
           <Card>
-            <CardHeader className="flex flex-row items-start justify-between">
+            <CardHeader className="flex flex-row items-start justify-between flex-wrap gap-2">
               <div>
                 <CardTitle>Project Details</CardTitle>
                 <CardDescription>Core metadata for this design project.</CardDescription>
               </div>
               {!isEditingOverview && (
-                <Button variant="outline" size="sm" onClick={startEdit}>Edit</Button>
+                <Button variant="outline" size="sm" onClick={startEdit} className="min-h-[44px]">Edit</Button>
               )}
             </CardHeader>
             <CardContent>
@@ -274,9 +274,9 @@ export default function ProjectDetail() {
                     <Label>Creative Brief</Label>
                     <Textarea value={editBrief} onChange={(e) => setEditBrief(e.target.value)} className="min-h-[100px]" placeholder="Describe the vision…" />
                   </div>
-                  <div className="flex gap-2 justify-end">
-                    <Button variant="outline" onClick={() => setIsEditingOverview(false)}>Cancel</Button>
-                    <Button onClick={saveOverview} disabled={updateProject.isPending}>
+                  <div className="flex gap-2 justify-end flex-wrap">
+                    <Button variant="outline" onClick={() => setIsEditingOverview(false)} className="min-h-[44px]">Cancel</Button>
+                    <Button onClick={saveOverview} disabled={updateProject.isPending} className="min-h-[44px]">
                       {updateProject.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                       Save Changes
                     </Button>
@@ -339,28 +339,28 @@ export default function ProjectDetail() {
               <div className="grid gap-3 grid-cols-1 sm:grid-cols-2">
                 <div className="space-y-1.5">
                   <Label>Repository (owner/repo)</Label>
-                  <Input placeholder="e.g. myuser/my-designs" value={githubRepo} onChange={(e) => setGithubRepo(e.target.value)} />
+                  <Input placeholder="e.g. myuser/my-designs" value={githubRepo} onChange={(e) => setGithubRepo(e.target.value)} className="min-h-[44px]" />
                 </div>
                 <div className="space-y-1.5">
                   <Label>Personal Access Token</Label>
-                  <Input type="password" placeholder="ghp_…" value={githubPat} onChange={(e) => setGithubPat(e.target.value)} />
+                  <Input type="password" placeholder="ghp_…" value={githubPat} onChange={(e) => setGithubPat(e.target.value)} className="min-h-[44px]" />
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
-                <Button variant="outline" size="sm" onClick={saveGithubConfig} className="gap-1.5">
+                <Button variant="outline" size="sm" onClick={saveGithubConfig} className="gap-1.5 min-h-[44px]">
                   <Check className="w-3.5 h-3.5" /> Save Config
                 </Button>
-                <Button size="sm" onClick={triggerBackup} disabled={backupProject.isPending} className="gap-1.5">
+                <Button size="sm" onClick={triggerBackup} disabled={backupProject.isPending} className="gap-1.5 min-h-[44px]">
                   {backupProject.isPending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <GitBranch className="w-3.5 h-3.5" />}
                   Backup Now
                 </Button>
-                <Button variant="outline" size="sm" onClick={downloadDesignJson} className="gap-1.5">
+                <Button variant="outline" size="sm" onClick={downloadDesignJson} className="gap-1.5 min-h-[44px]">
                   <Download className="w-3.5 h-3.5" /> Download design.json
                 </Button>
               </div>
               {backupResult?.commitUrl && (
                 <a href={backupResult.commitUrl} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-sm text-primary hover:underline">
+                  className="flex items-center gap-1.5 text-sm text-primary hover:underline min-h-[44px]">
                   <ExternalLink className="w-3.5 h-3.5" /> View commit on GitHub
                 </a>
               )}

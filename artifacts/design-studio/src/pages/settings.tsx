@@ -134,7 +134,7 @@ export default function Settings() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="max-w-2xl mx-auto min-h-[100dvh] pb-safe pb-[env(safe-area-inset-bottom)] space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
         <p className="text-muted-foreground mt-1">Configure your AI provider and studio preferences.</p>
@@ -157,7 +157,7 @@ export default function Settings() {
           </CardHeader>
           {!installed && (
             <CardContent>
-              <Button onClick={install} className="gap-2">
+              <Button onClick={install} className="gap-2 min-h-[44px]">
                 <Download className="w-4 h-4" />
                 Install DESIGN.Studio
               </Button>
@@ -184,7 +184,7 @@ export default function Settings() {
               <SelectTrigger className="min-h-[44px]">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="overflow-x-auto max-w-[90vw]">
                 {(Object.entries(PROVIDER_DEFAULTS) as [AIProvider, (typeof PROVIDER_DEFAULTS)[AIProvider]][]).map(([key, info]) => (
                   <SelectItem key={key} value={key}>
                     <span className="flex items-center gap-2">
@@ -235,7 +235,7 @@ export default function Settings() {
               <SelectTrigger className="min-h-[44px]">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="overflow-x-auto max-w-[90vw]">
                 {providerInfo.models.map((m) => (
                   <SelectItem key={m} value={m}>
                     <code className="font-mono text-xs">{m}</code>
@@ -250,11 +250,11 @@ export default function Settings() {
             </Select>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 pt-2">
-            <Button onClick={handleSave} className="flex-1">
+          <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 pt-2">
+            <Button onClick={handleSave} className="flex-1 min-h-[44px]">
               Save Settings
             </Button>
-            <Button variant="outline" onClick={handleTest} disabled={testing}>
+            <Button variant="outline" onClick={handleTest} disabled={testing} className="min-h-[44px]">
               {testing ? (
                 <Loader2 className="w-4 h-4 animate-spin mr-2" />
               ) : testResult === "ok" ? (
@@ -263,7 +263,7 @@ export default function Settings() {
               Test Connection
             </Button>
             {testResult && (
-              <Badge variant={testResult === "ok" ? "default" : "destructive"}>
+              <Badge variant={testResult === "ok" ? "default" : "destructive"} className="min-h-[44px] flex items-center">
                 {testResult === "ok" ? "Connected" : "Failed"}
               </Badge>
             )}
