@@ -1,5 +1,5 @@
 packages:
-  - artifacts/design-studio
+  - artifacts/atelier-studio
   - artifacts/api-server
   - lib/*
   - lib/integrations/*

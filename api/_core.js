@@ -63,7 +63,7 @@ function getPricing(quantity, method) {
   };
 }
 
-function health(res) { json(res, 200, { status: "ok", app: "design-studio" }); }
+function health(res) { json(res, 200, { status: "ok", app: "atelier-studio" }); }
 function aiChat(res) { json(res, 501, { error: "Not Implemented", note: "Wire backend here" }); }
 function manufacturingPricing(res, q) { json(res, 200, getPricing(parseInt(q.get("quantity") || "100", 10) || 100, q.get("printMethod") || "screen_print")); }
 function manufacturingManufacturers(res) { json(res, 200, MANUFACTURERS); }

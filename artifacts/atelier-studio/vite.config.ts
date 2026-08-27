@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 
-const basePath = process.env.BASE_PATH || (process.env.VERCEL || process.env.VERCEL_ENV ? "/" : "/design-studio/");
+const basePath = process.env.BASE_PATH || (process.env.VERCEL || process.env.VERCEL_ENV ? "/" : "/atelier-studio/");
 
 export default defineConfig({
   base: basePath,

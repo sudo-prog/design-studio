@@ -1,4 +1,4 @@
-// design-studio-mobile-audit.mjs — mobile-UI gate for DESIGN-STUDIO (390x844, touch)
+// atelier-studio-mobile-audit.mjs — mobile-UI gate for ATELIER-STUDIO (390x844, touch)
 // Run from the app-dir so 'playwright' resolves; BASE is the local prod-build preview.
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

@@ -39,8 +39,8 @@ DESIGN.Studio is a comprehensive, print-first AI design studio platform designed
 ### Installation
 ```bash
 # Clone the repository
-git clone https://github.com/sudo-prog/design-studio.git
-cd design-studio
+git clone https://github.com/sudo-prog/atelier-studio.git
+cd atelier-studio
 
 # Install dependencies
 pnpm install

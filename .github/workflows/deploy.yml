@@ -25,7 +25,7 @@ jobs:
       - run: pnpm install --no-frozen-lockfile
       
       - name: Build
-        run: pnpm --filter @workspace/design-studio run build
+        run: pnpm --filter @workspace/atelier-studio run build
 
   deploy:
     needs: build

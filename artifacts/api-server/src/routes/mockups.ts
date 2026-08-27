@@ -10,8 +10,8 @@ import {
   ListMockupTemplatesResponse,
 } from "@workspace/api-zod";
 
-// Base path for bundled local SVG assets (served from design-studio/public/mockups/).
-// The design-studio Vite dev server serves these under its BASE_URL prefix.
+// Base path for bundled local SVG assets (served from atelier-studio/public/mockups/).
+// The atelier-studio Vite dev server serves these under its BASE_URL prefix.
 // We store relative paths; clients resolve them against their own origin.
 const MOCKUP_ASSET_BASE = "/mockups";
 
