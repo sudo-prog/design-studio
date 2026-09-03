@@ -168,25 +168,29 @@ export default function ProjectDetail() {
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
-        <Skeleton className="h-8 w-40" />
-        <Skeleton className="h-12 w-2/3" />
-        <Skeleton className="h-96 w-full" />
+      <div className="min-h-[100dvh] bg-background flex items-center justify-center pb-safe pb-[env(safe-area-inset-bottom)]">
+        <div className="space-y-6">
+          <Skeleton className="h-8 w-40" />
+          <Skeleton className="h-12 w-2/3" />
+          <Skeleton className="h-96 w-full" />
+        </div>
       </div>
     );
   }
 
   if (projectError || !project) {
     return (
-      <div className="text-center py-20">
-        <p className="text-muted-foreground mb-4">
-          {projectError ? "Could not load project. The API may be unavailable." : "Project not found."}
-        </p>
-        <Button asChild variant="outline" className="min-h-[44px]">
-          <Link href="/projects">
-            <ArrowLeft className="w-4 h-4 mr-2" />Back to Projects
-          </Link>
-        </Button>
+      <div className="min-h-[100dvh] bg-background flex items-center justify-center pb-safe pb-[env(safe-area-inset-bottom)]">
+        <div className="text-center py-20">
+          <p className="text-muted-foreground mb-4">
+            {projectError ? "Could not load project. The API may be unavailable." : "Project not found."}
+          </p>
+          <Button asChild variant="outline" className="min-h-[44px]">
+            <Link href="/projects">
+              <ArrowLeft className="w-4 h-4 mr-2" />Back to Projects
+            </Link>
+          </Button>
+        </div>
       </div>
     );
   }
@@ -197,7 +201,7 @@ export default function ProjectDetail() {
     : [];
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="min-h-[100dvh] pb-safe pb-[env(safe-area-inset-bottom)] space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex items-center gap-3 flex-wrap">
         <Button asChild variant="ghost" size="icon" className="min-h-[44px] min-w-[44px]" aria-label="Back to projects">
           <Link href="/projects"><ArrowLeft className="w-4 h-4" /></Link>
@@ -221,13 +225,16 @@ export default function ProjectDetail() {
             <Layers className="w-3.5 h-3.5" /> Open Editor
           </Link>
         </Button>
-        <Button variant="outline" size="sm" onClick={downloadDesignJson} className="gap-1.5 hidden sm:flex">
+        <Button variant="outline" size="sm" onClick={downloadDesignJson} className="gap-1.5 min-h-[44px] sm:hidden" aria-label="Download design.json">
+          <Download className="w-3.5 h-3.5" />
+        </Button>
+        <Button variant="outline" size="sm" onClick={downloadDesignJson} className="gap-1.5 hidden sm:flex min-h-[44px]">
           <Download className="w-3.5 h-3.5" /> design.json
         </Button>
       </div>
 
       <Tabs defaultValue="overview">
-        <TabsList className="min-h-[44px]">
+        <TabsList className="min-h-[44px] overflow-x-auto justify-start sm:justify-center">
           <TabsTrigger value="overview" className="min-h-[44px]">Overview</TabsTrigger>
                             <TabsTrigger value="moodboard" className="min-h-[44px]">Mood Board</TabsTrigger>
                             <TabsTrigger value="assets" className="min-h-[44px]">Assets</TabsTrigger>
@@ -262,7 +269,7 @@ export default function ProjectDetail() {
                   <div className="space-y-1.5">
                     <Label>Status</Label>
                     <Select value={editStatus} onValueChange={setEditStatus}>
-                      <SelectTrigger className="min-h-[44px]"><SelectValue /></SelectTrigger>
+                      <SelectTrigger className="min-h-[44px] w-full"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         {STATUS_OPTIONS.map((s) => (
                           <SelectItem key={s} value={s}>{s.replace("_", " ")}</SelectItem>
@@ -272,7 +279,7 @@ export default function ProjectDetail() {
                   </div>
                   <div className="space-y-1.5">
                     <Label>Creative Brief</Label>
-                    <Textarea value={editBrief} onChange={(e) => setEditBrief(e.target.value)} className="min-h-[100px]" placeholder="Describe the vision…" />
+                    <Textarea value={editBrief} onChange={(e) => setEditBrief(e.target.value)} className="min-h-[100px] w-full" placeholder="Describe the vision…" />
                   </div>
                   <div className="flex gap-2 justify-end flex-wrap">
                     <Button variant="outline" onClick={() => setIsEditingOverview(false)} className="min-h-[44px]">Cancel</Button>

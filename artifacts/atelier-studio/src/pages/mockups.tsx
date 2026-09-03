@@ -104,8 +104,8 @@ export default function MockupsPage() {
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-[env(safe-area-inset-bottom)]">
+      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between flex-wrap">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Mockup Generator</h1>
           <p className="text-sm text-muted-foreground">Preview your design on 20+ garment and product templates.</p>
@@ -121,14 +121,14 @@ export default function MockupsPage() {
               ))}
             </SelectContent>
           </Select>
-          <Button size="sm" onClick={handleSaveMockup} disabled={createMockup.isPending} className="gap-1.5 min-h-[44px]">
+          <Button size="sm" onClick={handleSaveMockup} disabled={createMockup.isPending} className="gap-1.5 min-h-[44px] min-w-[44px]">
             <CheckCircle className="w-3.5 h-3.5" />
             Save Mockup
           </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-4 md:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-[280px_1fr] gap-4 sm:gap-6">
         {/* ── Left panel ─────────────────────────────────────────────────────── */}
         <div className="space-y-4">
           {/* Template picker */}
@@ -159,7 +159,7 @@ export default function MockupsPage() {
             <CardContent className="px-3 pb-3 space-y-3">
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="w-full h-24 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center gap-1.5 hover:border-primary transition-colors"
+                className="w-full min-h-[44px] h-24 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center gap-1.5 hover:border-primary transition-colors"
               >
                 {designUrl ? (
                   <img src={designUrl} alt="Design" className="h-full w-full object-contain p-1 rounded" />
@@ -240,7 +240,7 @@ export default function MockupsPage() {
                 <CardTitle className="text-sm">Saved Mockups</CardTitle>
               </CardHeader>
               <CardContent className="px-3 pb-3">
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {safeSavedMockups.slice(0, 6).map((m) => (
                     <div key={m.id} className="relative aspect-square rounded overflow-hidden border border-border">
                       <img src={m.resultUrl ?? m.designAssetUrl ?? ""} alt="" className="w-full h-full object-cover" />
@@ -273,7 +273,7 @@ export default function MockupsPage() {
               </div>
 
               <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="min-h-[44px]">
+                <TabsList className="min-h-[44px] flex-wrap">
                   <TabsTrigger value="2d" className="gap-1.5 min-h-[44px]">
                     <Layers className="w-3.5 h-3.5" />2D Warp
                   </TabsTrigger>
@@ -292,13 +292,13 @@ export default function MockupsPage() {
                       designUrl={designUrl}
                       garmentColor={garmentColor}
                       blendMode={blendMode}
-                      className="max-w-[520px] mx-auto"
+                      className="max-w-full md:max-w-[520px] mx-auto"
                       onCornersChange={setWarpCorners}
                     />
                     <p className="text-xs text-muted-foreground text-center">
                       {designUrl ? "Drag corner handles to warp design onto garment" : "Upload a design to enable warp controls"}
                     </p>
-                    <div className="flex justify-center gap-2">
+                    <div className="flex justify-center gap-2 flex-wrap">
                       <Button
                         size="sm"
                         variant="outline"
@@ -339,7 +339,7 @@ export default function MockupsPage() {
                     <Viewer3D
                       designUrl={designUrl}
                       garmentColor={garmentColor}
-                      className="max-w-[520px] mx-auto aspect-square"
+                      className="max-w-full md:max-w-[520px] mx-auto aspect-square"
                     />
                     <p className="text-xs text-muted-foreground text-center">
                       Drag to orbit • Use light presets above • Save PNG to export
@@ -348,7 +348,7 @@ export default function MockupsPage() {
                 </TabsContent>
 
                 <TabsContent value="lifestyle" className="mt-4">
-                  <div className="max-w-[520px] mx-auto">
+                  <div className="max-w-full md:max-w-[520px] mx-auto">
                     <LifestyleCompositor designUrl={designUrl} />
                   </div>
                 </TabsContent>

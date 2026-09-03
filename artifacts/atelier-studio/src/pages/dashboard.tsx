@@ -20,7 +20,7 @@ export default function Dashboard() {
   const showSkeletons = loadingSummary && !hasError;
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 min-h-[100dvh] pb-[env(safe-area-inset-bottom)]">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
       </div>
@@ -75,7 +75,7 @@ export default function Dashboard() {
         </CardContent>
       </Card>
 
-      <div className="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle>Recent Activity</CardTitle>
@@ -88,8 +88,8 @@ export default function Dashboard() {
             ) : safeActivity && safeActivity.length > 0 ? (
               <div className="space-y-6">
                 {safeActivity.map((entry) => (
-                  <div key={entry.id} className="flex flex-wrap items-start gap-4">
-                    <div className="p-2 rounded-full bg-secondary text-secondary-foreground">
+                  <div key={entry.id} className="flex flex-wrap items-start gap-4 min-h-[44px]">
+                    <div className="p-2 rounded-full bg-secondary text-secondary-foreground min-h-[44px] min-w-[44px] flex items-center justify-center">
                       <CheckCircle className="w-4 h-4" />
                     </div>
                     <div className="flex-1 space-y-1">
@@ -124,7 +124,7 @@ export default function Dashboard() {
 function StatCard({ title, value, loading, icon: Icon, trend, className }: any) {
   return (
     <Card className={className}>
-      <CardHeader className="flex flex-row flex-wrap items-center justify-between space-y-0 pb-2 gap-4">
+      <CardHeader className="flex flex-row flex-wrap items-center justify-between space-y-0 pb-2 gap-4 min-h-[44px]">
         <CardTitle className="text-sm font-medium">
           {title}
         </CardTitle>

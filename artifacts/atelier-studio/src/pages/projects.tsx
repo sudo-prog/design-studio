@@ -22,10 +22,10 @@ function StatusBadge({ status }: { status: string }) {
       variant={(STATUS_COLORS[status] ?? "secondary") as "default" | "secondary" | "outline" | "destructive"}
       className={
         status === "ready"
-          ? "bg-primary/20 text-primary border-primary/30"
+          ? "bg-primary/20 text-primary border-primary/30 flex items-center"
           : status === "in_progress"
-          ? "bg-blue-500/20 text-blue-400 border-blue-500/30"
-          : ""
+          ? "bg-blue-500/20 text-blue-400 border-blue-500/30 flex items-center"
+          : "flex items-center"
       }
     >
       {status.replace("_", " ")}
@@ -36,7 +36,7 @@ function StatusBadge({ status }: { status: string }) {
 function PaletteSwatches({ palette }: { palette: string[] }) {
   if (!palette?.length) return null;
   return (
-    <div className="flex gap-1 mt-2">
+    <div className="flex gap-1 mt-2 flex-wrap">
       {palette.slice(0, 6).map((color, i) => (
         <div
           key={i}
@@ -105,7 +105,7 @@ export default function Projects() {
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center justify-between gap-4">
-        <div>
+        <div className="w-full sm:w-auto">
           <h1 className="text-3xl font-bold tracking-tight">Projects</h1>
           <p className="text-muted-foreground">
             {showSkeletons ? "Loading…" : `${filtered.length} of ${safeProjects.length} project${safeProjects.length !== 1 ? "s" : ""}`}
@@ -124,68 +124,74 @@ export default function Projects() {
         </div>
       )}
 
-      <div className="flex flex-wrap gap-2 items-center">
-        <div className="relative flex-1 min-w-[200px] max-w-sm">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search projects…"
-            className="pl-8 min-h-[44px] min-w-[44px]"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-36 min-h-[44px] min-w-[44px]">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All statuses</SelectItem>
-            <SelectItem value="draft">Draft</SelectItem>
-            <SelectItem value="in_progress">In Progress</SelectItem>
-            <SelectItem value="ready">Ready</SelectItem>
-            <SelectItem value="archived">Archived</SelectItem>
-          </SelectContent>
-        </Select>
-        {categories.length > 0 && (
-          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-36 min-h-[44px] min-w-[44px]">
-              <SelectValue placeholder="Category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All categories</SelectItem>
-              {categories.map((c) => (
-                <SelectItem key={c} value={c}>{c}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
-        <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
-          <SelectTrigger className="w-36 min-h-[44px] min-w-[44px]">
-            <SelectValue placeholder="Sort by" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="updated">Last modified</SelectItem>
-            <SelectItem value="created">Created</SelectItem>
-            <SelectItem value="name">Name</SelectItem>
-          </SelectContent>
-        </Select>
-        <div className="flex border border-border rounded-md overflow-hidden ml-auto">
+      <div className="flex flex-col gap-2 flex-wrap">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-2 items-center">
+          <div className="relative flex-1 min-w-0 w-full sm:max-w-sm">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search projects…"
+              className="pl-8 min-h-[44px] w-full"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div >
+          <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-full sm:w-36 min-h-[44px]">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all" className="min-h-[44px]">All statuses</SelectItem>
+                <SelectItem value="draft" className="min-h-[44px]">Draft</SelectItem>
+                <SelectItem value="in_progress" className="min-h-[44px]">In Progress</SelectItem>
+                <SelectItem value="ready" className="min-h-[44px]">Ready</SelectItem>
+                <SelectItem value="archived" className="min-h-[44px]">Archived</SelectItem>
+              </SelectContent>
+            </Select>
+            {categories.length > 0 && (
+              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <SelectTrigger className="w-full sm:w-36 min-h-[44px]">
+                  <SelectValue placeholder="Category" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all" className="min-h-[44px]">All categories</SelectItem>
+                  {categories.map((c) => (
+                    <SelectItem key={c} value={c} className="min-h-[44px]">
+                      {c}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+            <Select value={sortBy} onValueChange={(v) => setSortBy(v as "updated" | "name" | "created")}>
+                            <SelectTrigger className="w-full sm:w-36 min-h-[44px]">
+                              <SelectValue placeholder="Sort" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="updated" className="min-h-[44px]">Updated</SelectItem>
+                              <SelectItem value="name" className="min-h-[44px]">Name</SelectItem>
+                              <SelectItem value="created" className="min-h-[44px]">Created</SelectItem>
+                            </SelectContent>
+                          </Select>
+          </div >
+        </div >
+        <div className="flex flex-wrap gap-2 w-full justify-center sm:justify-start">
           <Button
             variant={view === "grid" ? "secondary" : "ghost"}
             size="icon"
-            className="rounded-none min-h-[44px] min-w-[44px]"
+            className="flex-1 sm:flex-none rounded-none min-h-[44px] min-w-[44px]"
             onClick={() => setView("grid")}
             aria-label="Grid view"
           ><Grid3X3 className="w-4 h-4" /></Button>
           <Button
             variant={view === "list" ? "secondary" : "ghost"}
             size="icon"
-            className="rounded-none min-h-[44px] min-w-[44px]"
+            className="flex-1 sm:flex-none rounded-none min-h-[44px] min-w-[44px]"
             onClick={() => setView("list")}
             aria-label="List view"
           ><List className="w-4 h-4" /></Button>
-        </div>
-      </div>
+        </div >
+      </div >
 
       {showSkeletons ? (
         <div className={view === "grid" ? "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3" : "flex flex-col gap-3"}>
@@ -203,7 +209,7 @@ export default function Projects() {
             {search ? "Try a different search term." : "Create your first project to start designing."}
           </p>
           {!search && statusFilter === "all" && categoryFilter === "all" && (
-            <Button asChild className="min-h-[44px] min-w-[44px]"><Link href="/projects/new">Create Project</Link></Button>
+            <Button asChild className="min-h-[44px] min-w-[44px] w-full sm:w-auto"><Link href="/projects/new">Create Project</Link></Button>
           )}
         </div>
       ) : view === "grid" ? (
@@ -229,7 +235,7 @@ export default function Projects() {
                 </CardHeader>
                 <CardContent className="px-4 pb-4 pt-0">
                   <PaletteSwatches palette={project.colorPalette ?? []} />
-                  <div className="flex items-center justify-between mt-2">
+                  <div className="flex items-center justify-between mt-2 flex-wrap gap-2">
                     <p className="text-xs text-muted-foreground">{timeAgo(project.updatedAt)}</p>
                     {project.lastBackupAt && (
                       <span className="flex items-center gap-1 text-[10px] text-emerald-500/70">
@@ -257,11 +263,11 @@ export default function Projects() {
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-medium group-hover:text-primary transition-colors truncate">{project.name}</span>
                     <StatusBadge status={project.status} />
                   </div>
-                  <div className="flex items-center gap-2 mt-0.5">
+                  <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                     <span className="text-xs text-muted-foreground">{project.category ?? "Uncategorized"}</span>
                     <PaletteSwatches palette={project.colorPalette ?? []} />
                   </div>

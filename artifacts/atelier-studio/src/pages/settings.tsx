@@ -134,7 +134,7 @@ export default function Settings() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto min-h-[100dvh] pb-safe pb-[env(safe-area-inset-bottom)] space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="max-w-2xl mx-auto min-h-[100dvh] pb-[env(safe-area-inset-bottom)] space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
         <p className="text-muted-foreground mt-1">Configure your AI provider and studio preferences.</p>
@@ -143,7 +143,7 @@ export default function Settings() {
       {(canInstall || installed) && (
         <Card>
           <CardHeader>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row flex-wrap items-center gap-2">
               {installed
                 ? <CheckCircle2 className="w-5 h-5 text-green-500" />
                 : <Download className="w-5 h-5 text-primary" />}
@@ -157,7 +157,7 @@ export default function Settings() {
           </CardHeader>
           {!installed && (
             <CardContent>
-              <Button onClick={install} className="gap-2 min-h-[44px]">
+              <Button onClick={install} className="gap-2 min-h-[44px] min-w-[44px]">
                 <Download className="w-4 h-4" />
                 Install DESIGN.Studio
               </Button>
@@ -181,12 +181,12 @@ export default function Settings() {
           <div className="space-y-2">
             <Label>Provider</Label>
             <Select value={config.provider} onValueChange={(v) => handleProviderChange(v as AIProvider)}>
-              <SelectTrigger className="min-h-[44px]">
+              <SelectTrigger className="min-h-[44px] min-w-[44px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="overflow-x-auto max-w-[90vw]">
                 {(Object.entries(PROVIDER_DEFAULTS) as [AIProvider, (typeof PROVIDER_DEFAULTS)[AIProvider]][]).map(([key, info]) => (
-                  <SelectItem key={key} value={key}>
+                  <SelectItem key={key} value={key} className="min-h-[44px]">
                     <span className="flex items-center gap-2">
                       {key === "ollama" ? <Zap className="w-3.5 h-3.5" /> : <Globe className="w-3.5 h-3.5" />}
                       {info.label}
@@ -205,7 +205,7 @@ export default function Settings() {
             <Input
               id="api-key"
               type="password"
-              className="min-h-[44px]"
+              className="min-h-[44px] min-w-[44px]"
               placeholder={config.provider === "ollama" ? "Leave blank for local" : config.provider === "gemini-web2api" ? "No key needed" : "Paste your API key"}
               value={config.apiKey}
               onChange={(e) => setConfig((prev) => ({ ...prev, apiKey: e.target.value }))}
@@ -220,7 +220,7 @@ export default function Settings() {
             <Input
               id="base-url"
               type="url"
-              className="min-h-[44px]"
+              className="min-h-[44px] min-w-[44px]"
               value={config.baseUrl}
               onChange={(e) => setConfig((prev) => ({ ...prev, baseUrl: e.target.value }))}
             />
@@ -232,17 +232,17 @@ export default function Settings() {
           <div className="space-y-2">
             <Label>Default Model</Label>
             <Select value={config.model} onValueChange={(v) => setConfig((prev) => ({ ...prev, model: v }))}>
-              <SelectTrigger className="min-h-[44px]">
+              <SelectTrigger className="min-h-[44px] min-w-[44px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="overflow-x-auto max-w-[90vw]">
                 {providerInfo.models.map((m) => (
-                  <SelectItem key={m} value={m}>
+                  <SelectItem key={m} value={m} className="min-h-[44px]">
                     <code className="font-mono text-xs">{m}</code>
                   </SelectItem>
                 ))}
                 {!providerInfo.models.includes(config.model) && (
-                  <SelectItem value={config.model}>
+                  <SelectItem value={config.model} className="min-h-[44px]">
                     <code className="font-mono text-xs">{config.model} (custom)</code>
                   </SelectItem>
                 )}
@@ -251,10 +251,10 @@ export default function Settings() {
           </div>
 
           <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 pt-2">
-            <Button onClick={handleSave} className="flex-1 min-h-[44px]">
+            <Button onClick={handleSave} className="flex-1 min-h-[44px] min-w-[44px]">
               Save Settings
             </Button>
-            <Button variant="outline" onClick={handleTest} disabled={testing} className="min-h-[44px]">
+            <Button variant="outline" onClick={handleTest} disabled={testing} className="min-h-[44px] min-w-[44px]">
               {testing ? (
                 <Loader2 className="w-4 h-4 animate-spin mr-2" />
               ) : testResult === "ok" ? (
@@ -263,7 +263,7 @@ export default function Settings() {
               Test Connection
             </Button>
             {testResult && (
-              <Badge variant={testResult === "ok" ? "default" : "destructive"} className="min-h-[44px] flex items-center">
+              <Badge variant={testResult === "ok" ? "default" : "destructive"} className="min-h-[44px] min-w-[44px] flex items-center">
                 {testResult === "ok" ? "Connected" : "Failed"}
               </Badge>
             )}

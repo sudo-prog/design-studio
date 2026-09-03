@@ -131,7 +131,7 @@ function TextOptionsBar() {
         if (WEB_FONTS.includes(f)) loadGoogleFont(f);
         applyProp({ fontFamily: f });
       }}>
-        <SelectTrigger className="min-h-[44px] w-40 text-xs border-none shadow-none bg-transparent">
+        <SelectTrigger className="min-h-[44px] min-w-[44px] w-40 text-xs border-none shadow-none bg-transparent">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -148,7 +148,7 @@ function TextOptionsBar() {
       {/* Font size */}
       <Input
         type="number"
-        className="min-h-[44px] w-14 text-xs px-1.5"
+        className="min-h-[44px] min-w-[44px] w-14 text-xs px-1.5"
         value={fontSize}
         min={6}
         max={400}
@@ -230,10 +230,10 @@ function EditorHeader({ projectId, isSaving, onSave, onExport, onSendToPrint }: 
   const { undo, redo, canUndo, canRedo } = useEditor();
 
   return (
-    <header className="min-h-[52px] flex flex-wrap items-center px-2 gap-1 border-b border-border bg-card shrink-0">
+    <header className="min-h-[52px] flex flex-wrap items-center px-2 gap-1 border-b border-border bg-card shrink-0 overflow-x-auto">
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" className="w-8 h-8 min-h-[44px] min-w-[44px]" asChild aria-label="Back to project">
+          <Button variant="ghost" size="icon" className="min-h-[44px] min-w-[44px]" asChild aria-label="Back to project">
             <Link href={projectId ? `/projects/${projectId}` : "/projects"}>
               <ArrowLeft className="w-4 h-4" />
             </Link>
@@ -250,7 +250,7 @@ function EditorHeader({ projectId, isSaving, onSave, onExport, onSendToPrint }: 
 
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" className="w-8 h-8 min-h-[44px] min-w-[44px]" onClick={undo} disabled={!canUndo} aria-label="Undo">
+          <Button variant="ghost" size="icon" className="min-h-[44px] min-w-[44px]" onClick={undo} disabled={!canUndo} aria-label="Undo">
             <Undo2 className="w-3.5 h-3.5" />
           </Button>
         </TooltipTrigger>
@@ -258,7 +258,7 @@ function EditorHeader({ projectId, isSaving, onSave, onExport, onSendToPrint }: 
       </Tooltip>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon" className="w-8 h-8 min-h-[44px] min-w-[44px]" onClick={redo} disabled={!canRedo} aria-label="Redo">
+          <Button variant="ghost" size="icon" className="min-h-[44px] min-w-[44px]" onClick={redo} disabled={!canRedo} aria-label="Redo">
             <Redo2 className="w-3.5 h-3.5" />
           </Button>
         </TooltipTrigger>
@@ -267,20 +267,20 @@ function EditorHeader({ projectId, isSaving, onSave, onExport, onSendToPrint }: 
 
       <Separator orientation="vertical" className="h-5 mx-1" />
 
-      <Button variant="outline" size="sm" className="h-7 px-2.5 text-xs gap-1.5 min-h-[44px]" onClick={onExport}>
+      <Button variant="outline" size="sm" className="min-h-[44px] min-w-[44px] px-2.5 text-xs gap-1.5" onClick={onExport}>
         <Download className="w-3 h-3" />Export
       </Button>
 
       {projectId && (
         <>
-          <Button size="sm" className="h-7 px-2.5 text-xs gap-1.5 min-h-[44px]" onClick={onSave} disabled={isSaving}>
+          <Button size="sm" className="min-h-[44px] min-w-[44px] px-2.5 text-xs gap-1.5" onClick={onSave} disabled={isSaving}>
             {isSaving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
             Save
           </Button>
           <Button
             variant="ghost"
             size="sm"
-            className="h-7 px-2.5 text-xs gap-1.5 min-h-[44px]"
+            className="min-h-[44px] min-w-[44px] px-2.5 text-xs gap-1.5"
             onClick={onSendToPrint}
           >
             <Printer className="w-3 h-3" />Print
@@ -445,7 +445,7 @@ function EditorShell({ projectId, canvasRef }: ShellProps) {
 
       {isText && <TextOptionsBar />}
 
-      <div className="flex flex-1 min-h-0 flex-wrap md:flex-nowrap">
+      <div className="flex flex-1 min-h-0 flex-wrap">
         {/* Left toolbar */}
         <Toolbar
           zoom={zoom}
@@ -479,7 +479,7 @@ function EditorShell({ projectId, canvasRef }: ShellProps) {
         {/* Right panel */}
         <div className="w-full md:w-60 border-l md:border-l border-border flex flex-col min-h-0 shrink-0">
           <Tabs value={rightTab} onValueChange={setRightTab} className="flex flex-col flex-1 min-h-0">
-            <TabsList className="rounded-none border-b min-h-[44px] w-full bg-transparent p-0 gap-0 shrink-0 flex-wrap">
+            <TabsList className="rounded-none border-b min-h-[44px] w-full bg-transparent p-0 gap-0 shrink-0 flex-wrap overflow-x-auto">
               {(["layers", "print"] as const).map((t) => (
                 <TabsTrigger
                   key={t}

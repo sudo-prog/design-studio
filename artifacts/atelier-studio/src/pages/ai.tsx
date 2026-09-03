@@ -50,8 +50,8 @@ const TYPE_LABELS: Record<string, string> = {
 
 function JobCard({ job, onApprove, onReject }: { job: AiJob; onApprove: () => void; onReject: () => void }) {
   return (
-    <div className="border border-border rounded-lg p-4 space-y-2">
-      <div className="flex items-center gap-2">
+    <div className="border border-border rounded-lg p-4 space-y-2 max-w-full">
+      <div className="flex items-center gap-2 flex-wrap">
         {STATUS_ICON[job.status] ?? <Clock className="w-3 h-3" />}
         <Badge variant="outline" className="text-[10px]">{TYPE_LABELS[job.type] ?? job.type}</Badge>
         <span className="text-[10px] text-muted-foreground ml-auto">
@@ -68,10 +68,10 @@ function JobCard({ job, onApprove, onReject }: { job: AiJob; onApprove: () => vo
       )}
       {job.status === "completed" && (
         <div className="flex gap-1.5 flex-wrap">
-          <Button size="sm" className="min-h-[44px] text-[10px] gap-1" onClick={onApprove}>
+          <Button size="sm" className="min-h-[44px] min-w-[44px] text-[10px] gap-1" onClick={onApprove}>
             <CheckCircle className="w-3 h-3" />Approve
           </Button>
-          <Button size="sm" variant="outline" className="min-h-[44px] text-[10px] gap-1" onClick={onReject}>
+          <Button size="sm" variant="outline" className="min-h-[44px] min-w-[44px] text-[10px] gap-1" onClick={onReject}>
             <XCircle className="w-3 h-3" />Reject
           </Button>
         </div>
@@ -146,14 +146,14 @@ function StyleTransferPanel({ projectId, onApprove, onJobCreated }: StyleTransfe
 
   return (
     <div className="rounded-lg border border-border p-4 bg-muted/30 space-y-3">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-wrap max-w-full">
         <Badge variant="outline" className="text-[10px]">Beta</Badge>
         <p className="text-sm font-medium">Style Transfer</p>
       </div>
-      <p className="text-xs text-muted-foreground">
+      <p className="text-xs text-muted-foreground max-w-full">
         Apply the style of a reference image to your design.
       </p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-full">
         {/* Design slot */}
         <button
           onClick={() => designRef.current?.click()}
@@ -186,16 +186,16 @@ function StyleTransferPanel({ projectId, onApprove, onJobCreated }: StyleTransfe
       </Button>
 
       {result && (
-        <div className="space-y-2">
-          <img src={result} alt="Style transfer result" className="w-full rounded border border-border" />
-          <div className="flex gap-2 flex-wrap">
-            <Button size="sm" className="flex-1 gap-1 min-h-[44px] text-xs" onClick={() => onApprove(result)}>
+        <div className="space-y-2 max-w-full">
+          <img src={result} alt="Style transfer result" className="w-full max-w-full rounded border border-border" />
+          <div className="flex gap-2 flex-wrap max-w-full">
+            <Button size="sm" className="flex-1 gap-1 min-h-[44px] min-w-[44px] text-xs" onClick={() => onApprove(result)}>
               <CheckCircle className="w-3 h-3" />Approve & Save
             </Button>
-            <Button size="sm" variant="outline" className="flex-1 gap-1 min-h-[44px] text-xs" onClick={() => { setResult(null); handleTransfer(); }}>
+            <Button size="sm" variant="outline" className="flex-1 gap-1 min-h-[44px] min-w-[44px] text-xs" onClick={() => { setResult(null); handleTransfer(); }}>
               <Sparkles className="w-3 h-3" />Re-run
             </Button>
-            <Button size="sm" variant="ghost" className="min-h-[44px] text-xs" onClick={() => setResult(null)}>
+            <Button size="sm" variant="ghost" className="min-h-[44px] min-w-[44px] text-xs" onClick={() => setResult(null)}>
               <XCircle className="w-3 h-3" />Discard
             </Button>
           </div>
@@ -270,8 +270,8 @@ export default function AiHub() {
   const activeJobs = safeJobs.filter((j) => j.status === "pending" || j.status === "processing");
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 min-h-[100dvh] pb-safe pb-[env(safe-area-inset-bottom)]">
-      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 min-h-[100dvh] pb-safe pb-[env(safe-area-inset-bottom)] max-w-full">
+      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between flex-wrap">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight">AI Concept Generation</h1>
           <p className="text-sm text-muted-foreground">Generate, remove backgrounds, and refine designs with AI assistance.</p>
@@ -286,13 +286,13 @@ export default function AiHub() {
             {cfg.provider === "local" ? "Built-in AI" : cfg.provider}
           </Badge>
           {showProviderForm && (
-                      <div className="flex items-center gap-2 flex-wrap bg-background border border-border rounded-md p-2">
+                      <div className="flex items-center gap-2 flex-wrap bg-background border border-border rounded-md p-2 max-w-full">
                         <input
                           type="text"
                           value={providerChoice}
                           onChange={(e) => setProviderChoice(e.target.value)}
                           placeholder="Provider"
-                          className="min-h-[44px] text-xs rounded border border-border bg-background px-2 w-full"
+                          className="min-h-[44px] min-w-[44px] text-xs rounded border border-border bg-background px-2 w-full"
                         />
                         {![ "local", "nous", "gemini-web2api" ].includes(providerChoice) && (
                           <>
@@ -301,14 +301,14 @@ export default function AiHub() {
                               value={providerKey}
                               onChange={(e) => setProviderKey(e.target.value)}
                               placeholder="API key"
-                              className="min-h-[44px] text-xs rounded border border-border bg-background px-2 w-full sm:w-40"
+                              className="min-h-[44px] min-w-[44px] text-xs rounded border border-border bg-background px-2 w-full sm:w-40"
                             />
                             <input
                               type="text"
                               value={providerModel}
                               onChange={(e) => setProviderModel(e.target.value)}
                               placeholder="Model"
-                              className="min-h-[44px] text-xs rounded border border-border bg-background px-2 w-full sm:w-40"
+                              className="min-h-[44px] min-w-[44px] text-xs rounded border border-border bg-background px-2 w-full sm:w-40"
                             />
                           </>
                         )}
@@ -331,7 +331,7 @@ export default function AiHub() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 max-w-full">
         {[
         { label: "Total Jobs", value: safeJobs.length, icon: <Sparkles className="w-4 h-4" /> },
         { label: "Completed", value: completedJobs.length, icon: <CheckCircle className="w-4 h-4 text-green-500" /> },
@@ -351,7 +351,7 @@ export default function AiHub() {
       </div>
 
       <div className="overflow-x-auto">
-        <div className="grid grid-cols-1 md:grid-cols-[340px_1fr] gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-[340px_1fr] gap-6">
         {/* ── AI Module runner ─────────────────────────────────────────────── */}
         <Card>
           <CardHeader className="pb-2 pt-4">
@@ -370,7 +370,7 @@ export default function AiHub() {
 
         {/* ── Job history ──────────────────────────────────────────────────── */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap">
             <h2 className="text-sm font-semibold">Generation History</h2>
             <Button size="sm" variant="ghost" onClick={() => refetch()} className="min-h-[44px] text-xs">
               Refresh

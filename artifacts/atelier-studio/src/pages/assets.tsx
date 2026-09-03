@@ -13,7 +13,7 @@ export default function Assets() {
   const safeProjects = projectsError ? [] : projects;
 
   return (
-    <div className="space-y-6 px-4 sm:px-0 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="space-y-6 px-4 sm:px-0 animate-in fade-in slide-in-from-bottom-4 duration-500 min-h-[100dvh] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Assets</h1>
         <p className="text-muted-foreground">
@@ -24,9 +24,9 @@ export default function Assets() {
       <Card>
         <CardContent className="pt-6 space-y-4">
           <div className="flex flex-wrap items-center gap-3">
-            <Library className="w-4 h-4 text-muted-foreground" />
+            <Library className="w-4 h-4 text-muted-foreground min-h-[44px] min-w-[44px] flex items-center" />
             {projectsLoading ? (
-              <Skeleton className="h-9 w-56" />
+              <Skeleton className="min-h-[44px] w-full max-w-xs" />
             ) : (
               <Select
                 value={projectId ? String(projectId) : ""}

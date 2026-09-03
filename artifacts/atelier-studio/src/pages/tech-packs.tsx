@@ -244,7 +244,7 @@ export default function TechPacks() {
 
             {/* Color specs */}
             <div className="space-y-3">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <Label className="text-base font-semibold">Color Specifications</Label>
                 <Button variant="outline" size="sm" className="min-h-[44px]" onClick={addColor}>
                   <Plus className="w-3 h-3 mr-1" />Add Color
@@ -293,6 +293,7 @@ export default function TechPacks() {
             <div className="space-y-2">
               <Label>Production Notes</Label>
               <Textarea
+                className="min-h-[44px]"
                 placeholder="Special instructions, fabric type, wash requirements, print notes…"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
@@ -340,11 +341,13 @@ export default function TechPacks() {
                       <Download className="w-3 h-3 mr-1" />Download PDF
                     </Button>
                   </div>
-                  <iframe
-                    src={pdfUrl}
-                    className="w-full h-[600px] rounded-lg border bg-white"
-                    title="Tech Pack Preview"
-                  />
+                  <div className="overflow-x-auto">
+                    <iframe
+                      src={pdfUrl}
+                      className="w-full h-[600px] rounded-lg border bg-white"
+                      title="Tech Pack Preview"
+                    />
+                  </div>
                 </div>
               )}
             </div>
@@ -378,7 +381,7 @@ export default function TechPacks() {
               <Card key={pack.id} className="hover:border-primary/50 transition-colors">
                 <CardContent className="p-4 space-y-3">
                   <div className="flex items-start justify-between gap-2">
-                    <div className="space-y-0.5">
+                    <div className="space-y-0.5 min-w-0">
                       <p className="font-semibold truncate">{pack.title ?? "Untitled Tech Pack"}</p>
                       <p className="text-xs text-muted-foreground">
                         {format(new Date(pack.createdAt), "MMM d, yyyy")}

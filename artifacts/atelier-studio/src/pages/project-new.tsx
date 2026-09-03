@@ -121,7 +121,7 @@ export default function NewProject() {
   const progress = ((step - 1) / (STEPS.length - 1)) * 100;
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="max-w-2xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 min-h-[100dvh] pb-[env(safe-area-inset-bottom)]">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">New Project</h1>
         <p className="text-muted-foreground">Set up your design project in 4 quick steps.</p>
@@ -266,7 +266,7 @@ export default function NewProject() {
                       onChange={(e) => setCustomColor(e.target.value)}
                       className="w-8 h-8 min-h-[44px] min-w-[44px] rounded cursor-pointer border-0 bg-transparent p-0"
                     />
-                    <Button type="button" variant="outline" size="sm" className="min-h-[44px]" onClick={() => addColor(customColor)}>
+                    <Button type="button" variant="outline" size="sm" className="min-h-[44px] min-w-[44px]" onClick={() => addColor(customColor)}>
                       Add custom color
                     </Button>
                     {selectedPalette.length > 0 && (
@@ -311,7 +311,7 @@ export default function NewProject() {
                     <FormLabel>Print Method</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <SelectTrigger className="min-h-[44px]">
+                        <SelectTrigger className="min-h-[44px] min-w-[44px]">
                           <SelectValue placeholder="Select method" />
                         </SelectTrigger>
                       </FormControl>

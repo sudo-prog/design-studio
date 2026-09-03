@@ -156,17 +156,17 @@ export default function Collections() {
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 min-h-[100dvh] pb-[env(safe-area-inset-bottom)]">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Collections</h1>
         <p className="text-muted-foreground">Manage drops, seasons, and batch exports.</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-[320px_1fr] gap-6">
         {/* ── Create / edit panel ── */}
         <Card className="h-fit">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 flex-wrap">
               {editing ? <Pencil className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
               {editing ? "Edit Collection" : "New Collection"}
             </CardTitle>
@@ -176,7 +176,7 @@ export default function Collections() {
               <Label htmlFor="col-name">Name</Label>
               <Input
                 id="col-name"
-                placeholder="Spring Drop 2026" className="min-h-[44px]"
+                placeholder="Spring Drop 2026" className="min-h-[44px] min-w-[44px]"
                 value={editing ? editing.name : name}
                 onChange={(e) => (editing ? setEditing({ ...editing, name: e.target.value }) : setName(e.target.value))}
               />
@@ -185,7 +185,7 @@ export default function Collections() {
               <Label htmlFor="col-season">Season</Label>
               <Input
                 id="col-season"
-                placeholder="SS26" className="min-h-[44px]"
+                placeholder="SS26" className="min-h-[44px] min-w-[44px]"
                 value={editing ? (editing.season ?? "") : season}
                 onChange={(e) =>
                   editing ? setEditing({ ...editing, season: e.target.value }) : setSeason(e.target.value)
@@ -202,7 +202,7 @@ export default function Collections() {
                     : setProjectIds(v ? [v] : [])
                 }
               >
-                <SelectTrigger className="min-h-[44px]">
+                <SelectTrigger className="min-h-[44px] min-w-[44px]">
                   <SelectValue placeholder="Link a project (optional)" />
                 </SelectTrigger>
                 <SelectContent>
@@ -219,7 +219,7 @@ export default function Collections() {
                   value={editing.status ?? "planning"}
                   onValueChange={(v) => setEditing({ ...editing, status: v as CollectionUpdate["status"] })}
                 >
-                  <SelectTrigger className="min-h-[44px]">
+                  <SelectTrigger className="min-h-[44px] min-w-[44px]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -233,14 +233,14 @@ export default function Collections() {
             <div className="flex flex-wrap gap-2">
               {editing ? (
                 <>
-                  <Button onClick={handleSaveEdit} disabled={updateCollection.isPending} className="flex-1 gap-1.5 min-h-[44px]">
+                  <Button onClick={handleSaveEdit} disabled={updateCollection.isPending} className="flex-1 gap-1.5 min-h-[44px] min-w-[44px]">
                     {updateCollection.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckSquare className="w-4 h-4" />}
                     Save
                   </Button>
-                  <Button variant="ghost" onClick={() => setEditing(null)} className="min-h-[44px]">Cancel</Button>
+                  <Button variant="ghost" onClick={() => setEditing(null)} className="min-h-[44px] min-w-[44px]">Cancel</Button>
                 </>
               ) : (
-                <Button onClick={handleCreate} disabled={createCollection.isPending} className="w-full gap-1.5 min-h-[44px]">
+                <Button onClick={handleCreate} disabled={createCollection.isPending} className="w-full gap-1.5 min-h-[44px] min-w-[44px]">
                   {createCollection.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
                   Create Collection
                 </Button>
@@ -257,7 +257,7 @@ export default function Collections() {
               {selected.size > 0 ? `${selected.size} selected` : "Select collections for batch export"}
             </span>
             <Select value={batchAction} onValueChange={(v) => setBatchAction(v as BatchAction)}>
-              <SelectTrigger className="w-40 min-h-[44px]">
+              <SelectTrigger className="w-40 min-h-[44px] min-w-[44px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -271,7 +271,7 @@ export default function Collections() {
               variant="outline"
               disabled={selected.size === 0 || startBatch.isPending}
               onClick={handleBatchExport}
-              className="gap-1.5 min-h-[44px]"
+              className="gap-1.5 min-h-[44px] min-w-[44px]"
             >
               {startBatch.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
               Batch Export
@@ -290,12 +290,12 @@ export default function Collections() {
               <p className="text-muted-foreground">No collections yet. Create one to group your drops.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {safeCollections.map((col) => (
                 <Card key={col.id} className={selected.has(col.id) ? "border-primary/60" : ""}>
                   <CardHeader className="pb-2">
                     <div className="flex flex-wrap items-start justify-between gap-2">
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
                         <button
                           onClick={() => toggleSelect(col.id)}
                           className={`mt-0.5 min-h-[44px] min-w-[44px] rounded border flex items-center justify-center ${

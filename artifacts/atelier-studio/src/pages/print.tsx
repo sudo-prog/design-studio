@@ -204,7 +204,7 @@ export default function PrintSetup() {
   );
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 min-h-[100dvh] pb-[env(safe-area-inset-bottom)]">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Print Setup</h1>
         <p className="text-muted-foreground">Color separations, halftone films, and prepress output.</p>

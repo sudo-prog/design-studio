@@ -148,17 +148,17 @@ export default function Manufacturing() {
       </div>
 
       <Tabs defaultValue="cost">
-        <TabsList className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-1 w-full h-auto min-h-[44px]\">
-          <TabsTrigger value="cost" className="flex items-center gap-1.5 min-h-[44px]">
+        <TabsList className="flex flex-wrap gap-1 w-full h-auto min-h-[44px]">
+          <TabsTrigger value="cost" className="flex items-center gap-1.5 min-h-[44px] min-w-[44px]">
             <Calculator className="w-3.5 h-3.5" />Cost
           </TabsTrigger>
-          <TabsTrigger value="profit" className="flex items-center gap-1.5 min-h-[44px]">
+          <TabsTrigger value="profit" className="flex items-center gap-1.5 min-h-[44px] min-w-[44px]">
             <TrendingUp className="w-3.5 h-3.5" />Profit
           </TabsTrigger>
-          <TabsTrigger value="directory" className="flex items-center gap-1.5 min-h-[44px]">
+          <TabsTrigger value="directory" className="flex items-center gap-1.5 min-h-[44px] min-w-[44px]">
             <Factory className="w-3.5 h-3.5" />Directory
           </TabsTrigger>
-          <TabsTrigger value="orders" className="flex items-center gap-1.5 min-h-[44px]">
+          <TabsTrigger value="orders" className="flex items-center gap-1.5 min-h-[44px] min-w-[44px]">
             <ShoppingCart className="w-3.5 h-3.5" />Orders
           </TabsTrigger>
         </TabsList>
@@ -180,7 +180,9 @@ export default function Manufacturing() {
                 </div>
                 <div className="space-y-2">
                   <Label>Quantity: <span className="font-bold text-primary">{quantity} units</span></Label>
-                  <Slider min={12} max={500} step={12} value={[quantity]} onValueChange={([v]) => setQuantity(v)} />
+                  <div className="min-h-[44px] flex items-center">
+                    <Slider min={12} max={500} step={12} value={[quantity]} onValueChange={([v]) => setQuantity(v)} />
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -218,7 +220,6 @@ export default function Manufacturing() {
                       <p className="text-xl font-bold text-primary"><CurrencyValue value={pricing.totalCogs} /></p>
                     </div>
 
-                    {/* Bulk tiers */}
                     <div className="overflow-x-auto -mx-4 sm:mx-0">
                       <p className="text-sm font-semibold mb-2 px-4 sm:px-0">Bulk Pricing Tiers</p>
                       <Table>
@@ -270,11 +271,15 @@ export default function Manufacturing() {
                 </div>
                 <div className="space-y-2">
                   <Label>Quantity: <span className="font-bold text-primary">{quantity}</span></Label>
-                  <Slider min={12} max={500} step={12} value={[quantity]} onValueChange={([v]) => setQuantity(v)} />
+                  <div className="min-h-[44px] flex items-center">
+                    <Slider min={12} max={500} step={12} value={[quantity]} onValueChange={([v]) => setQuantity(v)} />
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label>Retail Price: <span className="font-bold text-primary">${retailPrice}</span></Label>
-                  <Slider min={5} max={200} step={1} value={[retailPrice]} onValueChange={([v]) => setRetailPrice(v)} />
+                  <div className="min-h-[44px] flex items-center">
+                    <Slider min={5} max={200} step={1} value={[retailPrice]} onValueChange={([v]) => setRetailPrice(v)} />
+                  </div>
                 </div>
                 {perUnit > 0 && (
                   <div className={cn("p-3 rounded-lg border text-sm", retailPrice < perUnit ? "bg-red-500/5 border-red-500/20 text-red-500" : "bg-green-500/5 border-green-500/20 text-green-600")}>
@@ -348,7 +353,7 @@ export default function Manufacturing() {
 
         {/* ── Manufacturer Directory ── */}
         <TabsContent value="directory" className="space-y-4 mt-4">
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-3 w-full">
             <div className="relative flex-1 min-w-48">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
@@ -397,12 +402,12 @@ export default function Manufacturing() {
             </Select>
           </div>
           {(moqMax < 500 || turnaroundMax < 30) && (
-            <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground w-full">
               <Filter className="w-3 h-3" />
               Showing {filteredMfrs.length} of {safeManufacturers.length} manufacturers
               {moqMax < 500 && <Badge variant="secondary" className="text-xs">MOQ ≤ {moqMax}</Badge>}
               {turnaroundMax < 30 && <Badge variant="secondary" className="text-xs">≤ {turnaroundMax} days</Badge>}
-              <button onClick={() => { setMoqMax(500); setTurnaroundMax(30); setMfrTypeFilter("all"); setMfrSearch(""); }} className="text-primary hover:underline ml-1 min-h-[44px]">Clear all</button>
+              <button onClick={() => { setMoqMax(500); setTurnaroundMax(30); setMfrTypeFilter("all"); setMfrSearch(""); }} className="text-primary hover:underline ml-1 min-h-[44px] min-w-[44px]">Clear all</button>
             </div>
           )}
 
@@ -412,7 +417,7 @@ export default function Manufacturing() {
               <p className="text-muted-foreground">No manufacturers yet. They'll appear here once seeded.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 overflow-x-auto">
               {filteredMfrs.map((mfr) => (
                 <Card key={mfr.id} className="hover:border-primary/50 transition-colors group">
                   <CardContent className="p-4 space-y-3">
@@ -445,7 +450,7 @@ export default function Manufacturing() {
                     )}
                     <div className="flex flex-wrap gap-2 pt-1">
                       {mfr.website && (
-                        <Button variant="outline" size="sm" className="flex-1 h-7 min-h-[44px] text-xs" asChild>
+                        <Button variant="outline" size="sm" className="flex-1 min-h-[44px] text-xs" asChild>
                           <a href={mfr.website} target="_blank" rel="noreferrer">
                             <Globe className="w-3 h-3 mr-1" />Website
                           </a>
@@ -560,7 +565,7 @@ export default function Manufacturing() {
             </div>
           ) : (
             <Card>
-              <CardContent className="p-0 overflow-x-auto">
+              <CardContent className="overflow-x-auto p-0">
                 <Table>
                   <TableHeader>
                     <TableRow>

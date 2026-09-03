@@ -104,13 +104,13 @@ export default function Colors() {
   }
 
   return (
-    <div className="min-h-[100dvh] pb-[env(safe-area-inset-bottom)] space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="min-h-[100dvh] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Color Tools</h1>
         <p className="text-muted-foreground">Extract, manage, and verify print colors.</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 gap-6">
         {/* ── Saved palettes ── */}
         <Card>
           <CardHeader>
@@ -124,12 +124,12 @@ export default function Colors() {
               value={projectId ? String(projectId) : ""}
               onValueChange={(v) => setProjectId(Number(v))}
             >
-              <SelectTrigger className="min-h-[44px]">
+              <SelectTrigger className="min-h-[44px] min-w-[44px]">
                 <SelectValue placeholder="Select a project…" />
               </SelectTrigger>
               <SelectContent>
                 {safeProjects.map((p) => (
-                  <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>
+                  <SelectItem key={p.id} value={String(p.id)} className="min-h-[44px]">{p.name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -148,6 +148,7 @@ export default function Colors() {
                 </p>
               </div>
             ) : (
+              <div className="overflow-x-auto">
               <div className="space-y-4">
                 {safePalettes.map((pal) => (
                   <div key={pal.id} className="rounded-lg border border-border p-3">
@@ -159,6 +160,7 @@ export default function Colors() {
                     </div>
                   </div>
                 ))}
+              </div>
               </div>
             )}
           </CardContent>
@@ -197,11 +199,11 @@ export default function Colors() {
               }}
             />
             <div className="flex flex-wrap gap-2">
-              <Button onClick={handleExtract} disabled={extracting || !imageUrl.trim()} className="gap-1.5 min-h-[44px]">
+              <Button onClick={handleExtract} disabled={extracting || !imageUrl.trim()} className="gap-1.5 min-h-[44px] min-w-[44px]">
                 {extracting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
                 {extracting ? "Extracting…" : "Extract Colors"}
               </Button>
-              <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="min-h-[44px]">
+              <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="min-h-[44px] min-w-[44px]">
                 Use local file
               </Button>
             </div>
@@ -223,7 +225,7 @@ export default function Colors() {
                   <>
                     <div className="flex flex-wrap gap-3 justify-center py-2">
                       {extracted.map((c, i) => (
-                        <button key={i} onClick={() => copyHex(c.hex)} title="Copy hex" className="min-h-[44px]">
+                        <button key={i} onClick={() => copyHex(c.hex)} title="Copy hex" className="min-h-[44px] min-w-[44px]">
                           <Swatch color={c} />
                         </button>
                       ))}
@@ -241,7 +243,7 @@ export default function Colors() {
                         <Button
                           onClick={handleSavePalette}
                           disabled={!projectId || createPalette.isPending}
-                          className="gap-1.5 min-h-[44px]"
+                          className="gap-1.5 min-h-[44px] min-w-[44px]"
                         >
                           {createPalette.isPending ? (
                             <Loader2 className="w-4 h-4 animate-spin" />
